@@ -50,11 +50,11 @@ class ObjectPool{
 	}
 
 public:
-	inline ObjectPool() : _chunkSize(8), _elementSize(sizeof(T)){
+	ObjectPool() : _chunkSize(8), _elementSize(sizeof(T)){
 		_expand(); // Initially expand to 1 chunk
 	}
 
-	inline ~ObjectPool(){
+	~ObjectPool(){
 		std::free(_buffer);
 	}
 
