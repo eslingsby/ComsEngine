@@ -1,0 +1,14 @@
+*
+!*/
+
+!*.hpp
+!*.cpp
+!*.h
+!*.c
+
+!.gitignore
+!LICENSE
+!README.md
+
+CMakeFiles/
+!CMakeLists.txt
