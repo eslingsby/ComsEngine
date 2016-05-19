@@ -16,33 +16,31 @@ struct Transform : public Component<Transform>{
 	float y;
 };
 
-void stopFor(const ObjectPool<Transform>& pool){
+void stopFor(const ObjectPool& pool){
 	system("cls");
 	pool.print();
 	getchar();
 }
 
 int main(int argc, char* argv[]){
-	ObjectPool<Transform> pool;
+	ObjectPool pool(sizeof(Transform));
 
 	stopFor(pool);
 
-	uint64_t id0 = pool.insert(Transform(1234.f, 4567.f));
+	uint64_t id0 = pool.insert(Transform(99999.f, 99999.f));
 	uint64_t id1 = pool.insert(Transform(99999.f, 99999.f));
 	
 	stopFor(pool);
 	
-	pool.free(id0);
-	id0 = pool.insert(Transform(0.f, 1.f));
+	pool.erase<Transform>(id0);
 	
-	pool.get(id1)->y = 753.f;
-	pool.get(id1)->x = 1.f;
+	pool.get<Transform>(id1)->y = 753.f;
+	pool.get<Transform>(id1)->x = 1.f;
 
 	stopFor(pool);
 
 	for (unsigned int i = 0; i < 16; i++){
 		pool.insert(Transform(0.f, 0.f));
-
 		stopFor(pool);
 	}
 	
