@@ -1,5 +1,5 @@
-file(GLOB SRCS *.hpp *.cpp)
+file(GLOB Files *.hpp *.cpp)
 
-add_executable(app ${SRCS})
+add_executable(App ${Files})
 
-target_link_libraries(app LINK_PUBLIC base)
+target_link_libraries(App LINK_PUBLIC Base)

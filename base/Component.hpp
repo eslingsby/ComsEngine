@@ -1,8 +1,10 @@
 #pragma once
 
+#include <cstdint>
+
 class BaseComponent{
 protected:
-	static unsigned int _typeCounter;
+	static uint32_t _typeCounter;
 
 public:
 	virtual ~BaseComponent(){}

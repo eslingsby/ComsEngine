@@ -1,5 +1,5 @@
-file(GLOB SRCS *.hpp *.cpp)
+file(GLOB Files *.hpp *.cpp)
 
-add_library(base STATIC ${SRCS})
+add_library(Base STATIC ${Files})
 
-target_include_directories(base PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Base PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

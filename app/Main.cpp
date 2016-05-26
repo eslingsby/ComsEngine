@@ -27,24 +27,19 @@ int main(int argc, char* argv[]){
 
 	stopFor(pool);
 
-	uint64_t id0 = pool.insert(Transform(99999.f, 99999.f));
-	uint64_t id1 = pool.insert(Transform(99999.f, 99999.f));
-	
-	stopFor(pool);
-	
-	pool.erase<Transform>(id0);
-	
-	pool.get<Transform>(id1)->y = 753.f;
-	pool.get<Transform>(id1)->x = 1.f;
+	Transform* tst0 = pool.insert(0, Transform(123.f, 456.f));
+	Transform* tst1 = pool.insert(1, Transform(789.f, 101112.f));
 
 	stopFor(pool);
 
-	for (unsigned int i = 0; i < 16; i++){
-		pool.insert(Transform(0.f, 0.f));
-		stopFor(pool);
-	}
-	
+	pool.erase(tst0);
+	pool.erase<Transform>(1);
+
 	stopFor(pool);
 
+	pool.insert(16, Transform(99999.f, 99999.f));
+
+	stopFor(pool);
+	
 	return 0;
 }
