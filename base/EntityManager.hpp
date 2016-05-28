@@ -1,0 +1,102 @@
+#pragma once
+
+#include "ObjectPool.hpp"
+#include "Component.hpp"
+
+#include <queue>
+
+class EntityManager{
+	std::vector<ObjectPool*> _pools;
+
+	std::vector<uint32_t> _masks;
+	std::queue<uint32_t> _free;
+
+	uint32_t _entities = 0;
+
+	EntityManager(const EntityManager& other) = delete;
+	EntityManager& operator=(const EntityManager& other) = delete;
+
+	static inline uint32_t _setBit(uint8_t i, bool value, uint32_t original = 0);
+	static inline bool _getBit(uint8_t i, uint32_t original);
+
+public:
+	EntityManager();
+
+	inline uint32_t createEntity();
+
+	inline void destroyEntity(uint32_t id);
+
+	template <typename T, typename ...Ts>
+	inline void addComponent(uint32_t id, Ts... args);
+
+	template <typename T>
+	inline T* getComponent(uint32_t id);
+};
+
+inline uint32_t EntityManager::_setBit(uint8_t i, bool value, uint32_t original){
+	if (value)
+		return original | (1 << i);
+	else
+		return original | (0 << i);
+}
+
+inline bool EntityManager::_getBit(uint8_t i, uint32_t original){
+	if ((1 << i) & original)
+		return true;
+
+	return false;
+}
+
+inline uint32_t EntityManager::createEntity(){
+	uint32_t id;
+
+	if (_free.size()){
+		id = _free.front();
+		_free.pop();
+	}
+	else{
+		_masks.resize(_entities + 1);
+		id = _entities;
+	}
+
+	_masks[id] = _setBit(31, true);
+	_entities++;
+
+	return id;
+}
+
+inline void EntityManager::destroyEntity(uint32_t id){
+	assert(id < _masks.size() && _masks[id]);
+
+	for (uint8_t i = 0; i < _pools.size(); i++){
+		if (_getBit(i, _masks[id]))
+			_pools[i]->get<BaseComponent>(id)->~BaseComponent();
+	}
+
+	_free.push(id);
+
+	_masks[id] = 0;
+	_entities--;
+}
+
+template <typename T, typename ...Ts>
+inline void EntityManager::addComponent(uint32_t id, Ts... args){
+	assert(id < _masks.size() && _masks[id]);
+
+	if (T::type() >= _pools.size()){
+		_pools.resize(T::type() + 1);
+		_pools[T::type()] = new ObjectPool(sizeof(T));
+	}
+
+	_masks[id] = _setBit(T::type(), true, _masks[id]);
+
+	_pools[T::type()]->insert(id, T(args...));
+}
+
+template<typename T>
+inline T* EntityManager::getComponent(uint32_t id){
+	if (T::type() >= _pools.size() || !_pools[T::type()] || id > _masks.size() || _masks[id] == 0)
+		return nullptr;
+
+	return _pools[T::type()]->get<T>(id);
+}

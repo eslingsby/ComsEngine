@@ -1,6 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include <cassert>
+
+class EntityManager;
 
 class BaseComponent{
 protected:
@@ -19,5 +22,7 @@ public:
 template<class T>
 unsigned int Component<T>::type(){
 	static unsigned int type = _typeCounter++;
+
+	assert(type < 32);
 	return type;
 }

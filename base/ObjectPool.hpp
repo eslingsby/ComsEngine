@@ -5,10 +5,12 @@
 #include <cassert>
 #include <cstdint>
 #include <vector>
-#include <math.h>
+#include <cmath>
 
-// Currently expands in chunks of elements, but really should expand in chunks of fixed amounts of bytes
-// The size parameter should also be in bytes instead of elements
+/*
+- Convert chunkSize and size to bytes
+- Remove check and occupied array
+*/
 
 class ObjectPool{
 	const uint32_t _chunkSize; // Size to increase buffer by when full (elements)
@@ -83,7 +85,7 @@ inline bool ObjectPool::check(uint32_t location) const{
 
 template<typename T>
 inline T* ObjectPool::get(uint32_t location, bool implicit) const{
-	assert(sizeof(T) == _elementSize);
+	assert(sizeof(T) <= _elementSize);
 
 	if (!implicit && !check(location))
 		return nullptr;
@@ -93,8 +95,6 @@ inline T* ObjectPool::get(uint32_t location, bool implicit) const{
 
 template <typename T>
 inline void ObjectPool::erase(uint32_t location){
-	assert(sizeof(T) == _elementSize);
-
 	T* object = get<T>(location);
 
 	assert(object != nullptr);
@@ -105,7 +105,7 @@ inline void ObjectPool::erase(uint32_t location){
 
 template <typename T>
 inline void ObjectPool::erase(T* object){
-	assert(_size != 0 && sizeof(T) == _elementSize);
+	assert(_size != 0 && sizeof(T) <= _elementSize);
 
 	uint32_t location = (uint32_t)(object - get<T>(0, true));
 
@@ -115,7 +115,7 @@ inline void ObjectPool::erase(T* object){
 
 template <typename T>
 inline T*  ObjectPool::insert(uint32_t location, const T& value){
-	assert(sizeof(T) == _elementSize);
+	assert(sizeof(T) <= _elementSize);
 
 	if (location >= _size){
 		float chunks = (float)(location - _size) / (float)(_chunkSize - 1);
