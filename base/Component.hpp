@@ -23,6 +23,24 @@ template<class T>
 unsigned int Component<T>::type(){
 	static unsigned int type = _typeCounter++;
 
-	assert(type < 32);
+	assert(type < 31); // 31 max components
 	return type;
 }
+
+struct Transform : public Component<Transform>{
+	Transform(float x = 0.f, float y = 0.f);
+	~Transform();
+
+	float x;
+	float y;
+};
+
+struct Velocity : public Component<Velocity>{
+	Velocity(float gravity = 1.f);
+	~Velocity();
+
+	float gravity;
+
+	float dx = 0.f;
+	float dy = 0.f;
+};

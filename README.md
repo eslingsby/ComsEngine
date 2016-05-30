@@ -2,7 +2,7 @@
 
 Bare-bones ECS game engine written in C++
 
-- [X] Fast contiguous object pools
-- [ ] Benchmark testing helper
-- [ ] Component manager
-- [ ] Entity component relationship
+- [X] Entity component relationship
+- [ ] Entity type iterator
+- [ ] Object pool test
+- [ ] Entity manager test

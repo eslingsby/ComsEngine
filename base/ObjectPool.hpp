@@ -9,7 +9,7 @@
 
 /*
 - Convert chunkSize and size to bytes
-- Remove check and occupied array
+- Remove check method and occupied array
 */
 
 class ObjectPool{

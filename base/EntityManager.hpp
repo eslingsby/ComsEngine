@@ -5,6 +5,12 @@
 
 #include <queue>
 
+/*
+- Create entity version array and occupied array
+- Maybe entity component disabled array
+- Remove last bit flag from masks
+*/
+
 class EntityManager{
 	std::vector<ObjectPool*> _pools;
 
@@ -16,14 +22,14 @@ class EntityManager{
 	EntityManager(const EntityManager& other) = delete;
 	EntityManager& operator=(const EntityManager& other) = delete;
 
-	static inline uint32_t _setBit(uint8_t i, bool value, uint32_t original = 0);
-	static inline bool _getBit(uint8_t i, uint32_t original);
+	static inline uint32_t _setBit(uint8_t i, bool value, uint32_t bits = 0);
+	static inline bool _getBit(uint8_t i, uint32_t bits);
 
 public:
 	EntityManager();
+	~EntityManager();
 
 	inline uint32_t createEntity();
-
 	inline void destroyEntity(uint32_t id);
 
 	template <typename T, typename ...Ts>
@@ -33,15 +39,15 @@ public:
 	inline T* getComponent(uint32_t id);
 };
 
-inline uint32_t EntityManager::_setBit(uint8_t i, bool value, uint32_t original){
+inline uint32_t EntityManager::_setBit(uint8_t i, bool value, uint32_t bits){
 	if (value)
-		return original | (1 << i);
+		return bits | (1 << i);
 	else
-		return original | (0 << i);
+		return bits | (0 << i);
 }
 
-inline bool EntityManager::_getBit(uint8_t i, uint32_t original){
-	if ((1 << i) & original)
+inline bool EntityManager::_getBit(uint8_t i, uint32_t bits){
+	if ((1 << i) & bits)
 		return true;
 
 	return false;
