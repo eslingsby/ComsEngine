@@ -1,6 +1,6 @@
+#include "EntityManager.hpp"
 #include "TestUtils.hpp"
-#include "ObjectPool.hpp"
-#include "Component.hpp"
+#include "Test.hpp"
 
 #include <iostream>
 
@@ -11,7 +11,7 @@ void stopFor(const ObjectPool& pool){
 }
 
 int main(int argc, char* argv[]){
-	ObjectPool pool(sizeof(Transform));
+	/*ObjectPool pool(sizeof(Transform));
 
 	stopFor(pool);
 
@@ -27,7 +27,11 @@ int main(int argc, char* argv[]){
 
 	pool.insert(16, Transform(99999.f, 99999.f));
 
-	stopFor(pool);
+	stopFor(pool);*/
+
+	EntityManager* manager = new EntityManager;
+
+	Physics physics(manager);
 
 	return 0;
 }
