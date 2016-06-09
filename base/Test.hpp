@@ -22,7 +22,6 @@ struct Velocity : public Component<Velocity>{
 };
 
 class Physics : System<Transform, Velocity>{
-	uint32_t _counter;
 
 public:
 	Physics(EntityManager* manager);

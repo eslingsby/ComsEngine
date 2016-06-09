@@ -19,13 +19,9 @@ Velocity::~Velocity(){
 Physics::Physics(EntityManager* manager) : System(manager){}
 
 void Physics::update(){
-	_counter = 0;
-
 	_manager->processEntities(this);
 }
 
 void Physics::operator()(uint64_t id, Transform* transform, Velocity* velocity){
-	std::cout << _counter << " - " << id << " - " << transform->x << ", " << transform->y << " - " << velocity->gravity << "\n";
-
-	_counter++;
+	std::cout << id << " - " << transform->x << ", " << transform->y << " - " << velocity->gravity << "\n";
 }

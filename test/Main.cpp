@@ -27,11 +27,11 @@ int main(int argc, char* argv[]){
 
 	pool.insert(16, Transform(99999.f, 99999.f));
 
-	stopFor(pool);*/
+	stopFor(pool);
 
 	EntityManager* manager = new EntityManager;
 
-	Physics physics(manager);
+	Physics physics(manager);*/
 
 	return 0;
 }

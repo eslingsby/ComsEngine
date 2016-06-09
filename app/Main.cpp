@@ -11,6 +11,11 @@ int main(int argc, char* argv[]){
 	manager.addComponent<Transform>(id, 123.f, 456.f);
 	manager.addComponent<Velocity>(id, 100.f);
 
+	id = manager.createEntity();
+
+	manager.addComponent<Transform>(id, 789.f, 101.f);
+	manager.addComponent<Velocity>(id, 140.f);
+
 	//manager.getComponent<Transform>(id)->x = 0.f;
 	//manager.getComponent<Transform>(id)->y = 0.f;
 
@@ -18,11 +23,9 @@ int main(int argc, char* argv[]){
 
 	//manager.destroyEntity(id);
 
-	
 	Physics system(&manager);
 
-	system.update();
-	
+	system.update();	
 
 	std::cin.get();
 

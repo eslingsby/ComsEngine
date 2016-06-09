@@ -1,6 +1,7 @@
 #pragma once
 
-#include <cstdint>
+#include "BitHelper.hpp"
+
 #include <cassert>
 #include <tuple>
 
@@ -22,19 +23,17 @@ public:
 
 template <class ...Ts>
 class System : public BaseSystem{
-	const uint32_t _size;
-
 	System() = delete;
 
 	static inline uint32_t _createMask();
 
+	template<uint32_t I>
+	static inline void _createMask(uint32_t& mask);
+
 	template<uint32_t I, typename ...Ts>
 	struct CreateMask{
 		inline void operator()(uint32_t& mask){
-			using T = typename std::tuple_element<I, std::tuple<Ts...>>::type;
-
-			// Deduce mask using T::type()
-
+			_createMask<I>(mask);
 			CreateMask<I - 1, Ts...>{}(mask);
 		}
 	};
@@ -42,13 +41,13 @@ class System : public BaseSystem{
 	template<typename ...Ts>
 	struct CreateMask<0, Ts...>{
 		inline void operator()(uint32_t& mask){
-			using T = typename std::tuple_element<0, std::tuple<Ts...>>::type;
-
-			// Deduce mask using T::type()
+			_createMask<0>(mask);
 		}
 	};
 
 public:
+	const uint32_t size;
+
 	System(EntityManager* manager);
 
 	static unsigned int type();
@@ -67,7 +66,15 @@ inline uint32_t System<Ts...>::_createMask(){
 }
 
 template<class ...Ts>
-System<Ts...>::System(EntityManager* manager) : BaseSystem(manager, _createMask()), _size(std::tuple_size<std::tuple<Ts...>>::value){}
+template<uint32_t I>
+inline void System<Ts...>::_createMask(uint32_t& mask){
+	using T = typename std::tuple_element<I, std::tuple<Ts...>>::type;
+
+	mask = BitHelper::setBit(T::type(), true, mask);
+}
+
+template<class ...Ts>
+System<Ts...>::System(EntityManager* manager) : BaseSystem(manager, _createMask()), size(std::tuple_size<std::tuple<Ts...>>::value){}
 
 template<class ...Ts>
 unsigned int System<Ts...>::type(){
