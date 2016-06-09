@@ -1,6 +1,6 @@
 #include "EntityManager.hpp"
-#include "TestUtils.hpp"
-#include "Test.hpp"
+#include "TestHelper.hpp"
+#include "TestObjects.hpp"
 
 #include <iostream>
 

@@ -1,4 +1,4 @@
-#include "Test.hpp"
+#include "TestObjects.hpp"
 
 #include "EntityManager.hpp"
 
@@ -23,5 +23,5 @@ void Physics::update(){
 }
 
 void Physics::operator()(uint64_t id, Transform* transform, Velocity* velocity){
-	std::cout << id << " - " << transform->x << ", " << transform->y << " - " << velocity->gravity << "\n";
+	std::cout << BitHelper::front(id) << " - " << transform->x << ", " << transform->y << " - " << velocity->gravity << "\n";
 }

@@ -1,8 +1,8 @@
-#include "TestUtils.hpp"
+#include "TestHelper.hpp"
 
 #include <random>
 
-int randInt(int a, int b){
+int TestHelper::randInt(int a, int b){
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
@@ -11,7 +11,7 @@ int randInt(int a, int b){
 	return dis(gen);
 }
 
-float randFloat(float a, float b){
+float TestHelper::randFloat(float a, float b){
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
@@ -20,7 +20,7 @@ float randFloat(float a, float b){
 	return (float)dis(gen);
 }
 
-double randDouble(double a, double b){
+double TestHelper::randDouble(double a, double b){
 	std::random_device rd;
 	std::mt19937 gen(rd());
 
@@ -29,28 +29,28 @@ double randDouble(double a, double b){
 	return dis(gen);
 }
 
-Timer::Timer(){
+TestHelper::Timer::Timer(){
 	_start = _now();
 }
 
-Timer::TimePoint Timer::_now(){
+TestHelper::Timer::TimePoint TestHelper::Timer::_now(){
 	return std::chrono::time_point_cast<Units>(Clock::now());
 }
 
-void Timer::start(){
+void TestHelper::Timer::start(){
 	_start = _now();
 }
 
-void Timer::stop(){
+void TestHelper::Timer::stop(){
 	_dt = Duration(_now() - _start);
 	_log.push_back(_dt);
 }
 
-void Timer::clear(){
+void TestHelper::Timer::clear(){
 	_log.clear();
 }
 
-long long Timer::delta(){
+long long TestHelper::Timer::delta(){
 	if (_log.size() == 1){
 		return _dt.count();
 	}

@@ -10,6 +10,8 @@
 /*
 - Convert chunkSize and size to bytes
 - Remove check method and occupied array
+
+- Slim down (as EntityManager supercedes alot of functionality)
 */
 
 class ObjectPool{
@@ -27,25 +29,25 @@ class ObjectPool{
 
 	inline void _expand(uint32_t chunks);
 
-	inline void _erase(uint32_t location); // Frees occupant slot at location
+	inline void _erase(uint32_t index); // Frees occupant slot at index
 
 public:
 	ObjectPool(uint32_t elementSize, uint32_t chunkSize = 8);
 	~ObjectPool();
 
-	inline bool check(uint32_t location) const;
+	inline bool check(uint32_t index) const;
 
 	template <typename T>
-	inline T* get(uint32_t location, bool implicit = false) const;
+	inline T* get(uint32_t index, bool implicit = false) const;
 
 	template <typename T>
-	inline void erase(uint32_t location);
+	inline void erase(uint32_t index);
 
 	template <typename T>
 	inline void erase(T* object);
 
 	template <typename T>
-	inline T* insert(uint32_t location, const T& value);
+	inline T* insert(uint32_t index, const T& value);
 
 	inline uint32_t occupants() const;
 	inline uint32_t size() const;
@@ -69,69 +71,69 @@ inline void ObjectPool::_expand(uint32_t chunks){
 	_occupied.resize(_size, 0);
 }
 
-inline void ObjectPool::_erase(uint32_t location){
-	assert(location < _size);
+inline void ObjectPool::_erase(uint32_t index){
+	assert(index < _size);
 
-	_occupied[location] = 0;
+	_occupied[index] = 0;
 	_occupants--;
 }
 
-inline bool ObjectPool::check(uint32_t location) const{
-	if (location >= _size || _occupied[location] == 0)
+inline bool ObjectPool::check(uint32_t index) const{
+	if (index >= _size || _occupied[index] == 0)
 		return false;
 
 	return true;
 }
 
 template<typename T>
-inline T* ObjectPool::get(uint32_t location, bool implicit) const{
+inline T* ObjectPool::get(uint32_t index, bool implicit) const{
 	assert(sizeof(T) <= _elementSize);
 
-	if (!implicit && !check(location))
+	if (!implicit && !check(index))
 		return nullptr;
 
-	return reinterpret_cast<T*>(_buffer + (location * _elementSize)); // Cast from byte buffer location
+	return reinterpret_cast<T*>(_buffer + (index * _elementSize)); // Cast from byte buffer index
 }
 
 template <typename T>
-inline void ObjectPool::erase(uint32_t location){
-	T* object = get<T>(location);
+inline void ObjectPool::erase(uint32_t index){
+	T* object = get<T>(index);
 
 	assert(object != nullptr);
 
 	object->~T();
-	_erase(location);
+	_erase(index);
 }
 
 template <typename T>
 inline void ObjectPool::erase(T* object){
 	assert(_size != 0 && sizeof(T) <= _elementSize);
 
-	uint32_t location = (uint32_t)(object - get<T>(0, true));
+	uint32_t index = (uint32_t)(object - get<T>(0, true));
 
 	object->~T();
-	_erase(location);
+	_erase(index);
 }
 
 template <typename T>
-inline T*  ObjectPool::insert(uint32_t location, const T& value){
+inline T*  ObjectPool::insert(uint32_t index, const T& value){
 	assert(sizeof(T) <= _elementSize);
 
-	if (location >= _size){
-		float chunks = (float)(location - _size) / (float)(_chunkSize - 1);
+	if (index >= _size){
+		float chunks = (float)(index - _size) / (float)(_chunkSize - 1);
 		_expand((uint32_t)ceil(chunks));
 	}
 	else{
-		if (_occupied[location] != 0)
+		if (_occupied[index] != 0)
 			return nullptr;
 	}
 
-	memcpy(_buffer + location * _elementSize, &value, _elementSize); // Copy object to byte buffer
+	memcpy(_buffer + index * _elementSize, &value, _elementSize); // Copy object to byte buffer
 
-	_occupied[location] = 0xFF;
+	_occupied[index] = 0xFF;
 	_occupants++; 
 
-	return get<T>(location, true); 
+	return get<T>(index, true); 
 }
 
 inline uint32_t ObjectPool::occupants() const{
