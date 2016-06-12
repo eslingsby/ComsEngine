@@ -10,8 +10,7 @@
 /*
 - Convert chunkSize and size to bytes
 - Remove check method and occupied array
-
-- Slim down (as EntityManager supercedes alot of functionality)
+- Replace erasing by pointer with getIndex(pointer*)
 */
 
 class ObjectPool{

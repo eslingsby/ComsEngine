@@ -6,6 +6,11 @@
 
 #include <queue>
 
+/*
+- Add onCreate and onDestroy System calls
+- Change processEntities to allow custom filters and callback functions
+*/
+
 class EntityManager{
 	std::vector<ObjectPool*> _pools; // Byte pools for each component type
 
@@ -29,12 +34,6 @@ class EntityManager{
 	template<uint32_t I, typename ...Ts>
 	static inline void _fillTuple(std::vector<ObjectPool*>& pools, uint32_t index, std::tuple<Ts*...>& t); // Actual transformation function
 
-	enum EntityState : uint8_t{
-		Empty,
-		Active,
-		Inactive
-	};
-
 	template<uint32_t I, typename ...Ts>
 	struct FillTuple{
 		inline void operator()(std::vector<ObjectPool*>& pools, uint32_t index, std::tuple<Ts*...>& t){ // Body of compiled recursive function
@@ -49,6 +48,8 @@ class EntityManager{
 			_fillTuple<0, Ts...>(pools, index, t);
 		}
 	};
+
+	enum EntityState : uint8_t{ Empty, Active, Inactive };
 
 public:
 	EntityManager();
@@ -160,7 +161,6 @@ inline void EntityManager::setEntityActive(uint64_t id, bool active){
 template <typename T>
 inline void EntityManager::setComponentEnabled(uint64_t id, bool enabled){
 	uint32_t index = BitHelper::front(id);
-	uint32_t version = BitHelper::back(id);
 
 	assert(index < _masks.size() && _states[index] && _versions[index] == version && BitHelper::getBit(T::type(), _masks[index]));
 
@@ -174,10 +174,11 @@ inline T* EntityManager::addComponent(uint64_t id, Ts... args){
 
 	assert(index < _masks.size() && _states[index] && _versions[index] == version && !BitHelper::getBit(T::type(), _masks[index]));
 
-	if (T::type() >= _pools.size()){
+	if (T::type() >= _pools.size())
 		_pools.resize(T::type() + 1);
+
+	if (_pools[T::type()] == nullptr)
 		_pools[T::type()] = new ObjectPool(sizeof(T));
-	}
 
 	_masks[index] = BitHelper::setBit(T::type(), true, _masks[index]);
 	_enabled[index] = BitHelper::setBit(T::type(), true, _enabled[index]);
@@ -204,9 +205,12 @@ inline void EntityManager::processEntities(System<Ts...>* system){
 		if (_states[i] != EntityState::Active)
 			continue;
 
+		//if (std::tuple_size<decltype(components)>::value == 0)
+		//	(*system)(BitHelper::combine(i, _versions[i]));
+
 		if ((system->mask & _enabled[i]) == system->mask){
 			_fillTuple(i, components);
-			(*system)(BitHelper::combine(i, _versions[i]), std::get<Ts*>(components)...);
+			system->onProcess(BitHelper::combine(i, _versions[i]), std::get<Ts*>(components)...);
 		}
 	}
 }
