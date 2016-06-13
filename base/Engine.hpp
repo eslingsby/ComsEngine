@@ -1,9 +1,8 @@
 #pragma once
 
-#include "System.hpp"
+#include "EntityManager.hpp"
 
 #include <vector>
-#include <atomic>
 
 class EntityManager;
 
@@ -43,8 +42,12 @@ void Engine::addSystem(Ts ...args){
 		assert(_systems[T::type()] == nullptr);
 	}
 
-	_systems[T::type()] = new T(_manager, args...);
+	T* system = new T(_manager, args...);
+
+	_systems[T::type()] = system;
 	_updateOrder[_systemCount] = T::type() + 1;
 
 	_systemCount++;
+
+	_manager->_registerSystem(system);
 }

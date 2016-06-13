@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <tuple>
 
 struct BitHelper{
 	static inline uint32_t setBit(uint8_t i, bool value, uint32_t bits = 0);
@@ -18,13 +19,13 @@ struct BitHelper{
 
 private:
 
-	template<uint32_t I>
+	template<uint32_t I, typename ...Ts>
 	static inline void _createMask(uint32_t& mask);
 
 	template<uint32_t I, typename ...Ts>
 	struct CreateMask{
 		inline void operator()(uint32_t& mask){
-			_createMask<I>(mask);
+			_createMask<I, Ts...>(mask);
 			CreateMask<I - 1, Ts...>{}(mask);
 		}
 	};
@@ -32,8 +33,13 @@ private:
 	template<typename ...Ts>
 	struct CreateMask<0, Ts...>{
 		inline void operator()(uint32_t& mask){
-			_createMask<0>(mask);
+			_createMask<0, Ts...>(mask);
 		}
+	};
+
+	template<typename ...Ts>
+	struct CreateMask<-1, Ts...>{
+		inline void operator()(uint32_t& mask){}
 	};
 };
 
@@ -69,13 +75,12 @@ inline uint32_t BitHelper::createMask(){
 
 	const uint32_t size = std::tuple_size<std::tuple<Ts...>>::value;
 
-	//if (size)
-	//	CreateMask<size - 1, Ts...>{}(mask);
+	CreateMask<size - 1, Ts...>{}(mask);
 
 	return mask;
 }
 
-template<uint32_t I>
+template<uint32_t I, typename ...Ts>
 inline void BitHelper::_createMask(uint32_t& mask){
 	using T = typename std::tuple_element<I, std::tuple<Ts...>>::type;
 

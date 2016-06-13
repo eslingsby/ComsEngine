@@ -1,18 +1,16 @@
 #include "Engine.hpp"
 
-#include "EntityManager.hpp"
-
 void Engine::_updateSystems(){
 	for (uint32_t i : _updateOrder){
 		if (i)
-			_systems[i - 1]->onUpdate();
+			_systems[i - 1]->update();
 	}
 }
 
 void Engine::_loadSystems(){
 	for (uint32_t i : _updateOrder){
 		if (i)
-			_systems[i - 1]->onLoad();
+			_systems[i - 1]->load();
 	}
 }
 

@@ -9,7 +9,7 @@ struct Mesh : public Component<Mesh>{
 
 	const std::string source;
 
-	unsigned int meshId;
+	unsigned int meshId = 0;
 
 	unsigned int width = 0;
 	unsigned int height = 0;

@@ -3,7 +3,6 @@
 #include "BitHelper.hpp"
 
 #include <cassert>
-#include <tuple>
 
 /*
 - Change System from being fixed to one Component filter
@@ -23,8 +22,14 @@ public:
 	BaseSystem(EntityManager* manager, uint32_t mask);
 	virtual ~BaseSystem() = 0;
 
-	virtual void onLoad(){};
-	virtual void onUpdate(){};
+	virtual void load(){};
+	virtual void update(){};
+
+	virtual void onCreate(uint64_t id){};
+	virtual void onDestroy(uint64_t id){};
+
+	virtual void onActivate(uint64_t id){};
+	virtual void onDeactivate(uint64_t id){};
 };
 
 template <class ...Ts>
@@ -39,10 +44,6 @@ public:
 	static unsigned int type();
 
 	virtual void onProcess(uint64_t id, Ts*...){};
-
-	virtual void onCreate(uint64_t id, Ts*...){};
-
-	virtual void onDestroy(uint64_t id, Ts*...){};
 };
 
 template<class ...Ts>

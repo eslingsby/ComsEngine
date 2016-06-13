@@ -5,7 +5,7 @@ EntityManager::EntityManager(){}
 EntityManager::~EntityManager(){
 	// Call all component destructers properly
 
-	for (ObjectPool* pool : _pools){
+	for (BasePool* pool : _pools){
 		if (pool)
 			delete pool;
 	}
