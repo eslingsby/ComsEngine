@@ -2,19 +2,17 @@
 
 #include "System.hpp"
 
-#include "Transform.hpp"
-#include "Mesh.hpp"
-#include "Material.hpp"
+#include "Script.hpp"
 
-class Renderer : public System<Transform, Mesh, Material>{
+class Scripting : public System<Script>{
 
 public:
-	Renderer(EntityManager* manager);
+	Scripting(EntityManager* manager);
 
 	void load() override;
 	void update() override;
 
-	void onProcess(uint64_t id, Transform* transform, Mesh* mesh, Material* material) override;
+	void onProcess(uint64_t id, Script& script) override;
 
 	void onCreate(uint64_t id) override;
 	void onDestroy(uint64_t id) override;

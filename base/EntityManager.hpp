@@ -7,34 +7,45 @@
 #include <queue>
 #include <tuple>
 
-/*
-- Add onCreate and onDestroy System calls
-- Change processEntities to allow custom filters and callback functions
-*/
-
 class EntityManager{
-	std::vector<BasePool*> _pools; // Byte pools for each component type
+	// Byte pools for each component type
+	std::vector<BasePool*> _pools;
 
-	// Below vectors use the same key for each entity
-	std::vector<uint8_t> _states; // Entity occupant slots
+	// Entity occupant slots
+	std::vector<uint8_t> _states;
+	// Bit masks representing components of an entity
+	std::vector<uint32_t> _masks; 
+	// Bit masks representing enabled components
+	std::vector<uint32_t> _enabled;
+	// Version of each entity
+	std::vector<uint32_t> _versions;
+	// Reference counters
+	std::vector<uint16_t> _references;
 
-	std::vector<uint32_t> _masks; // Bit masks representing components of an entity
-	std::vector<uint32_t> _enabled; // Bit masks representing enabled components
-	std::vector<uint32_t> _versions; // Version of each entity
+	// List of recently destroyed entities
+	std::queue<uint32_t> _free; 
 
-	std::queue<uint32_t> _free; // List of recently destroyed entities
-
+	// Entity count
 	uint32_t _entities = 0;
 
+	// System register for calling BaseSystem events
 	std::vector<BaseSystem*> _systems;
 
-	enum EntityState : uint8_t{ Empty, Active, Inactive };
+	// Entity states for entity _states vector
+	enum EntityState : uint8_t{ Empty, Active, Inactive, Destroyed };
 
+	// Non-copyable overloads
 	EntityManager(const EntityManager& other) = delete;
 	EntityManager& operator=(const EntityManager& other) = delete;
 
+	// Register system for basic events
 	template<typename T>
 	void _registerSystem(T* system);
+
+	inline void _addReference(uint64_t id);
+	inline void _removeReference(uint64_t id);
+
+	inline void _eraseEntity(uint32_t index);
 
 	template<typename ...Ts>
 	inline void _fillTuple(uint32_t index, std::tuple<Ts*...>& t); // Entry point of recursive function
@@ -83,9 +94,13 @@ public:
 	template <typename ...Ts>
 	inline void processEntities(System<Ts...>* system);
 
-	friend class Engine;
-};
+	inline uint8_t getEntityState(uint64_t id);
 
+	inline uint32_t getEntityMask(uint64_t id);
+
+	friend class Engine;
+	friend class Entity;
+};
 
 template<typename T>
 inline void EntityManager::_registerSystem(T* system){
@@ -95,6 +110,42 @@ inline void EntityManager::_registerSystem(T* system){
 	assert(!_systems[T::type()]);
 
 	_systems[T::type()] = system;
+}
+
+inline void EntityManager::_addReference(uint64_t id){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+
+	_references[index]++;
+}
+
+inline void EntityManager::_removeReference(uint64_t id){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	assert(index < _masks.size() && _states[index] && _versions[index] == version && _references[index] != 0);
+
+	_references[index]--;
+
+	if (!_references[index] && _states[index] == EntityState::Destroyed)
+		_eraseEntity(index);
+}
+
+inline void EntityManager::_eraseEntity(uint32_t index){
+	for (uint8_t i = 0; i < _pools.size(); i++){
+		if (BitHelper::getBit(i, _masks[index]))
+			_pools[i]->erase(index);
+	}
+
+	_free.push(index);
+
+	_states[index] = EntityState::Empty;
+
+	_versions[index]++;
+
+	_entities--;
 }
 
 template<typename ...Ts>
@@ -127,10 +178,13 @@ inline uint64_t EntityManager::createEntity(){
 		_free.pop();
 	}
 	else{
-		_states.resize(_entities + 1);
-		_masks.resize(_entities + 1);
-		_versions.resize(_entities + 1);
-		_enabled.resize(_entities + 1);
+		if (_states.size() <= _entities){
+			_states.resize(_entities + 1);
+			_masks.resize(_entities + 1);
+			_versions.resize(_entities + 1);
+			_enabled.resize(_entities + 1);
+			_references.resize(_entities + 1);
+		}
 
 		index = _entities;
 	}
@@ -162,7 +216,7 @@ inline void EntityManager::destroyEntity(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
 
 	// Call onDestroy
 	for (BaseSystem* system : _systems){
@@ -170,25 +224,17 @@ inline void EntityManager::destroyEntity(uint64_t id){
 			system->onDestroy(id);
 	}
 
-	for (uint8_t i = 0; i < _pools.size(); i++){
-		if (BitHelper::getBit(i, _masks[index]))
-			_pools[i]->erase(index);
-	}
+	_states[index] = EntityState::Destroyed;
 
-	_free.push(index);
-
-	_states[index] = EntityState::Empty;
-
-	_versions[index]++;
-
-	_entities--;
+	if (!_references[index])
+		_eraseEntity(index);
 }
 
 inline void EntityManager::setEntityActive(uint64_t id, bool active){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
 
 	if ((active && _states[index] == EntityState::Active) || (!active && _states[index] == EntityState::Inactive))
 		return;
@@ -214,7 +260,7 @@ inline void EntityManager::setComponentEnabled(uint64_t id, bool enabled){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && BitHelper::getBit(T::type(), _masks[index]));
+	assert(index < _masks.size() && _states[index] && _versions[index] == version && BitHelper::getBit(T::type(), _masks[index]) && _states[index] != EntityState::Destroyed);
 
 	_enabled[index] = BitHelper::setBit(T::type(), enabled, _enabled[index]);
 }
@@ -224,7 +270,7 @@ inline T* EntityManager::addComponent(uint64_t id, Ts... args){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && !BitHelper::getBit(T::type(), _masks[index]));
+	assert(index < _masks.size() && _states[index] && _versions[index] == version && !BitHelper::getBit(T::type(), _masks[index]) && _states[index] != EntityState::Destroyed);
 
 	if (T::type() >= _pools.size())
 		_pools.resize(T::type() + 1);
@@ -254,7 +300,7 @@ inline T* EntityManager::getComponent(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	if (T::type() >= _pools.size() || !_pools[T::type()] || index > _states.size() || !_states[index] || _versions[index] != version)
+	if (T::type() >= _pools.size() || !_pools[T::type()] || index > _states.size() || !_states[index] || _versions[index] != version || _states[index] == EntityState::Destroyed)
 		return nullptr;
 
 	return _pools[T::type()]->get<T>(index);
@@ -273,7 +319,25 @@ inline void EntityManager::processEntities(System<Ts...>* system){
 			if (system->mask)
 				_fillTuple(i, components);
 
-			system->onProcess(BitHelper::combine(i, _versions[i]), std::get<Ts*>(components)...);
+			system->onProcess(BitHelper::combine(i, _versions[i]), *std::get<Ts*>(components)...);
 		}
 	}
+}
+
+inline uint8_t EntityManager::getEntityState(uint64_t id){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+
+	return _states[index];
+}
+
+inline uint32_t EntityManager::getEntityMask(uint64_t id){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+
+	return _masks[index];
 }

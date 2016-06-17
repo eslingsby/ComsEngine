@@ -3,8 +3,7 @@
 #include "EntityManager.hpp"
 
 #include <vector>
-
-class EntityManager;
+#include <chrono>
 
 class Engine{
 	EntityManager* const _manager;
@@ -17,8 +16,8 @@ class Engine{
 	bool _running = false;
 	int _exit = 0;
 
-	void _loadSystems();
-	void _updateSystems();
+	inline void _loadSystems();
+	inline void _updateSystems();
 
 public:
 	Engine();
@@ -29,6 +28,20 @@ public:
 
 	virtual int run();
 };
+
+inline void Engine::_loadSystems(){
+	for (uint32_t i : _updateOrder){
+		if (i)
+			_systems[i - 1]->load();
+	}
+}
+
+inline void Engine::_updateSystems(){
+	for (uint32_t i : _updateOrder){
+		if (i)
+			_systems[i - 1]->update();
+	}
+}
 
 template<typename T, typename ...Ts>
 void Engine::addSystem(Ts ...args){

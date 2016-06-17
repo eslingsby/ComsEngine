@@ -4,34 +4,67 @@
 #include <cstdint>
 #include <cstdlib>
 
-/*
-- Convert chunkSize and size to bytes
-*/
+// To-do
+// - Convert chunkSize and size to bytes.
+// - Null index on erase
+// - Check if index is null on get and insert
+// - Create pointer to index function
 
 class BasePool{
-	const uint32_t _chunkSize; // Size to increase buffer by when full (elements)
-	const uint32_t _elementSize; // Size of elements (bytes)
+	// Size to increase buffer by when full (elements).
+	const uint32_t _chunkSize; 
 
-	uint8_t* _buffer; // Byte buffer
+	// Size of elements (bytes).
+	const uint32_t _elementSize; 
 
-	uint32_t _size = 0; // Total size of buffer (elements)
+	uint8_t* _buffer;
 
-	inline uint8_t* _conv(void* memory) const; // Malloc memory check, converts to byte type
+	// Size of buffer (elements).
+	uint32_t _size = 0; 
 
+	// Malloc memory check, converts to byte type.
+	inline uint8_t* _conv(void* memory) const; 
+
+	// Expands buffer by n chunks.
 	inline void _expand(uint32_t chunks);
 
 public:
-	BasePool(uint32_t elementSize, uint32_t chunkSize);
-	virtual ~BasePool();
+	inline BasePool(uint32_t elementSize, uint32_t chunkSize);
+	inline virtual ~BasePool();
 
+	// Returns cast pointer to index location in byte buffer,
+	// returns nullptr if index is empty, and halts if invalid. 
+	// Typename must be same type or base type of element.
+	//
+	//		BasePool* pool = new ObjectPool<Transform>();
+	//		pool->insert<Transform>(0, 100.f, 100.f, 100.f);
+	//
+	//		Transform* component = pool->get<Transform>(0);
+	// 
 	template <typename T>
 	inline T* get(uint32_t index) const;
 
+	// Creates new object and inserts at index, halts if index isn't nullptr.
+	// Returns pointer to created object for convenience.
+	//
+	//		BasePool* pool = new ObjectPool<Transform>();
+	//
+	//		Transform* component = pool->insert<Transform>(0, 100.f, 100.f, 100.f);
+	//
 	template <typename T, typename ...Ts>
 	inline T* insert(uint32_t index, Ts... args);
 
+	// Removes from object pool, deletes object and calls destructor.
+	// Halts if index is invalid or empty.
+	// 
+	//		BasePool* pool = new ObjectPool<Transform>();
+	//		pool->insert<Transform>(0, 100.f, 100.f, 100.f);
+	//
+	//		pool->erase(0);
+	//
 	virtual inline void erase(uint32_t index) = 0;
 
+	// Returns size of object element locations.
 	inline uint32_t size() const;
 };
 
@@ -42,6 +75,14 @@ public:
 
 	inline void erase(uint32_t index) override;
 };
+
+inline BasePool::BasePool(uint32_t elementSize, uint32_t chunkSize) : _elementSize(elementSize), _chunkSize(chunkSize){
+	_expand(1);
+}
+
+inline BasePool::~BasePool(){
+	free(_buffer);
+}
 
 inline uint8_t* BasePool::_conv(void* memory) const{
 	assert(memory != nullptr);
@@ -68,7 +109,6 @@ inline T* BasePool::get(uint32_t index) const{
 	return reinterpret_cast<T*>(_buffer + (index * _elementSize)); // Cast from byte buffer index
 }
 
-
 template <typename T, typename ...Ts>
 inline T*  BasePool::insert(uint32_t index, Ts... args){
 	assert(sizeof(T) <= _elementSize);
@@ -78,8 +118,7 @@ inline T*  BasePool::insert(uint32_t index, Ts... args){
 		_expand((uint32_t)ceil(chunks));
 	}
 
-	//memcpy(_buffer + index * _elementSize, &value, _elementSize); // Copy object to byte buffer
-	new(_buffer + index * _elementSize) T(args...);
+	new(_buffer + (index * _elementSize)) T(args...);
 
 	return get<T>(index); 
 }

@@ -2,7 +2,8 @@
 
 Bare-bones ECS game engine written in C++
 
-- [X] Entity component relationship
-- [X] Entity type iterator
-- [ ] Object pool test
-- [ ] Entity manager test
+- [ ] Object Pool test
+- [ ] System test
+- [ ] Entity test
+
+- [ ] Scripting system
