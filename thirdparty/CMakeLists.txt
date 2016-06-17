@@ -1,2 +1,2 @@
-add_subdirectory(glm)
-add_subdirectory(lua)
+#add_subdirectory(glm)
+#add_subdirectory(lua)

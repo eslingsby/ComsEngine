@@ -29,12 +29,15 @@ public:
 	inline void setComponentEnabled(bool enabled);
 
 	template <typename T, typename ...Ts>
-	inline T* addComponent(Ts... args);
+	inline T* const addComponent(Ts... args);
 
 	template <typename T>
-	inline T* getComponent();
+	inline T* const getComponent();
 
 	inline void destroy();
+
+	template <typename ...Ts>
+	inline bool hasComponents();
 
 	inline uint8_t state();
 	inline uint32_t mask();
@@ -42,7 +45,7 @@ public:
 };
 
 inline Entity::Entity(EntityManager* manager, uint64_t id) : _manager(manager), _id(id){
-	assert(manager);
+	assert(manager && _manager->entityExists(_id));
 
 	_valid = true;
 
@@ -61,7 +64,7 @@ inline Entity::Entity(EntityManager* manager) : _manager(manager){
 }
 
 inline Entity::Entity(const Entity& other) : _manager(other._manager), _id(other._id){
-	assert(other._valid);
+	assert(other._valid && _manager->entityExists(_id));
 
 	_valid = true;
 
@@ -76,7 +79,7 @@ inline Entity::~Entity(){
 }
 
 inline Entity Entity::operator=(const Entity & other){
-	assert(other._manager && other._valid && other._id != _id);
+	assert(other._manager && other._valid && other._id != _id  && _manager->entityExists(other._id));
 
 	// decrease reference count for old id
 	_manager->_removeReference(_id);
@@ -139,15 +142,22 @@ inline void Entity::setComponentEnabled(bool enabled){
 }
 
 template<typename T, typename ...Ts>
-inline T* Entity::addComponent(Ts... args){
+inline T* const Entity::addComponent(Ts... args){
 	assert(_valid);
 
 	return _manager->addComponent<T>(_id, args...);
 }
 
 template<typename T>
-inline T* Entity::getComponent(){
+inline T* const Entity::getComponent(){
 	assert(_valid);
 
 	return _manager->getComponent<T>(_id);
+}
+
+template<typename ...Ts>
+inline bool Entity::hasComponents(){
+	assert(_valid);
+
+	return _manager->hasComponents<Ts...>();
 }

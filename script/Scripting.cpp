@@ -1,19 +1,20 @@
 #include "Scripting.hpp"
 
-#include "EntityManager.hpp"
+#include "Engine.hpp"
 
 Scripting::Scripting(EntityManager* manager) : System(manager){
-}
-
-void Scripting::load(){
 
 }
 
-void Scripting::update(){
+void Scripting::load(Engine& engine){
 
 }
 
-void Scripting::onProcess(uint64_t id, Script & script){
+void Scripting::update(Engine& engine){
+
+}
+
+void Scripting::onProcess(uint64_t id, Script& script){
 
 }
 

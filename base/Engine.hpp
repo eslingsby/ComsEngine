@@ -26,25 +26,31 @@ public:
 	template <typename T, typename ...Ts>
 	void addSystem(Ts... args);
 
+	template <typename T>
+	inline T* const getSystem();
+
+	template <typename T = long long>
+	inline T deltaTime();
+
 	virtual int run();
 };
 
 inline void Engine::_loadSystems(){
 	for (uint32_t i : _updateOrder){
 		if (i)
-			_systems[i - 1]->load();
+			_systems[i - 1]->load(*this);
 	}
 }
 
 inline void Engine::_updateSystems(){
 	for (uint32_t i : _updateOrder){
 		if (i)
-			_systems[i - 1]->update();
+			_systems[i - 1]->update(*this);
 	}
 }
 
 template<typename T, typename ...Ts>
-void Engine::addSystem(Ts ...args){
+inline void Engine::addSystem(Ts ...args){
 	assert(!_running);
 
 	if (_systems.size() <= T::type()){
@@ -63,4 +69,16 @@ void Engine::addSystem(Ts ...args){
 	_systemCount++;
 
 	_manager->_registerSystem(system);
+}
+
+template<typename T>
+inline T* const Engine::getSystem(){
+	assert(_systems.size() > T::type() && _systems[T::type()]);
+
+	return _systems[T::type()];
+}
+
+template <typename T>
+inline T Engine::deltaTime(){
+	return T();
 }

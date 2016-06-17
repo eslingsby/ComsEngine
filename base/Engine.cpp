@@ -8,7 +8,7 @@ Engine::~Engine(){
 }
 
 int Engine::run(){
-	assert(_systemCount > 0);
+	assert(!_running && _systemCount > 0);
 
 	_loadSystems();
 

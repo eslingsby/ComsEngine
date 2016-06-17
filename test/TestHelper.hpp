@@ -3,6 +3,7 @@
 #include <chrono>
 #include <list>
 #include <random>
+#include <cstdint>
 
 struct TestHelper{
 	inline static int randInt(int a, int b);
@@ -38,8 +39,8 @@ struct TestHelper{
 };
 
 inline int TestHelper::randInt(int a, int b){
-	std::random_device rd;
-	std::mt19937 gen(rd());
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
 
 	std::uniform_int_distribution<> dis(a, b);
 
@@ -47,8 +48,8 @@ inline int TestHelper::randInt(int a, int b){
 }
 
 inline float TestHelper::randFloat(float a, float b){
-	std::random_device rd;
-	std::mt19937 gen(rd());
+	static std::random_device rd;
+	static std::mt19937 gen(rd());
 
 	std::uniform_real_distribution<> dis((double)a, (double)b);
 
@@ -56,8 +57,8 @@ inline float TestHelper::randFloat(float a, float b){
 }
 
 inline double TestHelper::randDouble(double a, double b){
-	std::random_device rd;
-	std::mt19937 gen(rd());
+	static 	std::random_device rd;
+	static std::mt19937 gen(rd());
 
 	std::uniform_real_distribution<> dis(a, b);
 

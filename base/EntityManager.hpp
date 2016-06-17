@@ -86,10 +86,10 @@ public:
 	inline void setComponentEnabled(uint64_t id, bool enabled);
 
 	template <typename T, typename ...Ts>
-	inline T* addComponent(uint64_t id, Ts... args);
+	inline T* const addComponent(uint64_t id, Ts... args);
 
 	template <typename T>
-	inline T* getComponent(uint64_t id);
+	inline T* const getComponent(uint64_t id);
 
 	template <typename ...Ts>
 	inline void processEntities(System<Ts...>* system);
@@ -97,6 +97,11 @@ public:
 	inline uint8_t getEntityState(uint64_t id);
 
 	inline uint32_t getEntityMask(uint64_t id);
+
+	template <typename ...Ts>
+	inline bool hasComponents(uint64_t id);
+
+	inline bool entityExists(uint64_t id);
 
 	friend class Engine;
 	friend class Entity;
@@ -218,13 +223,13 @@ inline void EntityManager::destroyEntity(uint64_t id){
 
 	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
 
+	_states[index] = EntityState::Destroyed;
+
 	// Call onDestroy
 	for (BaseSystem* system : _systems){
 		if ((system->mask & _masks[index]) == system->mask)
 			system->onDestroy(id);
 	}
-
-	_states[index] = EntityState::Destroyed;
 
 	if (!_references[index])
 		_eraseEntity(index);
@@ -266,7 +271,7 @@ inline void EntityManager::setComponentEnabled(uint64_t id, bool enabled){
 }
 
 template <typename T, typename ...Ts>
-inline T* EntityManager::addComponent(uint64_t id, Ts... args){
+inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
@@ -296,7 +301,7 @@ inline T* EntityManager::addComponent(uint64_t id, Ts... args){
 }
 
 template<typename T>
-inline T* EntityManager::getComponent(uint64_t id){
+inline T* const EntityManager::getComponent(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
@@ -340,4 +345,23 @@ inline uint32_t EntityManager::getEntityMask(uint64_t id){
 	assert(index < _masks.size() && _states[index] && _versions[index] == version);
 
 	return _masks[index];
+}
+
+template<typename ...Ts>
+inline bool EntityManager::hasComponents(uint64_t id){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+
+	uint32_t mask = BitHelper::createMask<Ts...>();
+
+	return (mask & _masks[index]) == mask;
+}
+
+inline bool EntityManager::entityExists(uint64_t id){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	return (index < _masks.size() && _states[index] && _versions[index] == version);
 }

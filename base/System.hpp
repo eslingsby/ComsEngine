@@ -5,6 +5,7 @@
 #include <cassert>
 
 class EntityManager;
+class Engine;
 
 // To-do
 // - Change System from being fixed to one Component filter.
@@ -51,10 +52,10 @@ public:
 	virtual ~BaseSystem() = 0;
 
 	// Called by entity manager once after all systems are added, before running
-	virtual void load(){};
+	virtual void load(Engine& engine){};
 
 	// Called by entity manager every tick
-	virtual void update(){};
+	virtual void update(Engine& engine){};
 
 	// Entity events called by entity manager to monitor subscribed entities
 	virtual void onCreate(uint64_t id){};

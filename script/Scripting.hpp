@@ -9,8 +9,8 @@ class Scripting : public System<Script>{
 public:
 	Scripting(EntityManager* manager);
 
-	void load() override;
-	void update() override;
+	void load(Engine& engine) override;
+	void update(Engine& engine) override;
 
 	void onProcess(uint64_t id, Script& script) override;
 

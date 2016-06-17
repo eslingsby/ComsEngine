@@ -42,7 +42,7 @@ public:
 	//		Transform* component = pool->get<Transform>(0);
 	// 
 	template <typename T>
-	inline T* get(uint32_t index) const;
+	inline T* const get(uint32_t index) const;
 
 	// Creates new object and inserts at index, halts if index isn't nullptr.
 	// Returns pointer to created object for convenience.
@@ -52,7 +52,7 @@ public:
 	//		Transform* component = pool->insert<Transform>(0, 100.f, 100.f, 100.f);
 	//
 	template <typename T, typename ...Ts>
-	inline T* insert(uint32_t index, Ts... args);
+	inline T* const insert(uint32_t index, Ts... args);
 
 	// Removes from object pool, deletes object and calls destructor.
 	// Halts if index is invalid or empty.
@@ -100,7 +100,7 @@ inline void BasePool::_expand(uint32_t chunks){
 }
 
 template<typename T>
-inline T* BasePool::get(uint32_t index) const{
+inline T* const BasePool::get(uint32_t index) const{
 	assert(sizeof(T) <= _elementSize);
 
 	if (index >= _size)
@@ -110,7 +110,7 @@ inline T* BasePool::get(uint32_t index) const{
 }
 
 template <typename T, typename ...Ts>
-inline T*  BasePool::insert(uint32_t index, Ts... args){
+inline T* const BasePool::insert(uint32_t index, Ts... args){
 	assert(sizeof(T) <= _elementSize);
 
 	if (index >= _size){
