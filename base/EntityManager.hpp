@@ -31,19 +31,9 @@ class EntityManager{
 	// System register for calling BaseSystem events
 	std::vector<BaseSystem*> _systems;
 
-	// Entity states for entity _states vector
-	enum EntityState : uint8_t{ Empty, Active, Inactive, Destroyed };
-
 	// Non-copyable overloads
 	EntityManager(const EntityManager& other) = delete;
 	EntityManager& operator=(const EntityManager& other) = delete;
-
-	// Register system for basic events
-	template<typename T>
-	void _registerSystem(T* system);
-
-	inline void _addReference(uint64_t id);
-	inline void _removeReference(uint64_t id);
 
 	inline void _eraseEntity(uint32_t index);
 
@@ -74,6 +64,9 @@ class EntityManager{
 	};
 
 public:
+	// Entity states for entity _states vector
+	enum EntityState : uint8_t{ Empty, Active, Inactive, Destroyed };
+
 	EntityManager();
 	~EntityManager();
 
@@ -103,12 +96,16 @@ public:
 
 	inline bool entityExists(uint64_t id);
 
-	friend class Engine;
-	friend class Entity;
+	inline void addReference(uint64_t id);
+
+	inline void removeReference(uint64_t id);
+
+	template<typename T>
+	void registerSystem(T* system);
 };
 
 template<typename T>
-inline void EntityManager::_registerSystem(T* system){
+inline void EntityManager::registerSystem(T* system){
 	if (T::type() >= _systems.size())
 		_systems.resize(T::type() + 1);
 
@@ -117,7 +114,7 @@ inline void EntityManager::_registerSystem(T* system){
 	_systems[T::type()] = system;
 }
 
-inline void EntityManager::_addReference(uint64_t id){
+inline void EntityManager::addReference(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
@@ -126,7 +123,7 @@ inline void EntityManager::_addReference(uint64_t id){
 	_references[index]++;
 }
 
-inline void EntityManager::_removeReference(uint64_t id){
+inline void EntityManager::removeReference(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
@@ -221,7 +218,10 @@ inline void EntityManager::destroyEntity(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
+	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+
+	if (_states[index] == EntityState::Destroyed)
+		return;
 
 	_states[index] = EntityState::Destroyed;
 

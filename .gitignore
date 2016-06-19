@@ -5,6 +5,7 @@
 !*.cpp
 !*.h
 !*.c
+!*.cc
 !*.inl
 
 !.gitignore

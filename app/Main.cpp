@@ -7,5 +7,5 @@ int main(int argc, char* argv[]){
 
 	engine.addSystem<Scripting>();
 
-	return engine.run();
+	return engine.run(argc, argv);
 }

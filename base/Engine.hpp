@@ -4,6 +4,8 @@
 
 #include <vector>
 #include <chrono>
+#include <unordered_map>
+#include <string>
 
 class Engine{
 	EntityManager* const _manager;
@@ -14,7 +16,13 @@ class Engine{
 	uint32_t _systemCount = 0;
 
 	bool _running = false;
-	int _exit = 0;
+	int _exitCode = 0;
+
+	std::unordered_map<std::string, std::string> _config;
+
+	// Non-copyable overloads
+	Engine(const Engine& other) = delete;
+	Engine& operator=(const Engine& other) = delete;
 
 	inline void _loadSystems();
 	inline void _updateSystems();
@@ -32,7 +40,15 @@ public:
 	template <typename T = long long>
 	inline T deltaTime();
 
-	virtual int run();
+	inline std::string getConfig(const std::string& key);
+
+	//inline void setConfig(const std::string& key, const std::string& value);
+
+	//inline void restart();
+
+	//inline void shutdown(int code = 0);
+
+	virtual int run(int argc, char* argv[]);
 };
 
 inline void Engine::_loadSystems(){
@@ -68,7 +84,7 @@ inline void Engine::addSystem(Ts ...args){
 
 	_systemCount++;
 
-	_manager->_registerSystem(system);
+	_manager->registerSystem(system);
 }
 
 template<typename T>
@@ -81,4 +97,13 @@ inline T* const Engine::getSystem(){
 template <typename T>
 inline T Engine::deltaTime(){
 	return T();
+}
+
+inline std::string Engine::getConfig(const std::string& key){
+	auto config = _config.find(key);
+
+	if (config != _config.end())
+		return config->second;
+
+	return "";
 }

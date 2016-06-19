@@ -1,10 +1,12 @@
 #pragma once
 
 #include "System.hpp"
+#include "Entity.hpp"
 
 #include "Script.hpp"
 
 class Scripting : public System<Script>{
+	Entity staticScript;
 
 public:
 	Scripting(EntityManager* manager);

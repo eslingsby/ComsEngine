@@ -5,113 +5,138 @@
 #include <cstdint>
 
 class Entity{
-	EntityManager* const _manager;
+	EntityManager* _manager = nullptr;
 	uint64_t _id;
 
 	bool _valid = false;
 
 public:
-	inline Entity(EntityManager* manager, uint64_t id);
+	inline Entity();
+
 	inline Entity(EntityManager* manager);
 	inline Entity(const Entity& other);
 
 	inline ~Entity();
 
-	inline Entity operator=(const Entity& other);
-
+	inline void operator=(const Entity& other);
+	inline void operator=(uint64_t id);
+	
 	inline operator bool();
+	inline operator uint64_t();
+	inline bool operator==(uint64_t id);
 
+	inline void linkManager(EntityManager* manager);
+	
 	inline void invalidate();
 
+	inline void create();
+	
 	inline void setActive(bool active);
-
+	
 	template <typename T>
 	inline void setComponentEnabled(bool enabled);
-
+	
 	template <typename T, typename ...Ts>
 	inline T* const addComponent(Ts... args);
-
+	
 	template <typename T>
 	inline T* const getComponent();
-
+	
 	inline void destroy();
-
+	
 	template <typename ...Ts>
 	inline bool hasComponents();
-
+	
 	inline uint8_t state();
 	inline uint32_t mask();
 	inline uint64_t id();
 };
 
-inline Entity::Entity(EntityManager* manager, uint64_t id) : _manager(manager), _id(id){
-	assert(manager && _manager->entityExists(_id));
+inline Entity::Entity(){}
 
-	_valid = true;
-
-	// increase reference count for id
-	_manager->_addReference(_id);
-}
-
-inline Entity::Entity(EntityManager* manager) : _manager(manager){
-	assert(manager);
-
-	_id = _manager->createEntity();
-	_valid = true;
-
-	// increase reference count for id
-	_manager->_addReference(_id);
+inline Entity::Entity(EntityManager* manager){
+	linkManager(manager);
 }
 
 inline Entity::Entity(const Entity& other) : _manager(other._manager), _id(other._id){
-	assert(other._valid && _manager->entityExists(_id));
+	assert(_manager && other._valid && _manager->entityExists(_id));
 
 	_valid = true;
 
 	// increase reference count for id
-	_manager->_addReference(_id);
+	_manager->addReference(_id);
 }
 
 inline Entity::~Entity(){
 	// if valid decrease reference count for id
 	if (_valid)
-		_manager->_removeReference(_id);
+		_manager->removeReference(_id);
 }
 
-inline Entity Entity::operator=(const Entity & other){
-	assert(other._manager && other._valid && other._id != _id  && _manager->entityExists(other._id));
+inline void Entity::operator=(const Entity& other){
+	assert(other._manager);
+
+	_manager = other._manager;
+
+	if (other._valid)
+		(*this) = other._id;
+}
+
+inline void Entity::operator=(uint64_t id){
+	assert(_manager && _id != id  && _manager->entityExists(id));
 
 	// decrease reference count for old id
-	_manager->_removeReference(_id);
+	if (_valid)
+		_manager->removeReference(_id);
 
-	_id = other._id;
+	_id = id;
 	_valid = true;
 
 	// increase reference count for new id
-	_manager->_addReference(_id);
+	_manager->addReference(_id);
 }
 
 inline Entity::operator bool(){
-	return state() != EntityManager::EntityState::Destroyed;
+	return _valid && state() != EntityManager::EntityState::Destroyed;
+}
+
+inline Entity::operator uint64_t(){
+	return _id;
+}
+
+inline bool Entity::operator==(uint64_t id){
+	return _id == id;
+}
+
+inline void Entity::linkManager(EntityManager* manager){
+	assert(manager);
+
+	_manager = manager;
 }
 
 inline uint8_t Entity::state(){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	return _manager->getEntityState(_id);
 }
 
 inline void Entity::invalidate(){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	// decrease reference count for id
-	_manager->_removeReference(_id);
+	_manager->removeReference(_id);
 
 	_valid = false;
 }
 
+inline void Entity::create(){
+	assert(_manager && !_valid);
+
+	(*this) = _manager->createEntity();
+}
+
 inline uint32_t Entity::mask(){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	return _manager->getEntityMask(_id);
 }
@@ -123,7 +148,7 @@ inline uint64_t Entity::id(){
 }
 
 inline void Entity::setActive(bool active){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	_manager->setEntityActive(_id, active);
 }
@@ -136,28 +161,28 @@ inline void Entity::destroy(){
 
 template<typename T>
 inline void Entity::setComponentEnabled(bool enabled){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	_manager->setComponentEnabled<T>(_id, enabled);
 }
 
 template<typename T, typename ...Ts>
 inline T* const Entity::addComponent(Ts... args){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	return _manager->addComponent<T>(_id, args...);
 }
 
 template<typename T>
 inline T* const Entity::getComponent(){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	return _manager->getComponent<T>(_id);
 }
 
 template<typename ...Ts>
 inline bool Entity::hasComponents(){
-	assert(_valid);
+	assert(_manager && _valid);
 
 	return _manager->hasComponents<Ts...>();
 }

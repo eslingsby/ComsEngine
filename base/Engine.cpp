@@ -7,15 +7,22 @@ Engine::~Engine(){
 		delete i;
 }
 
-int Engine::run(){
+int Engine::run(int argc, char* argv[]){
 	assert(!_running && _systemCount > 0);
+
+	// Load in _config strings from argv and config file
 
 	_loadSystems();
 
 	_running = true;
 
-	while (_running)
+	while (_running){
 		_updateSystems();
+		
+		// check for shutdown or restart
+	}
 
-	return _exit;
+	// write _config changes
+
+	return _exitCode;
 }
