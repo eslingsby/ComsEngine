@@ -7,6 +7,9 @@
 #include <queue>
 #include <tuple>
 
+// To-do
+// - Make reload function
+
 class EntityManager{
 	// Byte pools for each component type
 	std::vector<BasePool*> _pools;
@@ -37,13 +40,13 @@ class EntityManager{
 
 	inline void _eraseEntity(uint32_t index);
 
-	template<typename ...Ts>
+	template <typename ...Ts>
 	inline void _fillTuple(uint32_t index, std::tuple<Ts*...>& t); // Entry point of recursive function
 
-	template<uint32_t I, typename ...Ts>
+	template <uint32_t I, typename ...Ts>
 	static inline void _fillTuple(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t); // Actual transformation function
 
-	template<uint32_t I, typename ...Ts>
+	template <uint32_t I, typename ...Ts>
 	struct FillTuple{
 		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){ // Body of compiled recursive function
 			_fillTuple<I, Ts...>(pools, index, t);
@@ -51,14 +54,14 @@ class EntityManager{
 		}
 	};
 	
-	template<typename ...Ts>
+	template <typename ...Ts>
 	struct FillTuple<0, Ts...>{
 		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){ // Bottom level of compiled recursive function
 			_fillTuple<0, Ts...>(pools, index, t);
 		}
 	};
 
-	template<typename ...Ts>
+	template <typename ...Ts>
 	struct FillTuple<-1, Ts...>{
 		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){} // Bottom level for systems with no components
 	};
@@ -281,7 +284,7 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 		_pools.resize(T::type() + 1);
 
 	if (!_pools[T::type()])
-		_pools[T::type()] = new ObjectPool<T>();
+		_pools[T::type()] = new ObjectPool<T>(T::chunk());
 
 	uint32_t old = _masks[index];
 

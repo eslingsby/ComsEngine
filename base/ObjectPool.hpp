@@ -8,7 +8,7 @@
 // - Convert chunkSize and size to bytes.
 // - Null index on erase
 // - Check if index is null on get and insert
-// - Create pointer to index function
+// - Create "pointer to index" conversion function
 
 class BasePool{
 	// Size to increase buffer by when full (elements).
@@ -71,7 +71,7 @@ public:
 template <class T>
 class ObjectPool : public BasePool{
 public:
-	ObjectPool(uint32_t chunkSize = 8);
+	ObjectPool(uint32_t chunkSize);
 
 	inline void erase(uint32_t index) override;
 };
@@ -114,7 +114,7 @@ inline T* const BasePool::insert(uint32_t index, Ts... args){
 	assert(sizeof(T) <= _elementSize);
 
 	if (index >= _size){
-		float chunks = (float)(index - _size) / (float)(_chunkSize - 1);
+		float chunks = (float)((index + 1) - _size) / (float)(_chunkSize);
 		_expand((uint32_t)ceil(chunks));
 	}
 

@@ -6,13 +6,12 @@
 #include "Script.hpp"
 
 class Scripting : public System<Script>{
-	Entity staticScript;
 
 public:
-	Scripting(EntityManager* manager);
+	Scripting(Engine* engine);
 
-	void load(Engine& engine) override;
-	void update(Engine& engine) override;
+	void load() override;
+	void update() override;
 
 	void onProcess(uint64_t id, Script& script) override;
 

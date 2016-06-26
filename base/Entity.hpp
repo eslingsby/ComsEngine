@@ -14,6 +14,11 @@ public:
 	inline Entity();
 
 	inline Entity(EntityManager* manager);
+	inline Entity(EntityManager& manager);
+
+	inline Entity(EntityManager* manager, uint64_t id);
+	inline Entity(EntityManager& manager, uint64_t id);
+
 	inline Entity(const Entity& other);
 
 	inline ~Entity();
@@ -56,6 +61,20 @@ inline Entity::Entity(){}
 
 inline Entity::Entity(EntityManager* manager){
 	linkManager(manager);
+}
+
+inline Entity::Entity(EntityManager& manager){
+	linkManager(&manager);
+}
+
+inline Entity::Entity(EntityManager* manager, uint64_t id){
+	linkManager(manager);
+	(*this) = id;
+}
+
+inline Entity::Entity(EntityManager& manager, uint64_t id){
+	linkManager(&manager);
+	(*this) = id;
 }
 
 inline Entity::Entity(const Entity& other) : _manager(other._manager), _id(other._id){

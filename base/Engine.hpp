@@ -8,8 +8,6 @@
 #include <string>
 
 class Engine{
-	EntityManager* const _manager;
-
 	std::vector<BaseSystem*> _systems;
 	std::vector<uint32_t> _updateOrder;
 
@@ -18,7 +16,14 @@ class Engine{
 	bool _running = false;
 	int _exitCode = 0;
 
+	using Clock = std::chrono::high_resolution_clock;
+
 	std::unordered_map<std::string, std::string> _config;
+	
+	Clock::time_point _start;
+	Clock::time_point _end;
+
+	Clock::duration _dt;
 
 	// Non-copyable overloads
 	Engine(const Engine& other) = delete;
@@ -28,6 +33,8 @@ class Engine{
 	inline void _updateSystems();
 
 public:
+	EntityManager manager;
+
 	Engine();
 	virtual ~Engine();
 
@@ -37,31 +44,33 @@ public:
 	template <typename T>
 	inline T* const getSystem();
 
-	template <typename T = long long>
+	template <typename T = long double>
 	inline T deltaTime();
 
 	inline std::string getConfig(const std::string& key);
 
-	//inline void setConfig(const std::string& key, const std::string& value);
+	inline void setConfig(const std::string& key, const std::string& value);
+	
+	inline void shutdown(bool abort = false);
 
-	//inline void restart();
+	inline void load();
 
-	//inline void shutdown(int code = 0);
+	inline void update();
 
-	virtual int run(int argc, char* argv[]);
+	int run(int argc, char* argv[]);
 };
 
 inline void Engine::_loadSystems(){
 	for (uint32_t i : _updateOrder){
 		if (i)
-			_systems[i - 1]->load(*this);
+			_systems[i - 1]->load();
 	}
 }
 
 inline void Engine::_updateSystems(){
 	for (uint32_t i : _updateOrder){
 		if (i)
-			_systems[i - 1]->update(*this);
+			_systems[i - 1]->update();
 	}
 }
 
@@ -77,14 +86,14 @@ inline void Engine::addSystem(Ts ...args){
 		assert(_systems[T::type()] == nullptr);
 	}
 
-	T* system = new T(_manager, args...);
+	T* system = new T(this, args...);
 
 	_systems[T::type()] = system;
 	_updateOrder[_systemCount] = T::type() + 1;
 
 	_systemCount++;
 
-	_manager->registerSystem(system);
+	manager.registerSystem(system);
 }
 
 template<typename T>
@@ -96,7 +105,7 @@ inline T* const Engine::getSystem(){
 
 template <typename T>
 inline T Engine::deltaTime(){
-	return T();
+	return std::chrono::duration_cast<std::chrono::duration<T>>(_dt).count();
 }
 
 inline std::string Engine::getConfig(const std::string& key){
@@ -106,4 +115,45 @@ inline std::string Engine::getConfig(const std::string& key){
 		return config->second;
 
 	return "";
+}
+
+inline void Engine::setConfig(const std::string& key, const std::string& value){
+	_config[key] = value;
+}
+
+inline void Engine::shutdown(bool abort){
+	assert(_running);
+
+	if (abort)
+		_exitCode = 1;
+
+	_running = false;
+}
+
+inline void Engine::load(){
+	assert(!_running && _systemCount > 0);
+
+	_start = Clock::now();
+	_end = _start;
+
+	_dt = _end - _start;
+
+	_loadSystems();
+
+	_running = true;
+}
+
+inline void Engine::update(){
+	assert(_running && _systemCount > 0);
+
+	_dt = _end - _start;
+	_start = Clock::now();
+
+	_updateSystems();
+
+	_end = Clock::now();
+
+	if (!_running){
+		// check for shutdown or restart
+	}
 }

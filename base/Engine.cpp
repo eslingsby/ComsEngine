@@ -1,6 +1,6 @@
 #include "Engine.hpp"
 
-Engine::Engine() : _manager(new EntityManager()){}
+Engine::Engine(){}
 
 Engine::~Engine(){
 	for (BaseSystem* i : _systems)
@@ -8,19 +8,14 @@ Engine::~Engine(){
 }
 
 int Engine::run(int argc, char* argv[]){
-	assert(!_running && _systemCount > 0);
+	assert(!_running);
 
 	// Load in _config strings from argv and config file
 
-	_loadSystems();
+	load();
 
-	_running = true;
-
-	while (_running){
-		_updateSystems();
-		
-		// check for shutdown or restart
-	}
+	while (_running)
+		update();
 
 	// write _config changes
 

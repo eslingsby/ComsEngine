@@ -2,8 +2,8 @@
 
 #include "EntityManager.hpp"
 
-BaseSystem::BaseSystem(EntityManager* manager, uint32_t mask) : _manager(manager), mask(mask){
-	assert(manager != nullptr);
+BaseSystem::BaseSystem(Engine* const engine, uint32_t mask) : _engine(*engine), mask(mask){
+	assert(engine != nullptr);
 }
 
 BaseSystem::~BaseSystem(){}

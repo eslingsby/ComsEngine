@@ -4,7 +4,6 @@
 
 #include <cassert>
 
-class EntityManager;
 class Engine;
 
 // To-do
@@ -42,20 +41,20 @@ protected:
 	static uint32_t _typeCounter;
 
 	// Required pointer to entity manager
-	EntityManager* const _manager;
+	Engine& _engine;
 
 public:
 	// Bitmask representing types of subscribed components
 	const uint32_t mask;
 
-	BaseSystem(EntityManager* manager, uint32_t mask);
+	BaseSystem(Engine* const engine, uint32_t mask);
 	virtual ~BaseSystem() = 0;
 
 	// Called by entity manager once after all systems are added, before running
-	virtual void load(Engine& engine){};
+	virtual void load(){};
 
 	// Called by entity manager every tick
-	virtual void update(Engine& engine){};
+	virtual void update(){};
 
 	// Entity events called by entity manager to monitor subscribed entities
 	virtual void onCreate(uint64_t id){};
@@ -69,7 +68,7 @@ class System : public BaseSystem{
 	System() = delete;
 
 public:
-	System(EntityManager* manager);
+	System(Engine* const engine);
 
 	// Returns static type counter 
 	static unsigned int type();
@@ -79,7 +78,7 @@ public:
 };
 
 template<class ...Ts>
-System<Ts...>::System(EntityManager* manager) : BaseSystem(manager, BitHelper::createMask<Ts...>()){}
+System<Ts...>::System(Engine* const engine) : BaseSystem(engine, BitHelper::createMask<Ts...>()){}
 
 template<class ...Ts>
 unsigned int System<Ts...>::type(){
