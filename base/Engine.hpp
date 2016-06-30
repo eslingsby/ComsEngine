@@ -29,7 +29,10 @@ class Engine{
 	Engine(const Engine& other) = delete;
 	Engine& operator=(const Engine& other) = delete;
 
+	// Call system load methods in order of added
 	inline void _loadSystems();
+
+	// Call system update methods in order of added
 	inline void _updateSystems();
 
 public:
@@ -38,25 +41,33 @@ public:
 	Engine();
 	virtual ~Engine();
 
+	// Create and add unique system to engine
+	// Updated in order of added
 	template <typename T, typename ...Ts>
 	void addSystem(Ts... args);
 
+	// Get unique system
 	template <typename T>
 	inline T* const getSystem();
 
+	// Get length of previous update tick in floating point seconds
 	template <typename T = long double>
 	inline T deltaTime();
 
+	// Get string in config map (eventually will read config from file at startup)
 	inline std::string getConfig(const std::string& key);
 
+	// Set string in config map (eventually will save config to file at reload or shutdown)
 	inline void setConfig(const std::string& key, const std::string& value);
 	
+	// Stop the engine from running if using run method
 	inline void shutdown(bool abort = false);
 
+	// Manually load and tick the engine (mainly for testing speed)
 	inline void load();
-
 	inline void update();
 
+	// Automatically load and tick the engine
 	int run(int argc, char* argv[]);
 };
 

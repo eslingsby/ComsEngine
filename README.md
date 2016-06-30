@@ -2,11 +2,6 @@
 
 Bare-bones ECS game engine written in C++
 
-- [ ] Object Pool test
-- [ ] System test
-- [ ] Entity test
-- [ ] Scripting system
-
 # Third Party
 
 - GTest, Google unit testing framework, [github.com/google/googletest](https://github.com/google/googletest)

@@ -1,11 +1,9 @@
-#include "Engine.hpp"
+#include "StaticEngine.hpp"
 
 #include "Scripting.hpp"
 
 int main(int argc, char* argv[]){
-	Engine engine;
+	StaticEngine::get().addSystem<Scripting>();
 
-	engine.addSystem<Scripting>();
-
-	return engine.run(argc, argv);
+	return StaticEngine::get().run(argc, argv);
 }

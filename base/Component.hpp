@@ -14,7 +14,10 @@ public:
 template <class T, uint32_t chunkSize = 8>
 class Component : public BaseComponent{
 public:
+	// Integer representing component type, increments and is unique for each derived class
 	static inline uint32_t type();
+
+	// Desired chunk size to increase object pool when expanding, defined by derived class
 	static inline uint32_t chunk();
 };
 

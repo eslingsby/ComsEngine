@@ -38,32 +38,39 @@ class EntityManager{
 	EntityManager(const EntityManager& other) = delete;
 	EntityManager& operator=(const EntityManager& other) = delete;
 
+	// Erase entity component's from object pools
 	inline void _eraseEntity(uint32_t index);
 
+	// Fill component type tuple with relevent components at existing entity index
+	// Entry point of compile time recursive function
 	template <typename ...Ts>
-	inline void _fillTuple(uint32_t index, std::tuple<Ts*...>& t); // Entry point of recursive function
+	inline void _fillTuple(uint32_t index, std::tuple<Ts*...>& t); 
 
+	// Actual transformation function
 	template <uint32_t I, typename ...Ts>
-	static inline void _fillTuple(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t); // Actual transformation function
+	static inline void _fillTuple(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t);
 
+	// Body of compiled recursive function
 	template <uint32_t I, typename ...Ts>
 	struct FillTuple{
-		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){ // Body of compiled recursive function
+		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){ 
 			_fillTuple<I, Ts...>(pools, index, t);
 			FillTuple<I - 1, Ts...>{}(pools, index, t);
 		}
 	};
-	
+
+	// Bottom level of compile time recursive function
 	template <typename ...Ts>
 	struct FillTuple<0, Ts...>{
-		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){ // Bottom level of compiled recursive function
+		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){ 
 			_fillTuple<0, Ts...>(pools, index, t);
 		}
 	};
 
+	// Bottom level for systems with no components
 	template <typename ...Ts>
 	struct FillTuple<-1, Ts...>{
-		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){} // Bottom level for systems with no components
+		inline void operator()(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){} 
 	};
 
 public:
@@ -73,36 +80,68 @@ public:
 	EntityManager();
 	~EntityManager();
 
+	// Create new empty entity. Manager will re-use previously destroyed entity location if available,
+	// and will increment the entity version. A 64 bit entity ID is made up the entitie's
+	// index in memory, and its version number, ensuring all IDs refer to specific versions.
 	inline uint64_t createEntity();
+
+	// Destroy entity and components, and erase if entity has no references.
+	// If entity has references, entity will be erased when all references are gone, meanwhile the
+	// onDestroy function will be called as usual, and entity will stop being processed by systems.
 	inline void destroyEntity(uint64_t id);
 
+	// Set if entity gets processed by systems
 	inline void setEntityActive(uint64_t id, bool active);
 
+	// Set if component gets processed by systems
 	template <typename T>
 	inline void setComponentEnabled(uint64_t id, bool enabled);
 
+	// Create and attach new unique component to existing entity
 	template <typename T, typename ...Ts>
 	inline T* const addComponent(uint64_t id, Ts... args);
 
+	// Get unique component pointer from existing entity
 	template <typename T>
 	inline T* const getComponent(uint64_t id);
 
+	// Pass all valid entities to a system via system's onProcess(Ts... args) function
 	template <typename ...Ts>
 	inline void processEntities(System<Ts...>* system);
-
+	
+	// Get the state of existing entity, states being defined in EntityState enum
 	inline uint8_t getEntityState(uint64_t id);
 
+	// Get the 32 bit mask of representing components owned by existing entity
+	//
+	//		Each component class has a type integer, in the below example assume that
+	//		Transform has a type number of 0, and Velocity has a type number of 4
+	//
+	//		uint64_t id = manager.createEntity();
+	//		manager.addComponent<Transform>(id, 0.f, 0.f, 0.f);
+	//		manager.addComponent<Velocity>(id, 10.f);
+	//
+	//		manager.getEntityMask(id);		// = 0xb10001000000000000000000000000000
+	//
 	inline uint32_t getEntityMask(uint64_t id);
 
+	// Returns true if entity has components
+	//
+	//		bool result = manager.hasComponents<Transform, Velocity>(id);
+	//
 	template <typename ...Ts>
 	inline bool hasComponents(uint64_t id);
 
+	// Returns if entity ID is valid
 	inline bool entityExists(uint64_t id);
 
+	// Increments an entitie's reference count, causing it not to be fully erased on destroy
 	inline void addReference(uint64_t id);
 
+	// Decrements an entitie's reference count
 	inline void removeReference(uint64_t id);
 
+	// Subscribes system to entity events via onCreate, onDestroy, onActivate, onDeactivate functions
 	template<typename T>
 	void registerSystem(T* system);
 };

@@ -3,11 +3,9 @@
 #include "Component.hpp"
 
 #include <string>
+#include <set>
+#include <unordered_map>
 
 struct Script : public Component<Script>{
-	Script(std::string source) : source(source){}
-
-	const std::string source;
-	
-	bool loaded = false;
+	std::unordered_map<std::string, std::set<int>> references;
 };

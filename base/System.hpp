@@ -17,22 +17,22 @@ class Engine;
 //
 //		class Renderer : public System<Transform, Mesh, Material>{
 //		public:
-//			Renderer(EntityManager* manager);
+//			Renderer(Engine* engine);
 //		
 //			void update() override;
 //		
 //			void onProcess(uint64_t id, Transform* transform, Mesh* mesh, Material* material) override;
 //		};
 //
-//		Renderer::Renderer(EntityManager* manager) : public System(manager){}
+//		Renderer::Renderer(Engine* engine) : public System(manager){}
 //
 //		void Renderer::update(){
-//			_manager->processEntities(this);
+//			_engine.manager.processEntities(this);
 //		}
 //
-//		void Renderer::onProcess(uint64_t id, Transform* transform, Mesh* mesh, Material* material){
-//			transform->x += 10.f;
-//			transform->y += 10.f;
+//		void Renderer::onProcess(uint64_t id, Transform& transform, Mesh& mesh, Material& material){
+//			transform.x += 10.f;
+//			transform.y += 10.f;
 //		}
 
 class BaseSystem{
