@@ -34,11 +34,11 @@ TEST_F(ObjectPoolTest, allocation){
 	double begin = TestHelper::randDouble(index, DBL_MAX);
 	double end = TestHelper::randDouble(index, DBL_MAX);
 	
-	component->begin = begin;
-	component->end = end;
+	//component->begin = begin;
+	//component->end = end;
 	
-	EXPECT_EQ(pool->get<TestComponent>(index)->begin, begin);
-	EXPECT_EQ(pool->get<TestComponent>(index)->end, end);
+	//EXPECT_EQ(pool->get<TestComponent>(index)->begin, begin);
+	//EXPECT_EQ(pool->get<TestComponent>(index)->end, end);
 	
 	//pool->erase(index);
 	

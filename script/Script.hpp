@@ -3,9 +3,9 @@
 #include "Component.hpp"
 
 #include <string>
-#include <set>
 #include <unordered_map>
+#include <vector>
 
 struct Script : public Component<Script>{
-	std::unordered_map<std::string, std::set<int>> references;
+	std::unordered_map<std::string, std::vector<std::pair<bool, uint32_t>>> references;
 };

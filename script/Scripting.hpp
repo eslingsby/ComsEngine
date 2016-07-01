@@ -9,9 +9,11 @@
 #include <string>
 
 class Scripting : public System<Script>{
-	lua_State* const L;
+	void _destroyInstance(int reference);
 
 public:
+	lua_State* const L;
+
 	Scripting(Engine* engine);
 	~Scripting();
 
@@ -22,11 +24,9 @@ public:
 
 	void registerFile(const std::string& file);
 
-	void createInstance(uint64_t id, Script& script, const std::string& meta);
+	void createInstance(uint64_t id, const std::string& type, unsigned int number = 0);
+	void destroyInstance(uint64_t id, const std::string& type, unsigned int number = 0);
 
 	void onCreate(uint64_t id) override;
 	void onDestroy(uint64_t id) override;
-
-	void onActivate(uint64_t id) override;
-	void onDeactivate(uint64_t id) override;
 };

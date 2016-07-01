@@ -5,6 +5,10 @@ function Test:load()
 	--self.addComponent(Velocity)
 	
 	--transform.position = { 100, 100, 100 }
+	
+	self.test = Script.create(1, "Test", 0)
+	
+	self.x = 0
 end
 
 function Test:update()
@@ -26,6 +30,10 @@ function Test:update()
 	--entity.transform.position = self.position
 	
 	--self.destroy()
+	
+	print(self.x)
+	
+	self.x = self.x + 1
 end
 
 return "Test"
