@@ -48,24 +48,20 @@ void Scripting::load(){
 
 	Binder::bind(L);
 	
-	if (luaL_dofile(L, (_engine.getConfig("data") + "Load.lua").c_str()))
+	if (luaL_dofile(L, (_engine.getConfig("data") + "Load.lua").c_str())){
 		std::cout << lua_tostring(L, -1) << "\n";
+		lua_pop(L, 1);
+	}
 	
 	registerFile("Test.lua");
+	registerFile("Other.lua");
 
 	uint64_t id = _engine.manager.createEntity();
 
-	Script* script = _engine.manager.addComponent<Script>(id);
+	_engine.manager.addComponent<Script>(id);
 
 	createInstance(id, "Test");
-	createInstance(id, "Test", 1);
-	createInstance(id, "Test", 2);
-	createInstance(id, "Test", 3);
-
-	//destroyInstance(id, "Test");
-	destroyInstance(id, "Test", 1);
-	destroyInstance(id, "Test", 2);
-	destroyInstance(id, "Test", 3);
+	createInstance(id, "Other");
 }
 
 void Scripting::update(){

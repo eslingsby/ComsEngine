@@ -8,7 +8,7 @@ function Test:load()
 	
 	self.test = Script.create(1, "Test", 0)
 	
-	self.x = 0
+	self.vector = Vec3.create(0, 100, 1000)
 end
 
 function Test:update()
@@ -31,9 +31,16 @@ function Test:update()
 	
 	--self.destroy()
 	
-	print(self.x)
+	local test = Vec3.create({ z=100, x=5 })
 	
-	self.x = self.x + 1
+	test + test
+	
+	test.x + 10
+	
+	print(test.x)
+	
+	print(test)
+	
 end
 
 return "Test"

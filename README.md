@@ -1,6 +1,6 @@
 # ComsEngine
 
-Bare-bones ECS game engine written in C++
+Bare-bones ECS game engine written in C++, extended with Lua
 
 # Third Party
 
