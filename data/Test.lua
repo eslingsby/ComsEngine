@@ -33,9 +33,7 @@ function Test:update()
 	
 	local test = Vec3.create({ z=100, x=5 })
 	
-	test + test
-	
-	test.x + 10
+	test.x = test.x + 10
 	
 	print(test.x)
 	

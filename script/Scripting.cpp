@@ -24,7 +24,11 @@ void Scripting::_destroyInstance(int reference){
 		
 			if (!lua_isnil(L, -1)){
 				lua_rawgeti(L, LUA_REGISTRYINDEX, reference);
-				lua_pcall(L, 1, 0, 0);
+
+				if (lua_pcall(L, 1, 0, 0)){
+					std::cout << lua_tostring(L, -1) << "\n";
+					lua_pop(L, 1);
+				}
 			}
 		}
 
@@ -133,7 +137,9 @@ void Scripting::registerFile(const std::string& file){
 	lua_setfield(L, -2, "type");
 	
 	// M{} {}
-	luaL_newmetatable(L, type.c_str());
+	if (!luaL_newmetatable(L, type.c_str()))
+		luaL_getmetatable(L, type.c_str());
+
 	lua_insert(L, -2);
 
 	// M{}
@@ -152,6 +158,11 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 
 	// {} M{}
 	luaL_getmetatable(L, type.c_str());
+
+	if (lua_isnil(L, -1)){
+		lua_pop(L, 2);
+		return;
+	}
 
 	// {}
 	lua_setmetatable(L, -2);
