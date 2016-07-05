@@ -25,6 +25,9 @@ class EntityManager{
 	// Reference counters
 	std::vector<uint16_t> _references;
 
+	// List of entities to be destroyed
+	std::queue<uint64_t> _destroy;
+
 	// List of recently destroyed entities
 	std::queue<uint32_t> _free; 
 
@@ -144,6 +147,8 @@ public:
 	// Subscribes system to entity events via onCreate, onDestroy, onActivate, onDeactivate functions
 	template<typename T>
 	void registerSystem(T* system);
+
+	inline void callDestroyed();
 };
 
 template<typename T>
@@ -190,6 +195,23 @@ inline void EntityManager::_eraseEntity(uint32_t index){
 	_versions[index]++;
 
 	_entities--;
+}
+
+inline void EntityManager::callDestroyed(){
+	// Call onDestroy
+	while (_destroy.size()){
+		uint32_t index = BitHelper::front(_destroy.front());
+
+		for (BaseSystem* system : _systems){
+			if ((system->mask & _masks[index]) == system->mask)
+				system->onDestroy(_destroy.front());
+		}
+
+		if (!_references[index])
+			_eraseEntity(index);
+
+		_destroy.pop();
+	}
 }
 
 template<typename ...Ts>
@@ -267,14 +289,7 @@ inline void EntityManager::destroyEntity(uint64_t id){
 
 	_states[index] = EntityState::Destroyed;
 
-	// Call onDestroy
-	for (BaseSystem* system : _systems){
-		if ((system->mask & _masks[index]) == system->mask)
-			system->onDestroy(id);
-	}
-
-	if (!_references[index])
-		_eraseEntity(index);
+	_destroy.push(id);
 }
 
 inline void EntityManager::setEntityActive(uint64_t id, bool active){
@@ -347,7 +362,7 @@ inline T* const EntityManager::getComponent(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	if (T::type() >= _pools.size() || !_pools[T::type()] || index > _states.size() || !_states[index] || _versions[index] != version || _states[index] == EntityState::Destroyed)
+	if (T::type() >= _pools.size() || !_pools[T::type()] || index > _states.size() || !_states[index] || _versions[index] != version)
 		return nullptr;
 
 	return _pools[T::type()]->get<T>(index);

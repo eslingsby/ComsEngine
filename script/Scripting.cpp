@@ -8,39 +8,6 @@
 #include <iostream>
 #include <thread>
 
-void Scripting::_destroyInstance(int reference){
-	// go through table, and destroy script metatables
-
-	// {}
-	lua_rawgeti(L, LUA_REGISTRYINDEX, reference);
-
-	// {} nil
-	lua_pushnil(L);
-
-	// {}
-	while (lua_next(L, -2) != 0){
-		if (lua_type(L, -1) == LUA_TTABLE){
-			lua_getfield(L, -1, "destroy");
-		
-			if (!lua_isnil(L, -1)){
-				lua_rawgeti(L, LUA_REGISTRYINDEX, reference);
-
-				if (lua_pcall(L, 1, 0, 0)){
-					std::cout << lua_tostring(L, -1) << "\n";
-					lua_pop(L, 1);
-				}
-			}
-		}
-
-		lua_pop(L, 1);
-	}
-
-	// -
-	lua_pop(L, 1);
-
-	luaL_unref(L, LUA_REGISTRYINDEX, reference);
-}
-
 Scripting::Scripting(Engine* engine) : System(engine), L(luaL_newstate()){}
 
 Scripting::~Scripting(){
@@ -50,7 +17,7 @@ Scripting::~Scripting(){
 void Scripting::load(){
 	luaL_openlibs(L);
 
-	Binder::bind(L);
+	Binder::bind(L, _engine);
 	
 	if (luaL_dofile(L, (_engine.getConfig("data") + "Load.lua").c_str())){
 		std::cout << lua_tostring(L, -1) << "\n";
@@ -65,7 +32,7 @@ void Scripting::load(){
 	_engine.manager.addComponent<Script>(id);
 
 	createInstance(id, "Test");
-	createInstance(id, "Other");
+	//createInstance(id, "Other");
 }
 
 void Scripting::update(){
@@ -86,11 +53,13 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			lua_getfield(L, -1, "update");
 
 			if (!lua_isnil(L, -1)){
+				// {} function() {}
 				lua_rawgeti(L, LUA_REGISTRYINDEX, reference.second);
 
+				// {}
 				if (lua_pcall(L, 1, 0, 0)){
 					std::cout << lua_tostring(L, -1) << "\n";
-					lua_pop(L, 2);
+					lua_pop(L, 1);
 				}
 			}
 
@@ -98,6 +67,8 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			lua_pop(L, 1);
 		}
 	}
+
+	lua_gc(L, LUA_GCCOLLECT, 0);
 }
 
 void Scripting::registerFile(const std::string& file){
@@ -167,12 +138,6 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	// {}
 	lua_setmetatable(L, -2);
 	
-	// {} int
-	lua_pushinteger(L, id);
-
-	// {}
-	lua_setfield(L, -2, "id");
-
 	// function() {}
 	lua_getfield(L, -1, "load");
 	lua_insert(L, -2);
@@ -196,7 +161,7 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 
 		if (lua_pcall(L, 1, 0, 0)){
 			std::cout << lua_tostring(L, -1) << "\n";
-			lua_pop(L, 2);
+			lua_pop(L, 1);
 		}
 	}
 	else{
@@ -216,9 +181,7 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 
 	i.first = false;
 
-	_destroyInstance(i.second);
-
-	// Pop stack?
+	luaL_unref(L, LUA_REGISTRYINDEX, i.second);
 }
 
 void Scripting::onCreate(uint64_t id){
@@ -228,7 +191,9 @@ void Scripting::onCreate(uint64_t id){
 void Scripting::onDestroy(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
+	// Important! Safely unreference scripts on destroy!
+
 	for (auto type : script->references)
 		for (auto ref : type.second)
-			_destroyInstance(ref.second);
+			luaL_unref(L, LUA_REGISTRYINDEX, ref.second);
 }

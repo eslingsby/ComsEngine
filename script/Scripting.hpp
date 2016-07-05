@@ -9,7 +9,6 @@
 #include <string>
 
 class Scripting : public System<Script>{
-	void _destroyInstance(int reference);
 
 public:
 	lua_State* const L;

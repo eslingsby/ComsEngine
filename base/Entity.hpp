@@ -55,6 +55,7 @@ public:
 	inline uint8_t state();
 	inline uint32_t mask();
 	inline uint64_t id();
+	inline bool valid();
 };
 
 inline Entity::Entity(){}
@@ -140,12 +141,13 @@ inline uint8_t Entity::state(){
 }
 
 inline void Entity::invalidate(){
-	assert(_manager && _valid);
+	assert(_manager);
 
-	// decrease reference count for id
-	_manager->removeReference(_id);
+	if (_valid){
+		_manager->removeReference(_id);
 
-	_valid = false;
+		_valid = false;
+	}
 }
 
 inline void Entity::create(){
@@ -164,6 +166,10 @@ inline uint64_t Entity::id(){
 	assert(_valid);
 
 	return _id;
+}
+
+inline bool Entity::valid(){
+	return _valid;
 }
 
 inline void Entity::setActive(bool active){

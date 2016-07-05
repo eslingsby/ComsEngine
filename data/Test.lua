@@ -6,9 +6,20 @@ function Test:load()
 	
 	--transform.position = { 100, 100, 100 }
 	
-	self.test = Script.create(1, "Test", 0)
+	--local test = Script.create(1, "Test", 0)
 	
-	self.vector = Vec3.create(0, 100, 1000)
+	--local entity = entitmanger.findcomponent("name");
+	
+	--local entity = Engine.Naming:findEntity("camera")
+	
+	local entity = Entity(1)
+	
+	--entity:addComponent(Test)
+	
+	entity:destroy()
+
+	--self.vector = Vec3.create(0, 100, 1000)
+	
 end
 
 function Test:update()
@@ -31,14 +42,17 @@ function Test:update()
 	
 	--self.destroy()
 	
-	local test = Vec3.create({ z=100, x=5 })
+	--
 	
-	test.x = test.x + 10
+	--print(test.id)
 	
-	print(test.x)
+	local test = Vec3(10, 10, 10)
+
 	
+	--test.x = 1
+	
+
 	print(test)
-	
 end
 
 return "Test"

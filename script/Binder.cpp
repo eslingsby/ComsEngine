@@ -2,6 +2,7 @@
 
 #include "ScriptBind.hpp"
 #include "Vec3Bind.hpp"
+#include "EntityBind.hpp"
 
 void Binder::_setMembers(lua_State* L, MemberReg* binder){
 	// {}
@@ -18,14 +19,14 @@ void Binder::_setMembers(lua_State* L, MemberReg* binder){
 	}
 }
 
-void Binder::bind(lua_State* L, const std::string& type, const luaL_Reg* methods, const luaL_Reg* meta, const MemberReg* getters, const MemberReg* setters){
+void Binder::bind(lua_State* L, const std::string& type, const lua_CFunction constructor, const luaL_Reg* global, const luaL_Reg* instance, const luaL_Reg* meta, const MemberReg* getters, const MemberReg* setters){
 	// Register methods
 	// {}
 	lua_newtable(L);
 	int methodsTable = lua_gettop(L);
 
-	if (methods)
-		luaL_setfuncs(L, methods, 0);
+	if (instance)
+		luaL_setfuncs(L, instance, 0);
 	
 	// Register meta methods
 	// {} M{}
@@ -45,52 +46,90 @@ void Binder::bind(lua_State* L, const std::string& type, const luaL_Reg* methods
 
 	// Register member getters
 	if (getters){
-	// {} M{} literal
-	lua_pushliteral(L, "__index");
+		// {} M{} literal
+		lua_pushliteral(L, "__index");
 
-	// {} M{} literal M{}
-	lua_pushvalue(L, metaTable);
+		// {} M{} literal M{}
+		lua_pushvalue(L, metaTable);
 
-	//if (getters)
 		_setMembers(L, getters);
 
-	// {} M{} literal M{} {}
-	lua_pushvalue(L, methodsTable);
+		// {} M{} literal M{} {}
+		lua_pushvalue(L, methodsTable);
 
-	// {} M{} literal function()
-	lua_pushcclosure(L, _indexHandler, 2);
+		// {} M{} literal function()
+		lua_pushcclosure(L, _indexHandler, 2);
 
-	// {} M{}
-	lua_rawset(L, metaTable);
+		// {} M{}
+		lua_rawset(L, metaTable);
+	}
+	else if (instance){
+		lua_pushliteral(L, "__index");
+
+		lua_pushvalue(L, methodsTable);
+
+		lua_rawset(L, metaTable);
 	}
 	
 	// Register member setters
 	if (setters){
-	// {} M{} literal
-	lua_pushliteral(L, "__newindex");
+		// {} M{} literal
+		lua_pushliteral(L, "__newindex");
 
-	// {} M{} literal {}
-	lua_newtable(L);
+		// {} M{} literal {}
+		lua_newtable(L);
 
-	//if (setters)
 		_setMembers(L, setters);
 
-	// {} M{} literal function()
-	lua_pushcclosure(L, _newindexHandler, 1);
+		// {} M{} literal function()
+		lua_pushcclosure(L, _newindexHandler, 1);
 
-	// {} M{}
-	lua_rawset(L, metaTable);
+		// {} M{}
+		lua_rawset(L, metaTable);
 	}
-	
-	// Set main table as global typename
-	// {}
-	lua_pop(L, 1);
+
+	// {} M{} M{}
+	lua_newtable(L);
+	int globalMeta = lua_gettop(L);
+
+	const luaL_Reg constructorReg[2] = {
+		{ "__call", constructor },
+		{ 0, 0 }
+	};
+
+	luaL_setfuncs(L, constructorReg, 0);
+
+	// M{} M{} {}
+	lua_newtable(L);
+	int globalTable = lua_gettop(L);
+
+	if (global)
+		luaL_setfuncs(L, global, 0);
+
+	// M{} M{} {} M{}
+	lua_pushvalue(L, globalMeta);
+
+	// M{} M{} {}
+	lua_setmetatable(L, globalTable);
+
+	// M{} M{}
+	lua_setglobal(L, type.c_str());
+
+	// M{} M{} literal M{}
+	lua_pushliteral(L, "__metatable");
+	lua_pushvalue(L, metaTable);
+
+	// M{} M{}
+	lua_setmetatable(L, globalMeta);
 
 	// -
-	lua_setglobal(L, type.c_str());
+	lua_pop(L, 2);
 }
 
-void Binder::bind(lua_State* L){
-	bind(L, "Script", ScriptBind::methods);
-	bind(L, "Vec3", Vec3Bind::methods, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
+void Binder::bind(lua_State* L, Engine& engine){
+	lua_pushlightuserdata(L, &engine);
+	lua_setglobal(L, "__engine");
+
+	bind(L, EntityBind::name, EntityBind::constructor, 0, EntityBind::methods, EntityBind::meta);
+	bind(L, Vec3Bind::name, Vec3Bind::constructor, Vec3Bind::global, Vec3Bind::methods, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
 }
