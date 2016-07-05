@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-void Scripting::_unreference(uint32_t reference){
+void Scripting::_unreference(uint64_t id, uint32_t reference){
 	//Binder::printStack(L);
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, reference);
@@ -17,6 +17,8 @@ void Scripting::_unreference(uint32_t reference){
 	
 	lua_pop(L, 1);
 	luaL_unref(L, LUA_REGISTRYINDEX, reference);
+
+	_engine.manager.removeReference(id);
 }
 
 Scripting::Scripting(Engine* engine) : System(engine), L(luaL_newstate()){}
@@ -34,6 +36,8 @@ void Scripting::load(){
 		std::cout << lua_tostring(L, -1) << "\n";
 		lua_pop(L, 1);
 	}
+
+	// Testing
 	
 	registerFile("Test.lua");
 	registerFile("Other.lua");
@@ -187,9 +191,7 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 	assert(referance.first);
 	referance.first = false;
 
-	_unreference(referance.second);
-
-	_engine.manager.removeReference(id);
+	_unreference(id, referance.second);
 }
 
 void Scripting::onCreate(uint64_t id){
@@ -199,10 +201,17 @@ void Scripting::onCreate(uint64_t id){
 void Scripting::onDestroy(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
+	std::queue<uint32_t> remove;
+
 	for (auto type : script->references){
 		for (auto referance : type.second){
 			if (referance.first)
-				_unreference(referance.second);
+				remove.push(referance.second);
 		}
+	}
+
+	while (remove.size()){
+		_unreference(id, remove.front());
+		remove.pop();
 	}
 }

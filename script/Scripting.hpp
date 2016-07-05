@@ -9,7 +9,7 @@
 #include <string>
 
 class Scripting : public System<Script>{
-	void _unreference(uint32_t reference);
+	void _unreference(uint64_t id, uint32_t reference);
 
 public:
 	lua_State* const L;

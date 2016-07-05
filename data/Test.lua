@@ -12,11 +12,11 @@ function Test:load()
 	
 	--local entity = Engine.Naming:findEntity("camera")
 	
-	--local entity = Entity(1)
+	local entity = Entity(1)
 	
 	--entity:addComponent(Test)
 	
-	--entity:destroy()
+	entity:destroy()
 	
 	self.test = Vec3(1, 1, 1)
 
