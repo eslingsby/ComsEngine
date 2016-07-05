@@ -5,7 +5,19 @@
 #include "Binder.hpp"
 
 #include <iostream>
-#include <thread>
+
+void Scripting::_unreference(uint32_t reference){
+	//Binder::printStack(L);
+
+	lua_rawgeti(L, LUA_REGISTRYINDEX, reference);
+
+	assert(!lua_isnil(L, -1));
+
+	Entity* entity = (Entity*)lua_touserdata(L, -1);
+	
+	lua_pop(L, 1);
+	luaL_unref(L, LUA_REGISTRYINDEX, reference);
+}
 
 Scripting::Scripting(Engine* engine) : System(engine), L(luaL_newstate()){}
 
@@ -31,7 +43,7 @@ void Scripting::load(){
 	_engine.manager.addComponent<Script>(id);
 
 	createInstance(id, "Test");
-	//createInstance(id, "Other");
+	createInstance(id, "Other");
 }
 
 void Scripting::update(){
@@ -80,12 +92,6 @@ void Scripting::registerFile(const std::string& file){
 	
 	// function() {}
 	lua_newtable(L);
-	
-	// function() {} M{}
-	luaL_getmetatable(L, "Script");
-	
-	// function() {}
-	lua_setmetatable(L, -2);
 	
 	// function() {} {}
 	lua_pushvalue(L, -1);
@@ -166,6 +172,8 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	else{
 		lua_pop(L, 1);
 	}
+
+	_engine.manager.addReference(id);
 }
 
 void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
@@ -174,13 +182,14 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 
 	assert(script->references[type].size() > number);
 
-	auto& i = script->references[type][number];
+	auto& referance = script->references[type][number];
 
-	assert(i.first);
+	assert(referance.first);
+	referance.first = false;
 
-	i.first = false;
+	_unreference(referance.second);
 
-	luaL_unref(L, LUA_REGISTRYINDEX, i.second);
+	_engine.manager.removeReference(id);
 }
 
 void Scripting::onCreate(uint64_t id){
@@ -190,9 +199,10 @@ void Scripting::onCreate(uint64_t id){
 void Scripting::onDestroy(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	// Important! Safely unreference scripts on destroy!
-
-	for (auto type : script->references)
-		for (auto ref : type.second)
-			luaL_unref(L, LUA_REGISTRYINDEX, ref.second);
+	for (auto type : script->references){
+		for (auto referance : type.second){
+			if (referance.first)
+				_unreference(referance.second);
+		}
+	}
 }

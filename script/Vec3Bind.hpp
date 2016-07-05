@@ -51,7 +51,7 @@ int Vec3Bind::constructor(lua_State* L){
 	LuaVec3* vec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
 	*vec = LuaVec3();
 
-	if (lua_isuserdata(L, 2)){
+	if (lua_isuserdata(L, 2) && lua_gettop(L) > 2){
 		*vec = *(LuaVec3*)lua_touserdata(L, 1);
 	}
 	else if (lua_istable(L, 2)){
@@ -80,7 +80,7 @@ int Vec3Bind::constructor(lua_State* L){
 
 		lua_pop(L, 3);
 	}
-	else{
+	else if (lua_gettop(L) > 4){
 		*vec = LuaVec3(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 	}
 

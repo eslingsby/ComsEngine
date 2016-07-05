@@ -72,17 +72,19 @@ public:
 };
 
 inline void Engine::_loadSystems(){
-	for (uint32_t i : _updateOrder)
+	for (uint32_t i : _updateOrder){
 		if (i)
 			_systems[i - 1]->load();
+	}
 
 	manager.callDestroyed();
 }
 
 inline void Engine::_updateSystems(){
-	for (uint32_t i : _updateOrder)
+	for (uint32_t i : _updateOrder){
 		if (i)
 			_systems[i - 1]->update();
+	}
 
 	manager.callDestroyed();
 }

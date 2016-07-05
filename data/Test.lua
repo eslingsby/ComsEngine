@@ -8,15 +8,18 @@ function Test:load()
 	
 	--local test = Script.create(1, "Test", 0)
 	
-	--local entity = entitmanger.findcomponent("name");
+	--local entity = entitymanger.findcomponent("name");
 	
 	--local entity = Engine.Naming:findEntity("camera")
 	
-	local entity = Entity(1)
+	--local entity = Entity(1)
 	
 	--entity:addComponent(Test)
 	
 	--entity:destroy()
+	
+	self.test = Vec3(1, 1, 1)
+
 
 	--self.vector = Vec3.create(0, 100, 1000)
 	
@@ -42,17 +45,15 @@ function Test:update()
 	
 	--self.destroy()
 	
-	--
-	
 	--print(test.id)
 	
-	local test = Vec3(10, 10, 10)
+	-- local test = Vec3(1, 1, 1)
 
 	
 	--test.x = 1
 	
 
-	print(test)
+	print(self.test)
 end
 
 return "Test"

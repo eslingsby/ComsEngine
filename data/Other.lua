@@ -5,7 +5,7 @@ function Other:load()
 end
 
 function Other:update()	
-	--print(self.x)
+	print(self.x)
 
 	self.x = self.x + 10
 end

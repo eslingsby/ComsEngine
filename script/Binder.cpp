@@ -98,31 +98,24 @@ void Binder::bind(lua_State* L, const std::string& type, const lua_CFunction con
 
 	luaL_setfuncs(L, constructorReg, 0);
 
-	// M{} M{} {}
+	// {} M{} M{} {}
 	lua_newtable(L);
 	int globalTable = lua_gettop(L);
 
 	if (global)
 		luaL_setfuncs(L, global, 0);
 
-	// M{} M{} {} M{}
+	// {} M{} M{} {} M{}
 	lua_pushvalue(L, globalMeta);
 
-	// M{} M{} {}
+	// {} M{} M{} {}
 	lua_setmetatable(L, globalTable);
 
-	// M{} M{}
+	// {} M{} M{}
 	lua_setglobal(L, type.c_str());
 
-	// M{} M{} literal M{}
-	lua_pushliteral(L, "__metatable");
-	lua_pushvalue(L, metaTable);
-
-	// M{} M{}
-	lua_setmetatable(L, globalMeta);
-
 	// -
-	lua_pop(L, 2);
+	lua_pop(L, 3);
 }
 
 void Binder::bind(lua_State* L, Engine& engine){
@@ -130,5 +123,6 @@ void Binder::bind(lua_State* L, Engine& engine){
 	lua_setglobal(L, "__engine");
 
 	bind(L, EntityBind::name, EntityBind::constructor, 0, EntityBind::methods, EntityBind::meta);
+
 	bind(L, Vec3Bind::name, Vec3Bind::constructor, Vec3Bind::global, Vec3Bind::methods, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
 }

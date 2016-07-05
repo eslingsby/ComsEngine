@@ -7,6 +7,8 @@
 namespace EntityBind{
 	const char* name = "Entity";
 
+	inline static void _create(lua_State* L);
+
 	inline static int constructor(lua_State* L);
 
 	inline static int id(lua_State* L);
@@ -30,16 +32,21 @@ namespace EntityBind{
 	};
 }
 
-inline int EntityBind::constructor(lua_State * L){
+inline void EntityBind::_create(lua_State * L){
+	// {} integer
+
 	uint64_t id = luaL_checkinteger(L, 2);
 
+	// {} integer {}
 	void* location = lua_newuserdata(L, sizeof(Entity));
 	new(location) Entity(Binder::getEngine(L).manager, id);
+}
+
+inline int EntityBind::constructor(lua_State * L){
+	_create(L);
 
 	luaL_getmetatable(L, name);
-	
-	lua_setmetatable(L, 3);
-
+	lua_setmetatable(L, -2);
 	return 1;
 }
 

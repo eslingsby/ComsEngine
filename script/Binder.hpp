@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Engine.hpp"
-#include "Scripting.hpp"
 
 #include <string>
 #include <lua.hpp>
