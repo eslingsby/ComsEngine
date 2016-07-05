@@ -1,6 +1,5 @@
 #include "Binder.hpp"
 
-#include "ScriptBind.hpp"
 #include "Vec3Bind.hpp"
 #include "EntityBind.hpp"
 

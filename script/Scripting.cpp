@@ -1,7 +1,6 @@
 #include "Scripting.hpp"
 
 #include "Engine.hpp"
-#include "StaticEngine.hpp"
 
 #include "Binder.hpp"
 

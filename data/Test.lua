@@ -16,7 +16,7 @@ function Test:load()
 	
 	--entity:addComponent(Test)
 	
-	entity:destroy()
+	--entity:destroy()
 
 	--self.vector = Vec3.create(0, 100, 1000)
 	
