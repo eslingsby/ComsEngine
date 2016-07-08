@@ -1,7 +1,6 @@
 #pragma once
 
 #include "System.hpp"
-#include "Entity.hpp"
 
 #include "Script.hpp"
 
@@ -9,11 +8,9 @@
 #include <string>
 
 class Scripting : public System<Script>{
-	void _unreference(uint64_t id, uint32_t reference);
+	lua_State* const _L;
 
 public:
-	lua_State* const L;
-
 	Scripting(Engine* engine);
 	~Scripting();
 

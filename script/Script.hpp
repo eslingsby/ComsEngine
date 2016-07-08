@@ -7,5 +7,9 @@
 #include <vector>
 
 struct Script : public Component<Script>{
-	std::unordered_map<std::string, std::vector<std::pair<bool, uint32_t>>> references;
+	typedef std::pair<bool, uint32_t> RefPair;
+	typedef std::vector<RefPair> RefVec;
+	typedef std::unordered_map<std::string, RefVec> RefMap;
+
+	RefMap* references = nullptr;
 };

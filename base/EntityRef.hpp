@@ -4,27 +4,28 @@
 
 #include <cstdint>
 
-class Entity{
+class EntityRef{
 	EntityManager* _manager = nullptr;
 	uint64_t _id;
 
+protected:
 	bool _valid = false;
 
 public:
-	inline Entity();
+	inline EntityRef();
 
-	inline Entity(EntityManager* manager);
-	inline Entity(EntityManager& manager);
+	inline EntityRef(EntityManager* manager);
+	inline EntityRef(EntityManager& manager);
 
-	inline Entity(EntityManager* manager, uint64_t id);
-	inline Entity(EntityManager& manager, uint64_t id);
+	inline EntityRef(EntityManager* manager, uint64_t id);
+	inline EntityRef(EntityManager& manager, uint64_t id);
 
-	inline Entity(const Entity& other);
+	inline EntityRef(const EntityRef& other);
 
-	inline ~Entity();
+	inline ~EntityRef();
 
-	inline void operator=(const Entity& other);
-	inline void operator=(uint64_t id);
+	inline virtual void operator=(const EntityRef& other);
+	inline virtual void operator=(uint64_t id);
 	
 	inline operator bool();
 	inline operator uint64_t();
@@ -34,7 +35,7 @@ public:
 	
 	inline void invalidate();
 
-	inline void create();
+	inline virtual void create();
 	
 	inline void setActive(bool active);
 	
@@ -58,27 +59,27 @@ public:
 	inline bool valid();
 };
 
-inline Entity::Entity(){}
+inline EntityRef::EntityRef(){}
 
-inline Entity::Entity(EntityManager* manager){
+inline EntityRef::EntityRef(EntityManager* manager){
 	linkManager(manager);
 }
 
-inline Entity::Entity(EntityManager& manager){
+inline EntityRef::EntityRef(EntityManager& manager){
 	linkManager(&manager);
 }
 
-inline Entity::Entity(EntityManager* manager, uint64_t id){
+inline EntityRef::EntityRef(EntityManager* manager, uint64_t id){
 	linkManager(manager);
 	(*this) = id;
 }
 
-inline Entity::Entity(EntityManager& manager, uint64_t id){
+inline EntityRef::EntityRef(EntityManager& manager, uint64_t id){
 	linkManager(&manager);
 	(*this) = id;
 }
 
-inline Entity::Entity(const Entity& other) : _manager(other._manager), _id(other._id){
+inline EntityRef::EntityRef(const EntityRef& other) : _manager(other._manager), _id(other._id){
 	assert(_manager && other._valid && _manager->entityExists(_id));
 
 	_valid = true;
@@ -87,13 +88,13 @@ inline Entity::Entity(const Entity& other) : _manager(other._manager), _id(other
 	_manager->addReference(_id);
 }
 
-inline Entity::~Entity(){
+inline EntityRef::~EntityRef(){
 	// if valid decrease reference count for id
 	if (_valid)
 		_manager->removeReference(_id);
 }
 
-inline void Entity::operator=(const Entity& other){
+inline void EntityRef::operator=(const EntityRef& other){
 	assert(other._manager);
 
 	_manager = other._manager;
@@ -102,7 +103,7 @@ inline void Entity::operator=(const Entity& other){
 		(*this) = other._id;
 }
 
-inline void Entity::operator=(uint64_t id){
+inline void EntityRef::operator=(uint64_t id){
 	assert(_manager && _id != id  && _manager->entityExists(id));
 
 	// decrease reference count for old id
@@ -116,31 +117,31 @@ inline void Entity::operator=(uint64_t id){
 	_manager->addReference(_id);
 }
 
-inline Entity::operator bool(){
+inline EntityRef::operator bool(){
 	return _valid && state() != EntityManager::EntityState::Destroyed;
 }
 
-inline Entity::operator uint64_t(){
+inline EntityRef::operator uint64_t(){
 	return _id;
 }
 
-inline bool Entity::operator==(uint64_t id){
+inline bool EntityRef::operator==(uint64_t id){
 	return _id == id;
 }
 
-inline void Entity::linkManager(EntityManager* manager){
+inline void EntityRef::linkManager(EntityManager* manager){
 	assert(manager);
 
 	_manager = manager;
 }
 
-inline uint8_t Entity::state(){
+inline uint8_t EntityRef::state(){
 	assert(_manager && _valid);
 
 	return _manager->getEntityState(_id);
 }
 
-inline void Entity::invalidate(){
+inline void EntityRef::invalidate(){
 	assert(_manager);
 
 	if (_valid){
@@ -150,63 +151,63 @@ inline void Entity::invalidate(){
 	}
 }
 
-inline void Entity::create(){
+inline void EntityRef::create(){
 	assert(_manager && !_valid);
 
 	(*this) = _manager->createEntity();
 }
 
-inline uint32_t Entity::mask(){
+inline uint32_t EntityRef::mask(){
 	assert(_manager && _valid);
 
 	return _manager->getEntityMask(_id);
 }
 
-inline uint64_t Entity::id(){
+inline uint64_t EntityRef::id(){
 	assert(_valid);
 
 	return _id;
 }
 
-inline bool Entity::valid(){
+inline bool EntityRef::valid(){
 	return _valid;
 }
 
-inline void Entity::setActive(bool active){
+inline void EntityRef::setActive(bool active){
 	assert(_manager && _valid);
 
 	_manager->setEntityActive(_id, active);
 }
 
-inline void Entity::destroy(){
+inline void EntityRef::destroy(){
 	invalidate();
 
 	_manager->destroyEntity(_id);
 }
 
 template<typename T>
-inline void Entity::setComponentEnabled(bool enabled){
+inline void EntityRef::setComponentEnabled(bool enabled){
 	assert(_manager && _valid);
 
 	_manager->setComponentEnabled<T>(_id, enabled);
 }
 
 template<typename T, typename ...Ts>
-inline T* const Entity::addComponent(Ts... args){
+inline T* const EntityRef::addComponent(Ts... args){
 	assert(_manager && _valid);
 
 	return _manager->addComponent<T>(_id, args...);
 }
 
 template<typename T>
-inline T* const Entity::getComponent(){
+inline T* const EntityRef::getComponent(){
 	assert(_manager && _valid);
 
 	return _manager->getComponent<T>(_id);
 }
 
 template<typename ...Ts>
-inline bool Entity::hasComponents(){
+inline bool EntityRef::hasComponents(){
 	assert(_manager && _valid);
 
 	return _manager->hasComponents<Ts...>();

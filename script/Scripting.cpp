@@ -2,162 +2,170 @@
 
 #include "Engine.hpp"
 
+#include "EntityRef.hpp"
 #include "Binder.hpp"
+#include "Identification.hpp"
 
 #include <iostream>
 
-void Scripting::_unreference(uint64_t id, uint32_t reference){
-	//Binder::printStack(L);
-
-	lua_rawgeti(L, LUA_REGISTRYINDEX, reference);
-
-	assert(!lua_isnil(L, -1));
-
-	Entity* entity = (Entity*)lua_touserdata(L, -1);
-	
-	lua_pop(L, 1);
-	luaL_unref(L, LUA_REGISTRYINDEX, reference);
-
-	_engine.manager.removeReference(id);
-}
-
-Scripting::Scripting(Engine* engine) : System(engine), L(luaL_newstate()){}
+Scripting::Scripting(Engine* engine) : System(engine), _L(luaL_newstate()){}
 
 Scripting::~Scripting(){
-	lua_close(L);
+	lua_close(_L);
 }
 
 void Scripting::load(){
-	luaL_openlibs(L);
+	luaL_openlibs(_L);
 
-	Binder::bind(L, _engine);
+	Binder::bind(_L, _engine);
 	
-	if (luaL_dofile(L, (_engine.getConfig("data") + "Load.lua").c_str())){
-		std::cout << lua_tostring(L, -1) << "\n";
-		lua_pop(L, 1);
+	if (luaL_dofile(_L, (_engine.getConfig("data") + "Load.lua").c_str())){
+		std::cout << lua_tostring(_L, -1) << "\n";
+		lua_pop(_L, 1);
 	}
 
 	// Testing
-	
 	registerFile("Test.lua");
 	registerFile("Other.lua");
-
+	
 	uint64_t id = _engine.manager.createEntity();
-
+	_engine.manager.addComponent<Identifier>(id, "camera");
 	_engine.manager.addComponent<Script>(id);
-
-	createInstance(id, "Test");
 	createInstance(id, "Other");
+	
+	for (unsigned int i = 0; i < 1024 * 4; i++){
+		id = _engine.manager.createEntity();
+		_engine.manager.addComponent<Script>(id);
+		createInstance(id, "Test");
+		//createInstance(id, "Test", 1);
+	}
 }
 
 void Scripting::update(){
 	_engine.manager.processEntities(this);
+
+	lua_gc(_L, LUA_GCCOLLECT, 0);
 }
 
 void Scripting::onProcess(uint64_t id, Script& script){
-	for (auto type : script.references){
-		for (auto reference : type.second){
-
+	for (Script::RefMap::iterator i = script.references->begin(); i != script.references->end(); i++){
+		for (auto reference : i->second){
 			if (!reference.first)
 				continue;
-
+			
 			// {}
-			lua_rawgeti(L, LUA_REGISTRYINDEX, reference.second);
-
+			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
+			
 			// {} function()
-			lua_getfield(L, -1, "update");
-
-			if (!lua_isnil(L, -1)){
+			lua_getfield(_L, -1, "update");
+			
+			if (!lua_isnil(_L, -1)){
 				// {} function() {}
-				lua_rawgeti(L, LUA_REGISTRYINDEX, reference.second);
-
+				lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
+			
 				// {}
-				if (lua_pcall(L, 1, 0, 0)){
-					std::cout << lua_tostring(L, -1) << "\n";
-					lua_pop(L, 1);
+				if (lua_pcall(_L, 1, 0, 0)){
+					std::cout << lua_tostring(_L, -1) << "\n";
+					lua_pop(_L, 1);
 				}
 			}
-
+			
 			// -
-			lua_pop(L, 1);
+			lua_pop(_L, 1);
 		}
 	}
-
-	lua_gc(L, LUA_GCCOLLECT, 0);
 }
 
 void Scripting::registerFile(const std::string& file){
 	// function()
-	if (luaL_loadfile(L, (_engine.getConfig("data") + file).c_str())){
-		std::cout << lua_tostring(L, -1) << "\n";
-		lua_pop(L, 2);
+	if (luaL_loadfile(_L, (_engine.getConfig("data") + file).c_str())){
+		std::cout << lua_tostring(_L, -1) << "\n";
+		lua_pop(_L, 2);
 		return;
 	}
 	
 	// function() {}
-	lua_newtable(L);
+	lua_newtable(_L);
 	
 	// function() {} {}
-	lua_pushvalue(L, -1);
+	lua_pushvalue(_L, -1);
 	
 	// {} function() {} 
-	lua_insert(L, -3);
+	lua_insert(_L, -3);
 	
-	// {}
-	if (lua_pcall(L, 1, 1, 0)){
-		std::cout << lua_tostring(L, -1) << "\n";
-		lua_pop(L, 2);
+	// {} string
+	if (lua_pcall(_L, 1, 1, 0)){
+		std::cout << lua_tostring(_L, -1) << "\n";
+		lua_pop(_L, 2);
 		return;
 	}
 
-	// {} string
-	std::string type = lua_tostring(L, -1);
-
 	// {}
-	lua_setfield(L, -2, "type");
+	std::string type = lua_tostring(_L, -1);
+	lua_pop(_L, 1);
 	
-	// M{} {}
-	if (!luaL_newmetatable(L, type.c_str()))
-		luaL_getmetatable(L, type.c_str());
+	// {} M{}
+	if (!luaL_newmetatable(_L, type.c_str()))
+		luaL_getmetatable(_L, type.c_str());
 
-	lua_insert(L, -2);
+	// M{} {}
+	lua_insert(_L, -2);
 
 	// M{}
-	lua_setfield(L, -2, "__index");
+	lua_setfield(_L, -2, "__index");
 
 	// -
-	lua_pop(L, 1);
+	lua_pop(_L, 1);
 }
 
 void Scripting::createInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
 	assert(script);
-
+	
 	// {}
-	lua_newtable(L);
+	lua_newtable(_L);
 
 	// {} M{}
-	luaL_getmetatable(L, type.c_str());
+	luaL_getmetatable(_L, type.c_str());
 
-	if (lua_isnil(L, -1)){
-		lua_pop(L, 2);
+	if (lua_isnil(_L, -1)){
+		lua_pop(_L, 2);
 		return;
 	}
 
 	// {}
-	lua_setmetatable(L, -2);
+	lua_setmetatable(_L, -2);
 	
 	// function() {}
-	lua_getfield(L, -1, "load");
-	lua_insert(L, -2);
+	lua_getfield(_L, -1, "load");
+	lua_insert(_L, -2);
+
+	// function() {} _L{}
+	void* location = lua_newuserdata(_L, sizeof(EntityRef));
+	new(location) EntityRef(Binder::getEngine(_L).manager, id);
+
+	// function() {} _L{} M{}
+	luaL_getmetatable(_L, "Entity");
+
+	// function() {} _L{}
+	lua_setmetatable(_L, -2);
+
+	// function() {}
+	lua_setfield(_L, -2, "entity");
 
 	// function()
-	int reference = luaL_ref(L, LUA_REGISTRYINDEX);
+	int reference = luaL_ref(_L, LUA_REGISTRYINDEX);
 	
-	if (script->references[type].size() <= number)
-		script->references[type].resize(number + 1);
+	if (!script->references)
+		script->references = new Script::RefMap();
 
-	auto& referance = script->references[type][number];
+	if (script->references->find(type) == script->references->end())
+		script->references->insert({ type, Script::RefVec() });
+
+	if (script->references->at(type).size() <= number)
+		script->references->at(type).resize(number + 1);
+
+	auto& referance = script->references->at(type)[number];
 
 	assert(!referance.first);
 
@@ -165,33 +173,33 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	referance.second = reference;
 
 	// -
-	if (!lua_isnil(L, -1)){
-		lua_rawgeti(L, LUA_REGISTRYINDEX, referance.second);
+	if (!lua_isnil(_L, -1)){
+		lua_rawgeti(_L, LUA_REGISTRYINDEX, referance.second);
 
-		if (lua_pcall(L, 1, 0, 0)){
-			std::cout << lua_tostring(L, -1) << "\n";
-			lua_pop(L, 1);
+		if (lua_pcall(_L, 1, 0, 0)){
+			std::cout << lua_tostring(_L, -1) << "\n";
+			lua_pop(_L, 1);
 		}
 	}
 	else{
-		lua_pop(L, 1);
+		lua_pop(_L, 1);
 	}
-
-	_engine.manager.addReference(id);
 }
 
 void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
 	assert(script);
 
-	assert(script->references[type].size() > number);
+	assert(script->references);
 
-	auto& referance = script->references[type][number];
+	assert(script->references->at(type).size() > number);
+
+	auto& referance = script->references->at(type)[number];
 
 	assert(referance.first);
 	referance.first = false;
 
-	_unreference(id, referance.second);
+	luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
 }
 
 void Scripting::onCreate(uint64_t id){
@@ -201,17 +209,13 @@ void Scripting::onCreate(uint64_t id){
 void Scripting::onDestroy(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	std::queue<uint32_t> remove;
+	if (!script->references)
+		return;
 
-	for (auto type : script->references){
-		for (auto referance : type.second){
+	for (Script::RefMap::iterator i = script->references->begin(); i != script->references->end(); i++)
+		for (auto referance : i->second)
 			if (referance.first)
-				remove.push(referance.second);
-		}
-	}
+				luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
 
-	while (remove.size()){
-		_unreference(id, remove.front());
-		remove.pop();
-	}
+	delete script->references;
 }

@@ -2,7 +2,7 @@
 
 #include "Binder.hpp"
 
-#include "Entity.hpp"
+#include "EntityRef.hpp"
 
 namespace EntityBind{
 	const char* name = "Entity";
@@ -11,23 +11,23 @@ namespace EntityBind{
 
 	inline static int constructor(lua_State* L);
 
-	inline static int id(lua_State* L);
-	inline static int destroy(lua_State* L);
-	inline static int destroyed(lua_State* L);
-	inline static int invalidate(lua_State* L);
-	inline static int valid(lua_State* L);
+	inline static int _id(lua_State* L);
+	inline static int _destroy(lua_State* L);
+	inline static int _destroyed(lua_State* L);
+	inline static int _invalidate(lua_State* L);
+	inline static int _valid(lua_State* L);
 
 	static const luaL_Reg meta[] = {
-		{ "__gc", invalidate },
+		{ "__gc", _invalidate },
 		{ 0, 0 }
 	};
 
 	static const luaL_Reg methods[] = {
-		{ "id", id },
-		{ "destroy", destroy },
-		{ "destroyed", destroyed },
-		{ "invalidate", invalidate },
-		{ "valid", valid },
+		{ "id", _id },
+		{ "destroy", _destroy },
+		{ "destroyed", _destroyed },
+		{ "invalidate", _invalidate },
+		{ "valid", _valid },
 		{ 0, 0 }
 	};
 }
@@ -38,8 +38,8 @@ inline void EntityBind::_create(lua_State * L){
 	uint64_t id = luaL_checkinteger(L, 2);
 
 	// {} integer {}
-	void* location = lua_newuserdata(L, sizeof(Entity));
-	new(location) Entity(Binder::getEngine(L).manager, id);
+	void* location = lua_newuserdata(L, sizeof(EntityRef));
+	new(location) EntityRef(Binder::getEngine(L).manager, id);
 }
 
 inline int EntityBind::constructor(lua_State * L){
@@ -50,29 +50,29 @@ inline int EntityBind::constructor(lua_State * L){
 	return 1;
 }
 
-inline int EntityBind::id(lua_State * L){
+inline int EntityBind::_id(lua_State * L){
 	if (Binder::requireUserdata(L, "Entity"))
 		return 0;
 
-	Entity* entity = (Entity*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
 	lua_pushinteger(L, entity->id());
 	return 1;
 }
 
-inline int EntityBind::destroy(lua_State * L){
+inline int EntityBind::_destroy(lua_State * L){
 	if (Binder::requireUserdata(L, "Entity"))
 		return 0;
 
-	Entity* entity = (Entity*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
 	entity->destroy();
 	return 0;
 }
 
-inline int EntityBind::destroyed(lua_State * L){
+inline int EntityBind::_destroyed(lua_State * L){
 	if (Binder::requireUserdata(L, "Entity"))
 		return 0;
 
-	Entity* entity = (Entity*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
 
 	if (entity->state() == EntityManager::Destroyed)
 		lua_pushboolean(L, 1);
@@ -82,20 +82,20 @@ inline int EntityBind::destroyed(lua_State * L){
 	return 1;
 }
 
-inline int EntityBind::invalidate(lua_State * L){
+inline int EntityBind::_invalidate(lua_State * L){
 	if (Binder::requireUserdata(L, "Entity"))
 		return 0;
 
-	Entity* entity = (Entity*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
 	entity->invalidate();
 	return 0;
 }
 
-inline int EntityBind::valid(lua_State * L){
+inline int EntityBind::_valid(lua_State * L){
 	if (Binder::requireUserdata(L, "Entity"))
 		return 0;
 
-	Entity* entity = (Entity*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
 	lua_pushboolean(L, (int)entity->valid());
 	return 1;
 }

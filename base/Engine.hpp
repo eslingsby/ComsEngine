@@ -77,7 +77,7 @@ inline void Engine::_loadSystems(){
 			_systems[i - 1]->load();
 	}
 
-	manager.callDestroyed();
+	manager.eraseDestroyed();
 }
 
 inline void Engine::_updateSystems(){
@@ -86,7 +86,7 @@ inline void Engine::_updateSystems(){
 			_systems[i - 1]->update();
 	}
 
-	manager.callDestroyed();
+	manager.eraseDestroyed();
 }
 
 template<typename T, typename ...Ts>
@@ -115,7 +115,7 @@ template<typename T>
 inline T* const Engine::getSystem(){
 	assert(_systems.size() > T::type() && _systems[T::type()]);
 
-	return _systems[T::type()];
+	return static_cast<T*>(_systems[T::type()]);
 }
 
 template <typename T>
@@ -153,9 +153,9 @@ inline void Engine::load(){
 
 	_dt = _end - _start;
 
-	_loadSystems();
-
 	_running = true;
+
+	_loadSystems();
 }
 
 inline void Engine::update(){

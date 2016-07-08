@@ -16,20 +16,21 @@ namespace Binder{
 		const char* name;
 		member_func func;
 		size_t offset;
+		bool nil;
 	} MemberReg;
-
-	void _setMembers(lua_State* L, const MemberReg* binder);
 
 	inline static int _indexHandler(lua_State* L);
 	inline static int _newindexHandler(lua_State* L);
 	
-	void bind(lua_State* L, const std::string& type, const lua_CFunction constructor, const luaL_Reg* global = 0, const luaL_Reg* instance = 0, const luaL_Reg* meta = 0, const MemberReg* getters = 0, const MemberReg* setters = 0);
+	void _setMembers(lua_State* L, const MemberReg* binder);
+
+	void bind(lua_State* L, const std::string& type, const lua_CFunction constructor = 0, const luaL_Reg* global = 0, const luaL_Reg* instance = 0, const luaL_Reg* meta = 0, const MemberReg* getters = 0, const MemberReg* setters = 0);
 	void bind(lua_State* L, Engine& engine);
 
 	inline Engine& getEngine(lua_State* L);
 
 	template <typename T>
-	inline static T* getComponent(lua_State* L);
+	inline static T* getSystem(lua_State* L);
 
 	inline static int getInt(lua_State* L, void* value);
 	inline static int setInt(lua_State* L, void* value);
@@ -65,6 +66,9 @@ inline int Binder::_indexHandler(lua_State* L){
 	lua_pop(L, 1);
 
 	// -
+	if (binding->nil)
+		return binding->func(L, nullptr);
+	
 	return binding->func(L, (void*)((uint8_t*)lua_touserdata(L, 1) + binding->offset));
 }
 
@@ -81,7 +85,7 @@ inline int Binder::_newindexHandler(lua_State* L){
 	return binding->func(L, (void*)((uint8_t*)lua_touserdata(L, 1) + binding->offset));
 }
 
-Engine& Binder::getEngine(lua_State * L){
+inline Engine& Binder::getEngine(lua_State * L){
 	lua_getglobal(L, "__engine");
 	Engine* engine = (Engine*)lua_touserdata(L, -1);
 	lua_pop(L, 1);
@@ -91,14 +95,13 @@ Engine& Binder::getEngine(lua_State * L){
 	return *engine;
 }
 
-template <typename T>
-inline T* Binder::getComponent(lua_State* L){
-	uint64_t id = 0;// get id from table
+template<typename T>
+T* Binder::getSystem(lua_State* L){
+	T* system = getEngine(L).getSystem<T>();
 
-	T* component = getEngine(L).manager.getComponent<T>(id);
-	assert(component); // Todo Replace with lua error
+	assert(system);
 
-	return component;
+	return system;
 }
 
 inline int Binder::getInt(lua_State* L, void* value){
@@ -147,7 +150,7 @@ inline void Binder::error(lua_State* L, const std::string& name, const std::stri
 }
 
 inline bool Binder::requireUserdata(lua_State * L, const std::string& name){
-	if (lua_isuserdata(L, -1))
+	if (lua_isuserdata(L, 1))
 		return false;
 
 	error(L, name, "Method requires self as argument, use ':' operator instead of '.'");

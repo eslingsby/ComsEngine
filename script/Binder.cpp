@@ -1,7 +1,10 @@
 #include "Binder.hpp"
 
-#include "Vec3Bind.hpp"
+#include "EngineBind.hpp"
 #include "EntityBind.hpp"
+#include "IdentificationBind.hpp"
+#include "IdentifierBind.hpp"
+#include "Vec3Bind.hpp"
 
 void Binder::_setMembers(lua_State* L, MemberReg* binder){
 	// {}
@@ -91,12 +94,14 @@ void Binder::bind(lua_State* L, const std::string& type, const lua_CFunction con
 	lua_newtable(L);
 	int globalMeta = lua_gettop(L);
 
-	const luaL_Reg constructorReg[2] = {
-		{ "__call", constructor },
-		{ 0, 0 }
-	};
+	if (constructor){
+		const luaL_Reg constructorReg[2] = {
+			{ "__call", constructor },
+			{ 0, 0 }
+		};
 
-	luaL_setfuncs(L, constructorReg, 0);
+		luaL_setfuncs(L, constructorReg, 0);
+	}
 
 	// {} M{} M{} {}
 	lua_newtable(L);
@@ -122,7 +127,12 @@ void Binder::bind(lua_State* L, Engine& engine){
 	lua_pushlightuserdata(L, &engine);
 	lua_setglobal(L, "__engine");
 
+	bind(L, EngineBind::name, 0, EngineBind::global);
+
 	bind(L, EntityBind::name, EntityBind::constructor, 0, EntityBind::methods, EntityBind::meta);
+
+	bind(L, IdentificationBind::name, 0, IdentificationBind::global);bind(L, IdentificationBind::name, 0, IdentificationBind::global);
+	bind(L, IdentifierBind::name, IdentifierBind::constructor, 0, EntityBind::methods, EntityBind::meta, IdentifierBind::getters);
 
 	bind(L, Vec3Bind::name, Vec3Bind::constructor, Vec3Bind::global, Vec3Bind::methods, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
 }

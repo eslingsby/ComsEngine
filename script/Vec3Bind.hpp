@@ -11,9 +11,11 @@ namespace Vec3Bind{
 
 	inline static int constructor(lua_State* L);
 
-	inline static int add(lua_State* L);
+	inline static int _length(lua_State* L, void* value);
 
-	inline static int print(lua_State* L);
+	inline static int _add(lua_State* L);
+
+	inline static int _print(lua_State* L);
 
 	static const luaL_Reg global[] = {
 		{ 0, 0 }
@@ -24,8 +26,8 @@ namespace Vec3Bind{
 	};
 
 	static const luaL_Reg meta[] = {
-		{ "__add", add },
-		{ "__tostring", print },
+		{ "__add", _add },
+		{ "__tostring", _print },
 		{ 0, 0 }
 	};
 
@@ -33,6 +35,7 @@ namespace Vec3Bind{
 		{ "x", Binder::getNumber, offsetof(LuaVec3, x) },
 		{ "y", Binder::getNumber, offsetof(LuaVec3, y) },
 		{ "z", Binder::getNumber, offsetof(LuaVec3, z) },
+		{ "length", _length, 0, true },
 		{ 0, 0 }
 	};
 
@@ -96,7 +99,14 @@ int Vec3Bind::constructor(lua_State* L){
 	return 1;
 }
 
-int Vec3Bind::add(lua_State* L){
+int Vec3Bind::_length(lua_State* L, void* value){
+	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
+
+	lua_pushnumber(L, vec->length());
+	return 1;
+}
+
+int Vec3Bind::_add(lua_State* L){
 	// L{} number   OR   L{} L{}
 	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
 
@@ -123,7 +133,7 @@ int Vec3Bind::add(lua_State* L){
 	return 1;
 }
 
-inline int Vec3Bind::print(lua_State* L){
+inline int Vec3Bind::_print(lua_State* L){
 	// L{}
 	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
 	std::string combined = std::to_string((*vec).x) + "," + std::to_string((*vec).y) + "," + std::to_string((*vec).z);
