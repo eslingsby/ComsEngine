@@ -17,8 +17,8 @@ int Engine::run(int argc, char* argv[]){
 	if (argc){
 		std::string data = argv[0];
 
-		data = data.substr(0, data.find_last_of("/\\"));
-		data = data.substr(0, data.find_last_of("/\\") + 1) + "data/\\";
+		data = data.substr(0, data.find_last_of("\\"));
+		data = data.substr(0, data.find_last_of("\\") + 1) + "data\\";
 
 		_config["data"] = data;
 	}

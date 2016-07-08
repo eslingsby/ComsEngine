@@ -10,6 +10,8 @@
 class Scripting : public System<Script>{
 	lua_State* const _L;
 
+	void _addRequirePath(const std::string& path);
+
 public:
 	Scripting(Engine* engine);
 	~Scripting();
@@ -18,8 +20,6 @@ public:
 	void update() override;
 
 	void onProcess(uint64_t id, Script& script) override;
-
-	void registerFile(const std::string& file);
 
 	void createInstance(uint64_t id, const std::string& type, unsigned int number = 0);
 	void destroyInstance(uint64_t id, const std::string& type, unsigned int number = 0);

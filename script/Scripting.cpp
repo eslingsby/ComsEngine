@@ -8,6 +8,22 @@
 
 #include <iostream>
 
+void Scripting::_addRequirePath(const std::string& path){
+	lua_getglobal(_L, "package");
+
+	lua_getfield(_L, -1, "path");
+
+	std::string require = luaL_checkstring(_L, -1);
+	require.append(";" + path);
+
+	lua_pop(_L, 1);
+
+	lua_pushstring(_L, require.c_str());
+	lua_setfield(_L, -2, "path");
+
+	lua_pop(_L, 1);
+}
+
 Scripting::Scripting(Engine* engine) : System(engine), _L(luaL_newstate()){}
 
 Scripting::~Scripting(){
@@ -18,16 +34,14 @@ void Scripting::load(){
 	luaL_openlibs(_L);
 
 	Binder::bind(_L, _engine);
+
+	_addRequirePath(_engine.getConfig("data"));
 	
 	if (luaL_dofile(_L, (_engine.getConfig("data") + "Load.lua").c_str())){
 		std::cout << lua_tostring(_L, -1) << "\n";
 		lua_pop(_L, 1);
 	}
 
-	// Testing
-	registerFile("Test.lua");
-	registerFile("Other.lua");
-	
 	uint64_t id = _engine.manager.createEntity();
 	_engine.manager.addComponent<Identifier>(id, "camera");
 	_engine.manager.addComponent<Script>(id);
@@ -36,8 +50,8 @@ void Scripting::load(){
 	for (unsigned int i = 0; i < 1024 * 4; i++){
 		id = _engine.manager.createEntity();
 		_engine.manager.addComponent<Script>(id);
+		_engine.manager.addComponent<Identifier>(id, "", "test");
 		createInstance(id, "Test");
-		//createInstance(id, "Test", 1);
 	}
 }
 
@@ -76,48 +90,6 @@ void Scripting::onProcess(uint64_t id, Script& script){
 	}
 }
 
-void Scripting::registerFile(const std::string& file){
-	// function()
-	if (luaL_loadfile(_L, (_engine.getConfig("data") + file).c_str())){
-		std::cout << lua_tostring(_L, -1) << "\n";
-		lua_pop(_L, 2);
-		return;
-	}
-	
-	// function() {}
-	lua_newtable(_L);
-	
-	// function() {} {}
-	lua_pushvalue(_L, -1);
-	
-	// {} function() {} 
-	lua_insert(_L, -3);
-	
-	// {} string
-	if (lua_pcall(_L, 1, 1, 0)){
-		std::cout << lua_tostring(_L, -1) << "\n";
-		lua_pop(_L, 2);
-		return;
-	}
-
-	// {}
-	std::string type = lua_tostring(_L, -1);
-	lua_pop(_L, 1);
-	
-	// {} M{}
-	if (!luaL_newmetatable(_L, type.c_str()))
-		luaL_getmetatable(_L, type.c_str());
-
-	// M{} {}
-	lua_insert(_L, -2);
-
-	// M{}
-	lua_setfield(_L, -2, "__index");
-
-	// -
-	lua_pop(_L, 1);
-}
-
 void Scripting::createInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
 	assert(script);
@@ -128,10 +100,7 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	// {} M{}
 	luaL_getmetatable(_L, type.c_str());
 
-	if (lua_isnil(_L, -1)){
-		lua_pop(_L, 2);
-		return;
-	}
+	assert(!lua_isnil(_L, -1));
 
 	// {}
 	lua_setmetatable(_L, -2);

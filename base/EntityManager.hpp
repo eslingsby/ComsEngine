@@ -146,9 +146,11 @@ public:
 
 	// Subscribes system to entity events via onCreate, onDestroy, onActivate, onDeactivate functions
 	template<typename T>
-	void registerSystem(T* system);
+	inline void registerSystem(T* system);
 
 	inline void eraseDestroyed();
+
+	inline unsigned int totalReferences();
 };
 
 template<typename T>
@@ -208,6 +210,15 @@ inline void EntityManager::eraseDestroyed(){
 
 		_destroyed.pop();
 	}
+}
+
+inline unsigned int EntityManager::totalReferences(){
+	unsigned int total = 0;
+
+	for (unsigned int i : _references)
+		total += i;
+
+	return total;
 }
 
 template<typename ...Ts>

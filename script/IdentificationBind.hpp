@@ -64,7 +64,7 @@ int IdentificationBind::_hasName(lua_State * L){
 int IdentificationBind::_hasLayer(lua_State * L){
 	Identification* identification = Binder::getSystem<Identification>(L);
 
-	lua_pushinteger(L, identification->getByLayer(luaL_checkstring(L, 1), luaL_checkinteger(L, 2)));
+	lua_pushinteger(L, identification->hasLayer(luaL_checkstring(L, 1)));
 
 	return 1;
 }
