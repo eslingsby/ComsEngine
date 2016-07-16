@@ -4,11 +4,14 @@
 
 #include <vector>
 #include <chrono>
+#include <stack>
 #include <unordered_map>
 #include <string>
 
 class Engine{
 	std::vector<BaseSystem*> _systems;
+
+	std::vector<uint32_t> _loadOrder;
 	std::vector<uint32_t> _updateOrder;
 
 	uint32_t _systemCount = 0;
@@ -42,9 +45,8 @@ public:
 	virtual ~Engine();
 
 	// Create and add unique system to engine
-	// Updated in order of added
 	template <typename T, typename ...Ts>
-	void addSystem(Ts... args);
+	void addSystem(uint32_t loadIndex, uint32_t updateIndex, Ts... args);
 
 	// Get unique system
 	template <typename T>
@@ -68,11 +70,14 @@ public:
 	inline void update();
 
 	// Automatically load and tick the engine
-	int run(int argc, char* argv[]);
+	int run();
+
+	// Converts exe path to root folder
+	static std::string root(std::string exePath);
 };
 
 inline void Engine::_loadSystems(){
-	for (uint32_t i : _updateOrder){
+	for (uint32_t i : _loadOrder){
 		if (i)
 			_systems[i - 1]->load();
 	}
@@ -90,25 +95,32 @@ inline void Engine::_updateSystems(){
 }
 
 template<typename T, typename ...Ts>
-inline void Engine::addSystem(Ts ...args){
+inline void Engine::addSystem(uint32_t loadIndex, uint32_t updateIndex, Ts ...args){
 	assert(!_running);
-
-	if (_systems.size() <= T::type()){
-		_systems.resize(_systemCount + 1);
-		_updateOrder.resize(_systemCount + 1);
-	}
-	else{
-		assert(_systems[T::type()] == nullptr);
-	}
-
+	
 	T* system = new T(this, args...);
 
-	_systems[T::type()] = system;
-	_updateOrder[_systemCount] = T::type() + 1;
+	if (_systems.size() <= T::type())
+		_systems.resize(T::type() + 1);
 
-	_systemCount++;
+	assert(_systems[T::type()] == nullptr);
+
+	_systems[T::type()] = system;
 
 	manager.registerSystem(system);
+
+	if (loadIndex >= _loadOrder.size())
+		_loadOrder.resize(loadIndex + 1);
+
+	if (updateIndex >= _updateOrder.size())
+		_updateOrder.resize(updateIndex + 1);
+	
+	assert(_loadOrder[loadIndex] == 0 && _updateOrder[updateIndex] == 0);
+
+	_loadOrder[loadIndex] = T::type() + 1;
+	_updateOrder[updateIndex] = T::type() + 1;
+
+	_systemCount++;
 }
 
 template<typename T>

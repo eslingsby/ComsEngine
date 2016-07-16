@@ -13,9 +13,6 @@ public:
 	inline void operator=(const EntityRef& other) override;
 	inline void operator=(uint64_t id) override;
 
-	template <typename ...Ts>
-	inline void create(Ts... args);
-
 	inline T& component();
 };
 
@@ -43,13 +40,6 @@ inline void ComponentRef<T>::operator=(uint64_t id){
 	EntityRef::operator=(id);
 	_component = getComponent<T>();
 	assert(_component);
-}
-
-template <class T>
-template <typename ...Ts>
-inline void ComponentRef<T>::create(Ts... args){
-	EntityRef::create();
-	_component = addComponent<T>(args);
 }
 
 template <class T>

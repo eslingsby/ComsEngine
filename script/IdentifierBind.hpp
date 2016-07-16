@@ -12,8 +12,15 @@ namespace IdentifierBind{
 
 	inline int constructor(lua_State* L);
 
+	inline int _add(lua_State* L);
+
 	inline int _name(lua_State* L, void* value);
 	inline int _layer(lua_State* L, void* value);
+
+	static const luaL_Reg global[] = {
+		{ "add", _add },
+		{ 0, 0 }
+	};
 
 	static const Binder::MemberReg getters[] = {
 		{ "name", _name, 0, true },
@@ -25,7 +32,7 @@ namespace IdentifierBind{
 int IdentifierBind::constructor(lua_State* L){
 	// {} integer
 
-	uint64_t id = luaL_checkinteger(L, 2);
+	uint64_t id = luaL_checkinteger(L, -1);
 
 	// {} integer {}
 	void* location = lua_newuserdata(L, sizeof(ComponentRef<Identifier>));
@@ -35,6 +42,21 @@ int IdentifierBind::constructor(lua_State* L){
 	lua_setmetatable(L, -2);
 
 	return 1;
+}
+
+int IdentifierBind::_add(lua_State* L){
+	uint64_t id = luaL_checkinteger(L, 1);
+
+	Engine& engine = Binder::getEngine(L);
+
+	if (!engine.manager.hasComponents<Identifier>(id)){
+		if (lua_gettop(L) > 2)
+			engine.manager.addComponent<Identifier>(id, luaL_checkstring(L, 2), luaL_checkstring(L, 3));
+		else
+			engine.manager.addComponent<Identifier>(id, luaL_checkstring(L, 2));
+	}
+
+	return 0;
 }
 
 int IdentifierBind::_name(lua_State * L, void * value){

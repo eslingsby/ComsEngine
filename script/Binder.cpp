@@ -1,5 +1,7 @@
 #include "Binder.hpp"
 
+#include "Scripting.hpp"
+
 #include "EngineBind.hpp"
 #include "EntityBind.hpp"
 #include "IdentificationBind.hpp"
@@ -127,12 +129,18 @@ void Binder::bind(lua_State* L, Engine& engine){
 	lua_pushlightuserdata(L, &engine);
 	lua_setglobal(L, "__engine");
 
+	Scripting* scripting = engine.getSystem<Scripting>();
+
+	assert(scripting);
+
 	bind(L, EngineBind::name, 0, EngineBind::global);
 
 	bind(L, EntityBind::name, EntityBind::constructor, 0, EntityBind::methods, EntityBind::meta);
 
 	bind(L, IdentificationBind::name, 0, IdentificationBind::global);bind(L, IdentificationBind::name, 0, IdentificationBind::global);
-	bind(L, IdentifierBind::name, IdentifierBind::constructor, 0, EntityBind::methods, EntityBind::meta, IdentifierBind::getters);
+
+	bind(L, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, EntityBind::methods, EntityBind::meta, IdentifierBind::getters);
+	scripting->registerComponent<Identifier>(IdentifierBind::name);
 
 	bind(L, Vec3Bind::name, Vec3Bind::constructor, Vec3Bind::global, Vec3Bind::methods, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
 }

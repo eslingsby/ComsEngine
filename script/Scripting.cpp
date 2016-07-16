@@ -8,23 +8,9 @@
 
 #include <iostream>
 
-void Scripting::_addRequirePath(const std::string& path){
-	lua_getglobal(_L, "package");
-
-	lua_getfield(_L, -1, "path");
-
-	std::string require = luaL_checkstring(_L, -1);
-	require.append(";" + path);
-
-	lua_pop(_L, 1);
-
-	lua_pushstring(_L, require.c_str());
-	lua_setfield(_L, -2, "path");
-
-	lua_pop(_L, 1);
+Scripting::Scripting(Engine* engine, const std::string& scriptPath) : System(engine), _L(luaL_newstate()){
+	_scriptPath = scriptPath + "\\";
 }
-
-Scripting::Scripting(Engine* engine) : System(engine), _L(luaL_newstate()){}
 
 Scripting::~Scripting(){
 	lua_close(_L);
@@ -34,24 +20,22 @@ void Scripting::load(){
 	luaL_openlibs(_L);
 
 	Binder::bind(_L, _engine);
-
-	_addRequirePath(_engine.getConfig("data"));
 	
-	if (luaL_dofile(_L, (_engine.getConfig("data") + "Load.lua").c_str())){
+	if (luaL_dofile(_L, (_scriptPath + "Load.lua").c_str())){
 		std::cout << lua_tostring(_L, -1) << "\n";
 		lua_pop(_L, 1);
 	}
-
+	
+	// Testing code below (remove me)
 	uint64_t id = _engine.manager.createEntity();
-	_engine.manager.addComponent<Identifier>(id, "camera");
 	_engine.manager.addComponent<Script>(id);
-	createInstance(id, "Other");
+	createInstance(id, "Single");
 	
 	for (unsigned int i = 0; i < 1024 * 4; i++){
 		id = _engine.manager.createEntity();
 		_engine.manager.addComponent<Script>(id);
-		_engine.manager.addComponent<Identifier>(id, "", "test");
-		createInstance(id, "Test");
+		_engine.manager.addComponent<Identifier>(id, "", "many_layer");
+		createInstance(id, "Many");
 	}
 }
 
@@ -169,6 +153,36 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 	referance.first = false;
 
 	luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
+}
+
+void Scripting::registerFile(const std::string& type, const std::string& file){
+	std::string name = _scriptPath + file.c_str();
+
+	// function()
+	if (luaL_loadfile(_L, name.c_str())){
+		printf("%s\n", lua_tostring(_L, -1));
+		lua_pop(_L, 1);
+		return;
+	}
+
+	// {}
+	if (lua_pcall(_L, 0, 1, 0)){
+		printf("%s\n", lua_tostring(_L, -1));
+		lua_pop(_L, 1);
+		return;
+	}
+
+	// {} M{}
+	luaL_newmetatable(_L, type.c_str());
+
+	// M{} {}
+	lua_insert(_L, -2);
+
+	// M{}
+	lua_setfield(_L, -2, "__index");
+
+	// -
+	lua_pop(_L, 1);
 }
 
 void Scripting::onCreate(uint64_t id){
