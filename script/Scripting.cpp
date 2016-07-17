@@ -8,6 +8,10 @@
 
 #include <iostream>
 
+#ifdef WIN32
+#include <Windows.h>
+#endif
+
 Scripting::Scripting(Engine* engine, const std::string& scriptPath) : System(engine), _L(luaL_newstate()){
 	_scriptPath = scriptPath + "\\";
 }
@@ -40,12 +44,39 @@ void Scripting::load(){
 }
 
 void Scripting::update(){
-	_engine.manager.processEntities(this);
+#ifdef WIN32
+	if (GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(82) && _ctrlDown){
+		_ctrlDown = false;
+		_reloaded = true;
 
+		for (auto& i : _loadedScripts){
+			std::string type = i.substr(0, i.find_first_of(";"));
+			std::string file = i.substr(i.find_first_of(";") + 1, std::string::npos);
+
+			registerFile(type, file);
+		}
+	}
+	else if (!GetAsyncKeyState(VK_CONTROL) && !GetAsyncKeyState(82) && _ctrlDown){
+		_ctrlDown = false;
+	}
+	else if (GetAsyncKeyState(VK_CONTROL) && !GetAsyncKeyState(82) && !_ctrlDown){
+		_ctrlDown = true;
+	}
+#endif
+
+	_engine.manager.processEntities(this);
 	lua_gc(_L, LUA_GCCOLLECT, 0);
+
+#ifdef WIN32
+	if (_reloaded)
+		_reloaded = false;
+#endif
 }
 
 void Scripting::onProcess(uint64_t id, Script& script){
+	if (!script.references)
+		return;
+
 	for (Script::RefMap::iterator i = script.references->begin(); i != script.references->end(); i++){
 		for (auto reference : i->second){
 			if (!reference.first)
@@ -54,6 +85,27 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			// {}
 			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
 			
+			if (_reloaded){
+				// {} function()
+				lua_getfield(_L, -1, "reload");
+
+				if (!lua_isnil(_L, -1)){
+					// {} function() {}
+					lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
+
+					// {}
+					if (lua_pcall(_L, 1, 0, 0)){
+						std::cout << lua_tostring(_L, -1) << "\n";
+						lua_pop(_L, 1);
+					}
+				}
+				else{
+					lua_pop(_L, 1);
+				}
+			}
+
+			// {}
+
 			// {} function()
 			lua_getfield(_L, -1, "update");
 			
@@ -66,6 +118,9 @@ void Scripting::onProcess(uint64_t id, Script& script){
 					std::cout << lua_tostring(_L, -1) << "\n";
 					lua_pop(_L, 1);
 				}
+			}
+			else{
+				lua_pop(_L, 1);
 			}
 			
 			// -
@@ -84,7 +139,10 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	// {} M{}
 	luaL_getmetatable(_L, type.c_str());
 
-	assert(!lua_isnil(_L, -1));
+	if (lua_isnil(_L, -1)){
+		lua_pop(_L, 2);
+		return;
+	}
 
 	// {}
 	lua_setmetatable(_L, -2);
@@ -137,6 +195,8 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	else{
 		lua_pop(_L, 1);
 	}
+
+	_engine.manager.setComponentEnabled<Script>(id, true);
 }
 
 void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
@@ -153,6 +213,21 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 	referance.first = false;
 
 	luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
+
+	bool empty = true;
+
+	for (auto& referances : script->references->at(type)){
+		if (referances.first){
+			empty = false;
+			break;
+		}
+	}
+
+	if (empty)
+		script->references->erase(type);
+
+	if (script->references->size() == 0)
+		_engine.manager.setComponentEnabled<Script>(id, false);
 }
 
 void Scripting::registerFile(const std::string& type, const std::string& file){
@@ -183,10 +258,15 @@ void Scripting::registerFile(const std::string& type, const std::string& file){
 
 	// -
 	lua_pop(_L, 1);
+
+	std::string combined = type + ";" + file;
+
+	if (_loadedScripts.find(combined) == _loadedScripts.end())
+		_loadedScripts.insert(combined);
 }
 
 void Scripting::onCreate(uint64_t id){
-	// Run raw lua string here, passed via component constructor
+	_engine.manager.setComponentEnabled<Script>(id, false);
 }
 
 void Scripting::onDestroy(uint64_t id){

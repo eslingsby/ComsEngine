@@ -23,7 +23,7 @@ void Binder::_setMembers(lua_State* L, MemberReg* binder){
 	}
 }
 
-void Binder::bind(lua_State* L, const std::string& type, const lua_CFunction constructor, const luaL_Reg* global, const luaL_Reg* instance, const luaL_Reg* meta, const MemberReg* getters, const MemberReg* setters){
+void Binder::bind(lua_State* L, const std::string& type, lua_CFunction constructor, const luaL_Reg* global, const luaL_Reg* instance, const luaL_Reg* meta, const MemberReg* getters, const MemberReg* setters){
 	// Register methods
 	// {}
 	lua_newtable(L);
@@ -97,7 +97,7 @@ void Binder::bind(lua_State* L, const std::string& type, const lua_CFunction con
 	int globalMeta = lua_gettop(L);
 
 	if (constructor){
-		const luaL_Reg constructorReg[2] = {
+		const luaL_Reg constructorReg[] = {
 			{ "__call", constructor },
 			{ 0, 0 }
 		};
@@ -134,13 +134,8 @@ void Binder::bind(lua_State* L, Engine& engine){
 	assert(scripting);
 
 	bind(L, EngineBind::name, 0, EngineBind::global);
-
 	bind(L, EntityBind::name, EntityBind::constructor, 0, EntityBind::methods, EntityBind::meta);
-
 	bind(L, IdentificationBind::name, 0, IdentificationBind::global);bind(L, IdentificationBind::name, 0, IdentificationBind::global);
-
 	bind(L, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, EntityBind::methods, EntityBind::meta, IdentifierBind::getters);
-	scripting->registerComponent<Identifier>(IdentifierBind::name);
-
 	bind(L, Vec3Bind::name, Vec3Bind::constructor, Vec3Bind::global, Vec3Bind::methods, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
 }

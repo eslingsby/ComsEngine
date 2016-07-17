@@ -45,14 +45,8 @@ namespace EntityBind{
 inline int EntityBind::constructor(lua_State * L){
 	// {} integer
 
-	uint64_t id = luaL_checkinteger(L, 2);
+	Binder::referenceEntity(L, luaL_checkinteger(L, -1), name);
 
-	// {} integer {}
-	void* location = lua_newuserdata(L, sizeof(EntityRef));
-	new(location) EntityRef(Binder::getEngine(L).manager, id);
-
-	luaL_getmetatable(L, name);
-	lua_setmetatable(L, -2);
 	return 1;
 }
 
@@ -61,11 +55,8 @@ inline int EntityBind::_create(lua_State* L){
 	
 	uint64_t id = engine.manager.createEntity();
 
-	void* location = lua_newuserdata(L, sizeof(EntityRef));
-	new(location) EntityRef(Binder::getEngine(L).manager, id);
+	Binder::referenceEntity(L, id, name);
 
-	luaL_getmetatable(L, name);
-	lua_setmetatable(L, -2);
 	return 1;
 }
 

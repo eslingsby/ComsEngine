@@ -38,7 +38,7 @@ inline int EngineBind::_references(lua_State* L){
 	return 1;
 }
 
-int EngineBind::_define(lua_State * L){
+inline int EngineBind::_define(lua_State * L){
 	// string
 
 	// string {}
@@ -59,7 +59,7 @@ int EngineBind::_define(lua_State * L){
 	return 1;
 }
 
-int EngineBind::_register(lua_State* L){
+inline int EngineBind::_register(lua_State* L){
 	// function()
 
 	Binder::getSystem<Scripting>(L)->registerFile(luaL_checkstring(L, 1), luaL_checkstring(L, 2));

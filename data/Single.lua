@@ -13,6 +13,10 @@ function Single:load()
 	print("Entity " .. self.entity:id() .. " is called " .. self.identifier.name)
 end
 
+function Single:reload()
+	print("Reload triggered...")
+end
+
 function Single:update()
 	-- Update counters
 	self.seconds = self.seconds + 1 * Engine.dt()
@@ -21,9 +25,13 @@ function Single:update()
 	
 	-- Every second print information
 	if (self.counter > 1) then
-		print("Frames " .. self.frames, "", "FPS " .. 1 / Engine.dt())
-		print("Scripts Left " .. Identification.hasLayer("many_layer"), "References Left " .. Engine.references() .. "\n")
+		os.execute("cls")
 	
+		print("Total Frames", "- " .. self.frames)
+		print("FPS", "", "- " .. 1 / Engine.dt())
+		print("Scripts Left", "- " .. Identification.hasLayer("many_layer"))
+		print("References Left", "- " .. Engine.references())
+		
 		self.counter = 0
 		self.frames = 0
 	end
