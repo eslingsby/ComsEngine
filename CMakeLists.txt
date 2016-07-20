@@ -18,6 +18,7 @@ endif(MSVC)
 add_subdirectory(thirdparty)
 
 add_subdirectory(base)
+add_subdirectory(default)
 add_subdirectory(script)
 
 add_subdirectory(test)

@@ -2,7 +2,7 @@ file(GLOB Files *.hpp *.cpp)
 
 add_library(Script STATIC ${Files})
 
-target_link_libraries(Script LINK_PUBLIC Base)
+target_link_libraries(Script LINK_PUBLIC Default)
 
 target_link_libraries(Script LINK_PUBLIC _Lua)
 target_link_libraries(Script LINK_PUBLIC _GLM)
