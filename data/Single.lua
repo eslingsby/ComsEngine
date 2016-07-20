@@ -10,11 +10,25 @@ function Single:load()
 	self.entity:add(Identifier, "waywo")
 	self.identifier = self.entity:get(Identifier)
 	
-	print("Entity " .. self.entity:id() .. " is called " .. self.identifier.name)
+	self.entity:add(Transform)
+	self.transform = self.entity:get(Transform)
+
+	--print(self.transform:position())
+	
+	self.transform:position(-self.transform:position())
+	
+	--print(self.transform:position())
+	
+	
+	local quat = Quat(Vec3(0, 90, 0))
+	
+	print(quat:eulerAngles())
+	
+	--print("Entity " .. self.entity:id() .. " is called " .. self.identifier.name)
 end
 
 function Single:reload()
-	print("Reload triggered...")
+	print("Reload triggered...\n")
 end
 
 function Single:update()
@@ -25,12 +39,13 @@ function Single:update()
 	
 	-- Every second print information
 	if (self.counter > 1) then
-		os.execute("cls")
-	
+		--os.execute("cls")
+		
 		print("Total Frames", "- " .. self.frames)
 		print("FPS", "", "- " .. 1 / Engine.dt())
 		print("Scripts Left", "- " .. Identification.hasLayer("many_layer"))
 		print("References Left", "- " .. Engine.references())
+		print("")
 		
 		self.counter = 0
 		self.frames = 0
@@ -38,8 +53,9 @@ function Single:update()
 	
 	-- Shut down after 70 seconds
 	if (self.seconds > 70) then
+		print("End of program...\n")
 		self.entity:destroy()
-		Engine.shutdown()
+		--Engine.shutdown()
 	end
 end
 

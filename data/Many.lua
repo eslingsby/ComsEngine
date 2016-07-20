@@ -7,6 +7,10 @@ function Many:load()
 	self.killTime = math.random(0, 60)
 end
 
+function Many:reload()
+	self.killTime = math.random(0, 60)
+end
+
 function Many:update()
 	self.seconds = self.seconds + 1 * Engine.dt()
 	
