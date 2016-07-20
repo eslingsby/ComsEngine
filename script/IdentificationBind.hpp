@@ -28,7 +28,7 @@ inline int IdentificationBind::_getByName(lua_State* L){
 
 	uint64_t id = identification->getByName(luaL_checkstring(L, 1));
 
-	Binder::referenceEntity(L, id, "Entity");
+	Binder::createEntityRef(L, id, "Entity");
 
 	return 1;
 }
@@ -38,7 +38,7 @@ inline int IdentificationBind::_getByLayer(lua_State * L){
 
 	uint64_t id = identification->getByLayer(luaL_checkstring(L, 1), luaL_checkinteger(L, 2));
 
-	Binder::referenceEntity(L, id, "Entity");
+	Binder::createEntityRef(L, id, "Entity");
 
 	return 1;
 }

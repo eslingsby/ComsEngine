@@ -70,20 +70,9 @@ class System : public BaseSystem{
 public:
 	System(Engine* const engine);
 
-	// Returns static type counter 
-	static unsigned int type();
-
 	// Called by entity manager on request for every entity with subscribed components
 	virtual void onProcess(uint64_t id, Ts&...){};
 };
 
 template<class ...Ts>
 System<Ts...>::System(Engine* const engine) : BaseSystem(engine, BitHelper::createMask<Ts...>()){}
-
-template<class ...Ts>
-unsigned int System<Ts...>::type(){
-	static unsigned int type = _typeCounter++;
-	
-	assert(type < 32);
-	return type;
-}

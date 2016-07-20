@@ -31,11 +31,11 @@ namespace Binder{
 	template <typename T>
 	inline static T* getSystem(lua_State* L);
 
-	inline static void referenceEntity(lua_State* L, uint64_t id, const std::string& type);
+	inline static void createEntityRef(lua_State* L, uint64_t id, const std::string& type);
 
 	inline static void error(lua_State* L, const std::string& name, const std::string& error);
 
-	inline static bool requireUserdata(lua_State* L, const std::string& name);
+	inline static bool requireSelfData(lua_State* L, const std::string& name);
 
 	inline static void printStack(lua_State* L);
 
@@ -107,7 +107,7 @@ inline T* Binder::getSystem(lua_State* L){
 	return system;
 }
 
-inline void Binder::referenceEntity(lua_State* L, uint64_t id, const std::string& type){
+inline void Binder::createEntityRef(lua_State* L, uint64_t id, const std::string& type){
 	void* location = lua_newuserdata(L, sizeof(EntityRef));
 	new(location) EntityRef(Binder::getEngine(L).manager, id);
 
@@ -120,7 +120,7 @@ inline void Binder::error(lua_State* L, const std::string& name, const std::stri
 	lua_error(L);
 }
 
-inline bool Binder::requireUserdata(lua_State * L, const std::string& name){
+inline bool Binder::requireSelfData(lua_State* L, const std::string& name){
 	if (lua_isuserdata(L, 1))
 		return false;
 

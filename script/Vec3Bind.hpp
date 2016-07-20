@@ -2,11 +2,9 @@
 
 #include "Binder.hpp"
 
-#include <glm\vec3.hpp>
+#include "LuaTypes.hpp"
 
 namespace Vec3Bind{
-	typedef glm::tvec3<lua_Number, glm::highp> LuaVec3;
-
 	const char* name = "Vec3";
 
 	inline static int constructor(lua_State* L);
@@ -14,6 +12,12 @@ namespace Vec3Bind{
 	inline static int _length(lua_State* L, void* value);
 
 	inline static int _add(lua_State* L);
+	inline static int _unm(lua_State* L);
+	inline static int _sub(lua_State* L);
+	inline static int _mul(lua_State* L);
+	inline static int _div(lua_State* L);
+
+	inline static int _eq(lua_State* L);
 
 	inline static int _print(lua_State* L);
 
@@ -27,6 +31,11 @@ namespace Vec3Bind{
 
 	static const luaL_Reg meta[] = {
 		{ "__add", _add },
+		{ "__unm", _unm },
+		{ "__sub", _sub },
+		{ "__mul", _mul },
+		{ "__div", _div },
+		{ "__eq", _eq },
 		{ "__tostring", _print },
 		{ 0, 0 }
 	};
@@ -47,7 +56,7 @@ namespace Vec3Bind{
 	};
 }
 
-int Vec3Bind::constructor(lua_State* L){
+inline int Vec3Bind::constructor(lua_State* L){
 	// number number number   OR   L{}   or   {}
 
 	// ... L{}
@@ -99,14 +108,14 @@ int Vec3Bind::constructor(lua_State* L){
 	return 1;
 }
 
-int Vec3Bind::_length(lua_State* L, void* value){
+inline int Vec3Bind::_length(lua_State* L, void* value){
 	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
 
 	lua_pushnumber(L, vec->length());
 	return 1;
 }
 
-int Vec3Bind::_add(lua_State* L){
+inline int Vec3Bind::_add(lua_State* L){
 	// L{} number   OR   L{} L{}
 	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
 
@@ -121,14 +130,99 @@ int Vec3Bind::_add(lua_State* L){
 		(*newVec) = (*vec) + number;
 	}
 	
-	// L{} number L{} L{}
-	lua_pushvalue(L, -1);
-
-	// L{} number L{} L{} M{}
-	luaL_getmetatable(L, "Vec3");
-
-	// L{} number L{}
+	luaL_getmetatable(L, name);
 	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
+inline int Vec3Bind::_unm(lua_State * L){
+	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
+
+	LuaVec3* newVec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
+	*newVec = LuaVec3(-*vec);
+
+	luaL_getmetatable(L, name);
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
+inline int Vec3Bind::_sub(lua_State * L){
+	// L{} number   OR   L{} L{}
+	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
+
+	if (lua_isuserdata(L, 2)){
+		LuaVec3* other = (LuaVec3*)lua_touserdata(L, 2);
+		LuaVec3* newVec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
+		(*newVec) = (*vec) - (*other);
+	}
+	else{
+		lua_Number number = luaL_checknumber(L, 2);
+		LuaVec3* newVec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
+		(*newVec) = (*vec) - number;
+	}
+
+	luaL_getmetatable(L, name);
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
+inline int Vec3Bind::_mul(lua_State * L){
+	// L{} number   OR   L{} L{}
+	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
+
+	if (lua_isuserdata(L, 2)){
+		LuaVec3* newVec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
+
+		if (luaL_testudata(L, 2, name)){
+			LuaVec3* other = (LuaVec3*)lua_touserdata(L, 2);
+			(*newVec) = (*vec) * (*other);
+		}
+		else if (luaL_testudata(L, 2, "Quat")){
+			LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 2);
+			(*newVec) = (*vec) * (*quat);
+		}
+	}
+	else{
+		lua_Number number = luaL_checknumber(L, 2);
+		LuaVec3* newVec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
+		(*newVec) = (*vec) * number;
+	}
+
+	luaL_getmetatable(L, name);
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
+inline int Vec3Bind::_div(lua_State * L){
+	// L{} number   OR   L{} L{}
+	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
+
+	if (lua_isuserdata(L, 2)){
+		LuaVec3* other = (LuaVec3*)lua_touserdata(L, 2);
+		LuaVec3* newVec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
+		(*newVec) = (*vec) / (*other);
+	}
+	else{
+		lua_Number number = luaL_checknumber(L, 2);
+		LuaVec3* newVec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
+		(*newVec) = (*vec) / number;
+	}
+
+	luaL_getmetatable(L, name);
+	lua_setmetatable(L, -2);
+
+	return 1;
+}
+
+inline int Vec3Bind::_eq(lua_State * L){
+	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
+	LuaVec3* other = (LuaVec3*)lua_touserdata(L, 2);
+
+	lua_pushboolean(L, (int)(*vec == *other));
 
 	return 1;
 }

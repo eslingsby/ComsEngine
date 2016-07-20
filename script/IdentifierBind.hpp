@@ -30,7 +30,7 @@ namespace IdentifierBind{
 inline int IdentifierBind::constructor(lua_State* L){
 	// {} integer
 
-	Binder::referenceEntity(L, luaL_checkinteger(L, -1), name);
+	Binder::createEntityRef(L, luaL_checkinteger(L, -1), name);
 
 	return 1;
 }
@@ -49,7 +49,7 @@ inline int IdentifierBind::_add(lua_State* L){
 }
 
 inline int IdentifierBind::_name(lua_State * L, void * value){
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
@@ -59,7 +59,7 @@ inline int IdentifierBind::_name(lua_State * L, void * value){
 }
 
 inline int IdentifierBind::_layer(lua_State * L, void * value){
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);

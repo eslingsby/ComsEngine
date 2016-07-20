@@ -6,8 +6,8 @@
 Engine::Engine(){}
 
 Engine::~Engine(){
-	for (BaseSystem* i : _systems)
-		delete i;
+	for (auto i : _systems)
+		delete i.second;
 }
 
 int Engine::run(){

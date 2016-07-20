@@ -7,12 +7,15 @@
 #include <stack>
 #include <unordered_map>
 #include <string>
+#include <typeinfo>
+#include <typeindex>
+#include <unordered_map>
 
 class Engine{
-	std::vector<BaseSystem*> _systems;
-
-	std::vector<uint32_t> _loadOrder;
-	std::vector<uint32_t> _updateOrder;
+	std::unordered_map<std::type_index, BaseSystem*> _systems;
+	
+	std::vector<std::type_index> _loadOrder;
+	std::vector<std::type_index> _updateOrder;
 
 	uint32_t _systemCount = 0;
 
@@ -77,19 +80,15 @@ public:
 };
 
 inline void Engine::_loadSystems(){
-	for (uint32_t i : _loadOrder){
-		if (i)
-			_systems[i - 1]->load();
-	}
+	for (std::type_index i : _loadOrder)
+		_systems[i]->load();
 
 	manager.eraseDestroyed();
 }
 
 inline void Engine::_updateSystems(){
-	for (uint32_t i : _updateOrder){
-		if (i)
-			_systems[i - 1]->update();
-	}
+	for (std::type_index i : _updateOrder)
+		_systems[i]->update();
 
 	manager.eraseDestroyed();
 }
@@ -100,34 +99,29 @@ inline void Engine::addSystem(uint32_t loadIndex, uint32_t updateIndex, Ts ...ar
 	
 	T* system = new T(this, args...);
 
-	if (_systems.size() <= T::type())
-		_systems.resize(T::type() + 1);
+	assert(_systems.find(typeid(T)) == _systems.end());
 
-	assert(_systems[T::type()] == nullptr);
-
-	_systems[T::type()] = system;
+	_systems[typeid(T)] = system;
 
 	manager.registerSystem(system);
 
 	if (loadIndex >= _loadOrder.size())
-		_loadOrder.resize(loadIndex + 1);
+		_loadOrder.resize(loadIndex + 1, typeid(nullptr));
 
 	if (updateIndex >= _updateOrder.size())
-		_updateOrder.resize(updateIndex + 1);
+		_updateOrder.resize(updateIndex + 1, typeid(nullptr));
 	
-	assert(_loadOrder[loadIndex] == 0 && _updateOrder[updateIndex] == 0);
-
-	_loadOrder[loadIndex] = T::type() + 1;
-	_updateOrder[updateIndex] = T::type() + 1;
+	_loadOrder[loadIndex] = typeid(T);
+	_updateOrder[updateIndex] = typeid(T);
 
 	_systemCount++;
 }
 
 template<typename T>
 inline T* const Engine::getSystem(){
-	assert(_systems.size() > T::type() && _systems[T::type()]);
+	assert(_systems.find(typeid(T)) != _systems.end());
 
-	return static_cast<T*>(_systems[T::type()]);
+	return static_cast<T*>(_systems[typeid(T)]);
 }
 
 template <typename T>

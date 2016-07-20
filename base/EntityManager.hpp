@@ -6,6 +6,7 @@
 
 #include <queue>
 #include <tuple>
+#include <set>
 
 // To-do
 // - Make reload function
@@ -35,7 +36,7 @@ class EntityManager{
 	uint32_t _entities = 0;
 
 	// System register for calling BaseSystem events
-	std::vector<BaseSystem*> _systems;
+	std::set<BaseSystem*> _systems;
 
 	// Non-copyable overloads
 	EntityManager(const EntityManager& other) = delete;
@@ -155,12 +156,9 @@ public:
 
 template<typename T>
 inline void EntityManager::registerSystem(T* system){
-	if (T::type() >= _systems.size())
-		_systems.resize(T::type() + 1);
+	assert(_systems.find(system) == _systems.end());
 
-	assert(!_systems[T::type()]);
-
-	_systems[T::type()] = system;
+	_systems.insert(system);
 }
 
 inline void EntityManager::addReference(uint64_t id){
@@ -358,8 +356,8 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 	T* component = _pools[T::type()]->insert<T>(index, args...);
 
 	// Call onCreate (for potential new systems)
-	for (BaseSystem* system : _systems){
-		if ((system->mask & _masks[index]) == system->mask && (system->mask & old) != system->mask){
+	for (BaseSystem* system : _systems){ // if (system mask includes entity mask) and ((old system mask didn't include entity mask) or (entity mask was unchanged))
+		if ((system->mask & _masks[index]) == system->mask && ((system->mask & old) != system->mask) || (old == _masks[index])){
 			system->onCreate(id);
 		}
 	}

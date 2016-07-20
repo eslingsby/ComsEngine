@@ -45,7 +45,7 @@ namespace EntityBind{
 inline int EntityBind::constructor(lua_State * L){
 	// {} integer
 
-	Binder::referenceEntity(L, luaL_checkinteger(L, -1), name);
+	Binder::createEntityRef(L, luaL_checkinteger(L, -1), name);
 
 	return 1;
 }
@@ -55,14 +55,14 @@ inline int EntityBind::_create(lua_State* L){
 	
 	uint64_t id = engine.manager.createEntity();
 
-	Binder::referenceEntity(L, id, name);
+	Binder::createEntityRef(L, id, name);
 
 	return 1;
 }
 
 inline int EntityBind::_add(lua_State* L){
 	// U{} G{} ...
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
@@ -87,7 +87,7 @@ inline int EntityBind::_add(lua_State* L){
 
 inline int EntityBind::_get(lua_State* L){
 	// U{} G{}
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
@@ -105,7 +105,7 @@ inline int EntityBind::_get(lua_State* L){
 }
 
 inline int EntityBind::_id(lua_State * L){
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
@@ -114,7 +114,7 @@ inline int EntityBind::_id(lua_State * L){
 }
 
 inline int EntityBind::_destroy(lua_State * L){
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
@@ -123,7 +123,7 @@ inline int EntityBind::_destroy(lua_State * L){
 }
 
 inline int EntityBind::_destroyed(lua_State * L){
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
@@ -137,7 +137,7 @@ inline int EntityBind::_destroyed(lua_State * L){
 }
 
 inline int EntityBind::_invalidate(lua_State * L){
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
@@ -146,7 +146,7 @@ inline int EntityBind::_invalidate(lua_State * L){
 }
 
 inline int EntityBind::_valid(lua_State * L){
-	if (Binder::requireUserdata(L, "Entity"))
+	if (Binder::requireSelfData(L, "Entity"))
 		return 0;
 
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);

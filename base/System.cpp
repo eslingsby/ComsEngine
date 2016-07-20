@@ -7,5 +7,3 @@ BaseSystem::BaseSystem(Engine* const engine, uint32_t mask) : _engine(*engine), 
 }
 
 BaseSystem::~BaseSystem(){}
-
-unsigned int BaseSystem::_typeCounter = 0;

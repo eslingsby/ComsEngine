@@ -9,7 +9,7 @@ protected:
 	Engine engine;
 
 	void SetUp() override{
-		engine.addSystem<Scripting>();
+		//engine.addSystem<Scripting>(0, 0);
 
 		engine.load();
 	}
