@@ -14,7 +14,6 @@
 
 CMakeFiles/
 thirdparty/
-!thirdparty/lua-5.3.3/CMakeLists.txt
 
 !CMakeLists.txt
 

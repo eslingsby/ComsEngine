@@ -22,5 +22,4 @@ add_subdirectory("default")
 add_subdirectory("script")
 
 add_subdirectory("test")
-
-add_subdirectory("app")
+add_subdirectory("main")
