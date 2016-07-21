@@ -1,5 +1,5 @@
 function("add_external_tar" name url include)
-	if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${name}.tar.gz" )
+	if (NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/${name}/${include}" )
 		file(DOWNLOAD "${url}" "${CMAKE_CURRENT_SOURCE_DIR}/${name}.tar.gz")
 
 		execute_process(
@@ -10,6 +10,8 @@ function("add_external_tar" name url include)
 
 	add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/${name}")
 	include_directories("${CMAKE_CURRENT_SOURCE_DIR}/${name}/${include}")
+
+	file(REMOVE "${CMAKE_CURRENT_SOURCE_DIR}/${name}.tar.gz")
 endfunction("add_external_tar")
 
 add_external_tar("SDL2-2.0.4" "https://www.libsdl.org/release/SDL2-2.0.4.tar.gz" "include")
