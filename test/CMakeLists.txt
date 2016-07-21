@@ -1,11 +1,11 @@
-file(GLOB Files *.hpp *.cpp)
+file(GLOB Files "*.hpp" "*.cpp")
 
-add_executable(Test ${Files})
+add_executable("ComsEngine-Test" "${Files}")
 
-target_link_libraries(Test LINK_PUBLIC _GTest)
+target_link_libraries("ComsEngine-Test" LINK_PUBLIC "gtest")
 
-target_link_libraries(Test LINK_PUBLIC Script)
+target_link_libraries("ComsEngine-Test" LINK_PUBLIC "ComsEngine-Script")
 
 enable_testing()
 
-add_test(Tester Test)
+add_test("test" "ComsEngine-Test")

@@ -1,5 +1,5 @@
-file(GLOB Files *.hpp *.cpp)
+file(GLOB Files "*.hpp" "*.cpp")
 
-add_executable(App ${Files})
+add_executable("ComsEngine-Main" "${Files}")
 
-target_link_libraries(App LINK_PUBLIC Script)
+target_link_libraries("ComsEngine-Main" LINK_PUBLIC "ComsEngine-Script")
