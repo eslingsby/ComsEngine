@@ -62,3 +62,18 @@ size_t Identification::hasLayer(const std::string& layer){
 
 	return _layers[layer].size();
 }
+
+void Identification::destroyByName(const std::string& name){
+	assert(hasName(name));
+
+	_engine.manager.destroyEntity(_names[name]);
+}
+
+void Identification::destroyByLayer(const std::string& layer){
+	assert(hasLayer(layer));
+
+	std::queue<uint64_t> destroy;
+
+	for (uint64_t id : _layers[layer])
+		_engine.manager.destroyEntity(id);
+}

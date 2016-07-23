@@ -53,8 +53,14 @@ public:
 	// Called by entity manager once after all systems are added, before running
 	virtual void load(){};
 
+	// Called on state changes (also script reloads)
+	virtual void reset(){};
+
 	// Called by entity manager every tick
 	virtual void update(){};
+
+	// Called on shutdown
+	virtual void exit(){};
 
 	// Entity events called by entity manager to monitor subscribed entities
 	virtual void onCreate(uint64_t id){};

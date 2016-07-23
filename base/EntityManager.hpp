@@ -35,6 +35,8 @@ class EntityManager{
 	// Entity count
 	uint32_t _entities = 0;
 
+	bool _purge = false;
+
 	// System register for calling BaseSystem events
 	std::set<BaseSystem*> _systems;
 
@@ -105,6 +107,9 @@ public:
 	template <typename T, typename ...Ts>
 	inline T* const addComponent(uint64_t id, Ts... args);
 
+	template <typename T, typename ...Ts>
+	inline T* const changeComponent(uint64_t id, Ts... args);
+
 	// Get unique component pointer from existing entity
 	template <typename T>
 	inline T* const getComponent(uint64_t id);
@@ -152,6 +157,8 @@ public:
 	inline void eraseDestroyed();
 
 	inline unsigned int totalReferences();
+
+	inline void purge();
 };
 
 template<typename T>
@@ -199,7 +206,7 @@ inline void EntityManager::eraseDestroyed(){
 		uint32_t index = BitHelper::front(_destroyed.front());
 
 		for (BaseSystem* system : _systems){
-			if ((system->mask & _masks[index]) == system->mask)
+			if (system->mask && (system->mask & _masks[index]) == system->mask)
 				system->onDestroy(_destroyed.front());
 		}
 
@@ -207,6 +214,26 @@ inline void EntityManager::eraseDestroyed(){
 			_eraseEntity(index);
 
 		_destroyed.pop();
+	}
+
+	if (_purge){
+		for (BasePool* pool : _pools){
+			if (pool)
+				delete pool;
+		}
+
+		_pools.clear();
+		_states.clear();
+		_masks.clear();
+		_enabled.clear();
+		_versions.clear();
+		_references.clear();
+
+		while (_destroyed.size())
+			_destroyed.pop();
+
+		while (_free.size())
+			_free.pop();
 	}
 }
 
@@ -217,6 +244,10 @@ inline unsigned int EntityManager::totalReferences(){
 		total += i;
 
 	return total;
+}
+
+inline void EntityManager::purge(){
+	_purge = true;
 }
 
 template<typename ...Ts>
@@ -272,15 +303,7 @@ inline uint64_t EntityManager::createEntity(){
 
 	_entities++;
 
-	// Call onCreate (for blank systems)
-	uint64_t id = BitHelper::combine(index, _versions[index]);
-
-	for (BaseSystem* system : _systems){
-		if (!system->mask)
-			system->onCreate(id);
-	}
-
-	return id;
+	return BitHelper::combine(index, _versions[index]);
 }
 
 inline void EntityManager::destroyEntity(uint64_t id){
@@ -313,7 +336,7 @@ inline void EntityManager::setEntityActive(uint64_t id, bool active){
 
 	// Call onActivate / onDeactivate
 	for (BaseSystem* system : _systems){
-		if ((system->mask & _masks[index]) == system->mask){
+		if (system->mask && (system->mask & _masks[index]) == system->mask){
 			if (active)
 				system->onActivate(id);
 			else
@@ -337,10 +360,7 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
-
-	if (BitHelper::getBit(T::type(), _masks[index]))
-		_pools[T::type()]->erase(index);
+	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed && !BitHelper::getBit(T::type(), _masks[index]));
 
 	if (T::type() >= _pools.size())
 		_pools.resize(T::type() + 1);
@@ -357,12 +377,25 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 
 	// Call onCreate (for potential new systems)
 	for (BaseSystem* system : _systems){ // if (system mask includes entity mask) and ((old system mask didn't include entity mask) or (entity mask was unchanged))
-		if ((system->mask & _masks[index]) == system->mask && ((system->mask & old) != system->mask) || (old == _masks[index])){
+		if (system->mask && (system->mask & _masks[index]) == system->mask && ((system->mask & old) != system->mask) || (old == _masks[index])){
 			system->onCreate(id);
 		}
 	}
 
 	return component;
+}
+
+template<typename T, typename ...Ts>
+inline T * const EntityManager::changeComponent(uint64_t id, Ts ...args){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
+
+	if (BitHelper::getBit(T::type(), _masks[index]))
+		_pools[T::type()]->erase(index);
+
+	addComponent<T>(id, args..);
 }
 
 template<typename T>
@@ -385,10 +418,8 @@ inline void EntityManager::processEntities(System<Ts...>* system){
 		if (_states[i] != EntityState::Active)
 			continue;
 
-		if ((system->mask & _enabled[i]) == system->mask){
-			if (system->mask)
-				_fillTuple(i, components);
-
+		if (system->mask && (system->mask & _enabled[i]) == system->mask){
+			_fillTuple(i, components);
 			system->onProcess(BitHelper::combine(i, _versions[i]), *std::get<Ts*>(components)...);
 		}
 	}

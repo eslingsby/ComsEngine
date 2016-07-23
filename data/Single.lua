@@ -7,18 +7,23 @@ function Single:load()
 	self.frames = 0
 
 	-- Add identifier component with name
-	self.entity:add(Identifier, "waywo")
+	self.entity:add(Identifier, "camera")
+	--self.entity:add(Identifier, "camera")
+	
 	self.identifier = self.entity:get(Identifier)
 	
+
 	self.entity:add(Transform)
 	self.transform = self.entity:get(Transform)
 
+	
+	--print("ssss")
+	
 	--print(self.transform:position())
 	
 	self.transform:position(-self.transform:position())
 	
 	--print(self.transform:position())
-	
 	
 	local quat = Quat(Vec3(0, 90, 0))
 	
@@ -36,7 +41,7 @@ function Single:update()
 	self.seconds = self.seconds + 1 * Engine.dt()
 	self.counter = self.counter + 1 * Engine.dt()
 	self.frames = self.frames + 1
-	
+
 	-- Every second print information
 	if (self.counter > 1) then
 		--os.execute("cls")

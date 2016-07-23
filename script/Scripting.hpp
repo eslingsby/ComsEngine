@@ -3,6 +3,7 @@
 #include "System.hpp"
 
 #include "Script.hpp"
+#include "Input.hpp"
 
 #include <lua.hpp>
 #include <string>
@@ -15,11 +16,14 @@ class Scripting : public System<Script>{
 
 	std::string _scriptPath;
 
-	bool _ctrlDown = false;
+	Input* _input;
+
 	bool _reloaded = false;
 
+	void _callLoadFile();
+
 public:
-	Scripting(Engine* engine, const std::string& scriptPath);
+	Scripting(Engine* engine, const std::string& scriptPath = "");
 	~Scripting();
 
 	void load() override;

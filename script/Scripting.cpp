@@ -7,13 +7,20 @@
 #include "Identification.hpp"
 
 #include <iostream>
+#include <SDL_keycode.h>
 
-#ifdef WIN32
-#include <Windows.h>
-#endif
+void Scripting::_callLoadFile(){
+	if (luaL_dofile(_L, (_scriptPath + "Load.lua").c_str())){
+		std::cout << lua_tostring(_L, -1) << "\n";
+		lua_pop(_L, 1);
+	}
+}
 
 Scripting::Scripting(Engine* engine, const std::string& scriptPath) : System(engine), _L(luaL_newstate()){
-	_scriptPath = scriptPath + "\\";
+	if (scriptPath != "")
+		_scriptPath = scriptPath + "\\";
+	else
+		_scriptPath = "";
 }
 
 Scripting::~Scripting(){
@@ -21,15 +28,19 @@ Scripting::~Scripting(){
 }
 
 void Scripting::load(){
+	_input = _engine.getSystem<Input>();
+
+	_input->addInput("reload", SDLK_LCTRL, SDLK_r);
+
 	luaL_openlibs(_L);
+
+	if (_scriptPath == "")
+		_scriptPath = _engine.getConfig("root") + "data\\";
 
 	Binder::bind(_L, _engine);
 	
-	if (luaL_dofile(_L, (_scriptPath + "Load.lua").c_str())){
-		std::cout << lua_tostring(_L, -1) << "\n";
-		lua_pop(_L, 1);
-	}
-	
+	_callLoadFile();
+
 	// Testing code below (remove me)
 	uint64_t id = _engine.manager.createEntity();
 	_engine.manager.addComponent<Script>(id);
@@ -44,33 +55,18 @@ void Scripting::load(){
 }
 
 void Scripting::update(){
-#ifdef WIN32
-	if (GetAsyncKeyState(VK_CONTROL) && GetAsyncKeyState(82) && _ctrlDown){
-		_ctrlDown = false;
+	if (_input->wasDown("reload")){
+		_callLoadFile();
+		_engine.reset();
+
 		_reloaded = true;
-
-		for (auto& i : _loadedScripts){
-			std::string type = i.substr(0, i.find_first_of(";"));
-			std::string file = i.substr(i.find_first_of(";") + 1, std::string::npos);
-
-			registerFile(type, file);
-		}
 	}
-	else if (!GetAsyncKeyState(VK_CONTROL) && !GetAsyncKeyState(82) && _ctrlDown){
-		_ctrlDown = false;
-	}
-	else if (GetAsyncKeyState(VK_CONTROL) && !GetAsyncKeyState(82) && !_ctrlDown){
-		_ctrlDown = true;
-	}
-#endif
 
 	_engine.manager.processEntities(this);
 	lua_gc(_L, LUA_GCCOLLECT, 0);
 
-#ifdef WIN32
 	if (_reloaded)
 		_reloaded = false;
-#endif
 }
 
 void Scripting::onProcess(uint64_t id, Script& script){

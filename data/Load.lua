@@ -1,6 +1,6 @@
---Engine.config("title", "Window Title")
---Engine.config("resolution", Vec2(1920, 1080))
---Engine.config("fps", 144.0)
+Engine.config("window.title", "Title Goes Here")
+Engine.config("window.x", "512")
+Engine.config("window.y", "512")
 
 Engine.register("Single", "Single.lua")
 Engine.register("Many", "Many.lua")

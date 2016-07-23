@@ -10,7 +10,7 @@
 class Identification : public System<Identifier>{
 	std::unordered_map<std::string, uint64_t> _names;
 	std::unordered_map<std::string, std::set<uint64_t>> _layers;
-
+	
 public:
 	Identification(Engine* engine);
 
@@ -22,4 +22,7 @@ public:
 
 	bool hasName(const std::string& name);
 	size_t hasLayer(const std::string& layer);
+
+	void destroyByName(const std::string& name);
+	void destroyByLayer(const std::string& layer);
 };

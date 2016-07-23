@@ -22,6 +22,8 @@ class Engine{
 	bool _running = false;
 	int _exitCode = 0;
 
+	bool _reset = false;
+
 	using Clock = std::chrono::high_resolution_clock;
 
 	std::unordered_map<std::string, std::string> _config;
@@ -38,8 +40,12 @@ class Engine{
 	// Call system load methods in order of added
 	inline void _loadSystems();
 
+	inline void _resetSystems();
+
 	// Call system update methods in order of added
 	inline void _updateSystems();
+
+	inline void _exitSystems();
 
 public:
 	EntityManager manager;
@@ -68,15 +74,16 @@ public:
 	// Stop the engine from running if using run method
 	inline void shutdown(bool abort = false);
 
+	inline void reset(bool data = false);
+
 	// Manually load and tick the engine (mainly for testing speed)
+	inline void init(int argc, char* argv[]);
 	inline void load();
 	inline void update();
+	inline int exit();
 
 	// Automatically load and tick the engine
-	int run();
-
-	// Converts exe path to root folder
-	static std::string root(std::string exePath);
+	int run(int argc, char* argv[]);
 };
 
 inline void Engine::_loadSystems(){
@@ -86,9 +93,23 @@ inline void Engine::_loadSystems(){
 	manager.eraseDestroyed();
 }
 
+inline void Engine::_resetSystems(){
+	for (std::type_index i : _loadOrder)
+		_systems[i]->reset();
+
+	manager.eraseDestroyed();
+}
+
 inline void Engine::_updateSystems(){
 	for (std::type_index i : _updateOrder)
 		_systems[i]->update();
+
+	manager.eraseDestroyed();
+}
+
+inline void Engine::_exitSystems(){
+	for (std::type_index i : _loadOrder)
+		_systems[i]->exit();
 
 	manager.eraseDestroyed();
 }
@@ -151,6 +172,23 @@ inline void Engine::shutdown(bool abort){
 	_running = false;
 }
 
+inline void Engine::reset(bool data){
+	_resetSystems();
+
+	if (data)
+		_reset = true;
+}
+
+inline void Engine::init(int argc, char * argv[]){
+	std::string root = argv[0];
+
+	root = root.substr(0, root.find_last_of("\\"));
+	root = root.substr(0, root.find_last_of("\\") + 1);
+
+	setConfig("root", root);
+	setConfig("name", "ComsEngine");
+}
+
 inline void Engine::load(){
 	assert(!_running && _systemCount > 0);
 
@@ -174,7 +212,17 @@ inline void Engine::update(){
 
 	_end = Clock::now();
 
-	if (!_running){
-		// check for shutdown or restart
+	if (_reset){
+		manager.purge();
+		manager.eraseDestroyed();
+		_reset = false;
 	}
+}
+
+inline int Engine::exit(){
+	assert(_systemCount > 0);
+
+	_exitSystems();
+
+	return _exitCode;
 }
