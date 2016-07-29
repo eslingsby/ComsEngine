@@ -14,22 +14,21 @@ function Many:load()
 	
 end
 
-function Many:reload()
-	self.killTime = math.random(0, 60)
+function Many:reset()
+	--self.killTime = math.random(0, 60)
 end
 
 function Many:update()
 	self.seconds = self.seconds + 1 * Engine.dt()
 	
-	--print("ddd")
-	
+
 	--print(self.camera:id())
 	--print(self.cameraId.name)
 	
 	-- Destroy self
 	if (self.seconds > self.killTime) then
 		--print("Goodbye! ID - " .. self.entity:id())
-		--self.entity:destroy()
+		self.entity:destroy()
 	end
 end
 

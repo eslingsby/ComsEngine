@@ -5,7 +5,7 @@
 #include <SDL.h>
 
 unsigned int Input::_insert(const std::string& name, std::pair<SDL_Keycode, SDL_Keycode> pair){
-	unsigned int index = _keyCombos.size();
+	unsigned int index = (unsigned int)_keyCombos.size();
 
 	_keyCombos.resize(index + 1);
 	_modDown.resize(index + 1);
@@ -28,36 +28,6 @@ void Input::load(){
 	SDL_Init(SDL_INIT_EVENTS);
 }
 
-//void Input::update(){
-//	SDL_Event e;
-//
-//	while (SDL_PollEvent(&e)){
-//		if (e.type == SDL_QUIT){
-//			_quit = true;
-//		}
-//		if (e.type == SDL_KEYDOWN){
-//			if (e.key.keysym.sym == SDLK_LCTRL && !_r)
-//				_ctrl = true;
-//			else if (e.key.keysym.sym == SDLK_r)
-//				_r = true;
-//		}
-//		else if (e.type == SDL_KEYUP){
-//			if (e.key.keysym.sym == SDLK_LCTRL)
-//				_ctrl = false;
-//			else if (e.key.keysym.sym == SDLK_r)
-//				_r = false;
-//		}
-//	}
-//
-//	if (_ctrl && _r && !_combo){
-//		_combo = true;
-//		_reload = true;
-//	}
-//	else if (!_r){
-//		_combo = false;
-//	}
-//}
-
 bool Input::isQuit(){
 	if (_quit){
 		_quit = false;
@@ -66,14 +36,6 @@ bool Input::isQuit(){
 
 	return false;
 }
-
-//map<sring, pair<bool, uint>>		NameMap<Name, pair<Checked, Index>>
-//vector<pair<char, char>>			KeyCodes<pair<Modifier, Key>>
-//vector<bool>						KeyDown<Down>
-
-//std::unordered_map<std::string, std::pair<bool, unsigned int>> _comboNames;
-//std::vector<std::pair<char, char>> _keyCombos;
-//std::vector<bool> _comboDown;
 
 void Input::update(){
 	SDL_Event e;

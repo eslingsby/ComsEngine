@@ -12,12 +12,8 @@ function Single:load()
 	
 	self.identifier = self.entity:get(Identifier)
 	
-
 	self.entity:add(Transform)
 	self.transform = self.entity:get(Transform)
-
-	
-	--print("ssss")
 	
 	--print(self.transform:position())
 	
@@ -32,7 +28,9 @@ function Single:load()
 	--print("Entity " .. self.entity:id() .. " is called " .. self.identifier.name)
 end
 
-function Single:reload()
+function Single:reset()
+	os.execute("cls")
+
 	print("Reload triggered...\n")
 end
 
@@ -42,6 +40,7 @@ function Single:update()
 	self.counter = self.counter + 1 * Engine.dt()
 	self.frames = self.frames + 1
 
+	
 	-- Every second print information
 	if (self.counter > 1) then
 		--os.execute("cls")
@@ -58,8 +57,8 @@ function Single:update()
 	
 	-- Shut down after 70 seconds
 	if (self.seconds > 70) then
-		print("End of program...\n")
-		self.entity:destroy()
+		--print("End of program...\n")
+		--self.entity:destroy()
 		--Engine.shutdown()
 	end
 end

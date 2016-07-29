@@ -187,6 +187,7 @@ inline void Engine::init(int argc, char * argv[]){
 
 	setConfig("root", root);
 	setConfig("name", "ComsEngine");
+	setConfig("data", root + "data\\");
 }
 
 inline void Engine::load(){

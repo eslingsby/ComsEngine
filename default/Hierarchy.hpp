@@ -16,6 +16,8 @@ public:
 	void onCreate(uint64_t id) override;
 	void onDestroy(uint64_t id) override;
 
+
+	// Global transform data recursively calculated from transfrom parents
 	glm::vec3 globalPosition(uint64_t id);
 	glm::quat globalRotation(uint64_t id);
 	glm::vec3 globalScale(uint64_t id);

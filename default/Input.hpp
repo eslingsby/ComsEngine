@@ -9,8 +9,6 @@
 #include <SDL_keycode.h>
 
 class Input : public System<>{	
-	unsigned int _insert(const std::string& name, std::pair<SDL_Keycode, SDL_Keycode> pair);
-
 	bool _quit = false;
 
 	std::unordered_map<std::string, unsigned int> _comboNames;
@@ -26,17 +24,24 @@ class Input : public System<>{
 	std::vector<bool> _comboDown;
 	std::vector<bool> _comboChecked;
 
+	unsigned int _insert(const std::string& name, std::pair<SDL_Keycode, SDL_Keycode> pair);
+
 public:
 	Input(Engine* engine);
 
 	void load() override;
 	void update() override;
 
+	// If quit input event triggered (window closed)
 	bool isQuit();
 
+	// Binds string to key or key combination
 	void addInput(const std::string& name, SDL_Keycode modifier, SDL_Keycode key);
 	void addInput(const std::string& name, SDL_Keycode key);
 	
+	// Check if key was down like consumable event
 	bool wasDown(const std::string& name);
+
+	// Check if key is currently down
 	bool isDown(const std::string& name);
 };

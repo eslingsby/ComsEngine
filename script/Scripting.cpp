@@ -35,7 +35,7 @@ void Scripting::load(){
 	luaL_openlibs(_L);
 
 	if (_scriptPath == "")
-		_scriptPath = _engine.getConfig("root") + "data\\";
+		_scriptPath = _engine.getConfig("data");
 
 	Binder::bind(_L, _engine);
 	
@@ -83,7 +83,7 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			
 			if (_reloaded){
 				// {} function()
-				lua_getfield(_L, -1, "reload");
+				lua_getfield(_L, -1, "reset");
 
 				if (!lua_isnil(_L, -1)){
 					// {} function() {}

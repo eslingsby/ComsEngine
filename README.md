@@ -7,3 +7,5 @@ Bare-bones ECS game engine written in C++, extended with Lua
 - GTest, Google unit testing framework, [github.com/google/googletest](https://github.com/google/googletest)
 - Lua, embeddable scripting language, [lua.org](https://www.lua.org/)
 - GLM, OpenGL mathematics, [glm.g-truc.net](http://glm.g-truc.net/)
+- SDL2, cross-platform multimedia library, [libsdl.org](https://www.libsdl.org/)
+- GLEW, OpenGL extension wrangler library, [glew.sourceforge.net](http://glew.sourceforge.net/)
