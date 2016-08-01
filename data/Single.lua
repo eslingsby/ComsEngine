@@ -10,7 +10,7 @@ function Single:load()
 	--self.entity:add(Identifier, "camera")
 	--self.entity:add(Identifier, "camera")
 	
-	self.identifier = self.entity:get(Identifier)
+	--self.identifier = self.entity:get(Identifier)
 	
 	self.entity:add(Transform)
 	self.transform = self.entity:get(Transform)

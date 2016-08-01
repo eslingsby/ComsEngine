@@ -12,7 +12,6 @@
 #include "Mesh.hpp"
 #include "Identifier.hpp"
 
-
 GLuint Renderer::_loadShader(std::string shaderPath, uint32_t type){
 	std::fstream file;
 
@@ -66,7 +65,7 @@ GLuint Renderer::_loadShader(std::string shaderPath, uint32_t type){
 }
 
 void Renderer::_reshape(int width, int height, float fov){
-	glViewport(0, 0, width, height);
+	//glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -78,7 +77,7 @@ void Renderer::_reshape(int width, int height, float fov){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	//glRotatef(90.f, 0, 1, 0);
+	glRotatef(90.f, 0, 1, 0);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
@@ -202,15 +201,18 @@ void Renderer::update(){
 		return;
 	}
 
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	Transform* transform = _camera.getComponent<Transform>();
 
-	glTranslatef(transform->position.x, transform->position.y, transform->position.z);
+	
 	glMultMatrixf(&glm::mat4_cast(transform->rotation)[0][0]);
+
+	glTranslatef(transform->position.x, transform->position.y, transform->position.z);
+
 	glScalef(transform->scale.x, transform->scale.y, transform->scale.z);
 
 	//printf("%f %f %f\n", transform->position.x, transform->position.y, transform->position.z);

@@ -6,7 +6,10 @@ function Camera:load()
 	
 	self.transform = self.entity:get(Transform)
 	
-	self.speed = 1
+	self.transform:position(Vec3(0, 0, 5))
+	self.transform:rotation(Quat(Vec3(90, 0, 0)))
+	
+	self.speed = 10
 	
 	Input.addInput("forward", 26);
 	Input.addInput("back", 22);
@@ -25,8 +28,8 @@ function Camera:update()
 	
 	local mouse = Input.mouseRelativePos() * 0.25
 
-	self.transform:rotate(Quat(Vec3(0, mouse.x, 0)))
-	self.transform:localRotate(Quat(Vec3(mouse.y, 0, 0)))
+	self.transform:localRotate(Quat(Vec3(0, 0, -mouse.x)))
+	self.transform:rotate(Quat(Vec3(mouse.y, 0, 0)))
 	
 	if (Input.isDown("forward")) then
 		self.transform:localTranslate(Vec3(0, 0, self.speed * Engine.dt()))
@@ -37,11 +40,11 @@ function Camera:update()
 	end
 	
 	if (Input.isDown("left")) then
-		self.transform:localTranslate(Vec3(-self.speed * Engine.dt(), 0, 0))
+		self.transform:localTranslate(Vec3(self.speed * Engine.dt(), 0, 0))
 	end
 	
 	if (Input.isDown("right")) then
-		self.transform:localTranslate(Vec3(self.speed * Engine.dt(), 0, 0))
+		self.transform:localTranslate(Vec3(-self.speed * Engine.dt(), 0, 0))
 	end
 end
 

@@ -61,7 +61,7 @@ void Hierarchy::localTranslate(uint64_t id, glm::vec3 position){
 	Transform* transfrom = _engine.manager.getComponent<Transform>(id);
 	assert(transfrom);
 
-	transfrom->position += transfrom->rotation * position;
+	transfrom->position += position * transfrom->rotation;
 }
 
 void Hierarchy::rotate(uint64_t id, glm::quat rotation){

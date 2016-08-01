@@ -1,4 +1,4 @@
-Engine.config("window.title", "Title")
+Engine.config("window.title", "OpenGL")
 Engine.config("window.x", "1000")
 Engine.config("window.y", "512")
 
