@@ -50,6 +50,34 @@ void Hierarchy::onDestroy(uint64_t id){
 		_children.erase(id);
 }
 
+void Hierarchy::translate(uint64_t id, glm::vec3 position){
+	Transform* transfrom = _engine.manager.getComponent<Transform>(id);
+	assert(transfrom);
+
+	transfrom->position += position;
+}
+
+void Hierarchy::localTranslate(uint64_t id, glm::vec3 position){
+	Transform* transfrom = _engine.manager.getComponent<Transform>(id);
+	assert(transfrom);
+
+	transfrom->position += transfrom->rotation * position;
+}
+
+void Hierarchy::rotate(uint64_t id, glm::quat rotation){
+	Transform* transfrom = _engine.manager.getComponent<Transform>(id);
+	assert(transfrom);
+
+	transfrom->rotation = rotation * transfrom->rotation;
+}
+
+void Hierarchy::localRotate(uint64_t id, glm::quat rotation){
+	Transform* transfrom = _engine.manager.getComponent<Transform>(id);
+	assert(transfrom);
+
+	transfrom->rotation *= rotation;
+}
+
 glm::vec3 Hierarchy::globalPosition(uint64_t id){
 	Transform* transform = _engine.manager.getComponent<Transform>(id);
 

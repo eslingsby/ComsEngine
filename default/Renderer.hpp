@@ -3,7 +3,9 @@
 #include "System.hpp"
 
 #include "Transform.hpp"
+#include "Mesh.hpp"
 #include "Input.hpp"
+#include "EntityRef.hpp"
 
 #include <unordered_map>
 #include <SDL.h>
@@ -11,19 +13,23 @@
 #include <SDL_opengl.h>
 #include <gl\glu.h>
 
-class Renderer : public System<Transform>{
+class Renderer : public System<Transform, Mesh>{
 	SDL_Window* _window = nullptr;
 	SDL_GLContext _context = nullptr;
 
-	GLuint _mainShader = 0;
+	GLuint _programId = 0;
+	GLuint _mainVShader = 0;
+	GLuint _mainFShader = 0;
 
 	std::string _shaderPath;
 
 	Input* _input = nullptr;
 
-	std::unordered_map<std::string, GLuint> _shaders;
+	GLuint _loadShader(std::string shaderPath, uint32_t type);
 
-	bool _loadShader(std::string shaderPath);
+	void _reshape(int width, int height, float fov = 90.f);
+
+	EntityRef _camera;
 
 public:
 	Renderer(Engine* engine);
@@ -33,5 +39,11 @@ public:
 	void update() override;
 	void exit() override;
 
-	void onProcess(uint64_t id, Transform& script) override;
+	void onProcess(uint64_t id, Transform& transform, Mesh& mesh) override;
+
+	void onCreate(uint64_t id) override;
+
+	uint64_t cameraId();
+
+	void setCamera(uint64_t id);
 };

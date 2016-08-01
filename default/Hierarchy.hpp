@@ -16,6 +16,10 @@ public:
 	void onCreate(uint64_t id) override;
 	void onDestroy(uint64_t id) override;
 
+	void translate(uint64_t id, glm::vec3 position);
+	void localTranslate(uint64_t id, glm::vec3 position);
+	void rotate(uint64_t id, glm::quat rotation);
+	void localRotate(uint64_t id, glm::quat rotation);
 
 	// Global transform data recursively calculated from transfrom parents
 	glm::vec3 globalPosition(uint64_t id);

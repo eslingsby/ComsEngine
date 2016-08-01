@@ -4,7 +4,7 @@
 
 #include <SDL.h>
 
-unsigned int Input::_insert(const std::string& name, std::pair<SDL_Keycode, SDL_Keycode> pair){
+unsigned int Input::_insert(const std::string& name, std::pair<SDL_Scancode, SDL_Scancode> pair){
 	unsigned int index = (unsigned int)_keyCombos.size();
 
 	_keyCombos.resize(index + 1);
@@ -51,21 +51,21 @@ void Input::update(){
 
 		for (unsigned int i = 0; i < _keyCombos.size(); i++){
 			if (e.type == SDL_KEYDOWN){
-				if (e.key.keysym.sym == _keyCombos[i].first){
+				if (e.key.keysym.scancode == _keyCombos[i].first){
 					if (_keyDown[i])
 						_modPre[i] = true;
 
 					_modDown[i] = true;
 				}
-				else if (e.key.keysym.sym == _keyCombos[i].second){
+				else if (e.key.keysym.scancode == _keyCombos[i].second){
 					_keyDown[i] = true;
 				}
 			}
 			else if (e.type == SDL_KEYUP){
-				if (e.key.keysym.sym == _keyCombos[i].first ){
+				if (e.key.keysym.scancode == _keyCombos[i].first ){
 					_modDown[i] = false;
 				}
-				else if (e.key.keysym.sym == _keyCombos[i].second){
+				else if (e.key.keysym.scancode == _keyCombos[i].second){
 					_keyDown[i] = false;
 					_modPre[i] = false;
 				}
@@ -82,7 +82,7 @@ void Input::update(){
 	}
 }
 
-void Input::addInput(const std::string& name, SDL_Keycode modifier, SDL_Keycode key){
+void Input::addInput(const std::string& name, SDL_Scancode modifier, SDL_Scancode key){
 	// search _keyCombos for pair(modifier, key)
 
 	// if pair not in _keyCombos then resize vectors and add
@@ -92,8 +92,8 @@ void Input::addInput(const std::string& name, SDL_Keycode modifier, SDL_Keycode 
 	// set _comboNames[name] to false and vector index
 }
 
-void Input::addInput(const std::string& name, SDL_Keycode key){
-	unsigned int index = _insert(name, std::make_pair(0, key));
+void Input::addInput(const std::string& name, SDL_Scancode key){
+	unsigned int index = _insert(name, std::make_pair((SDL_Scancode)0, key));
 
 	_keyOnly[index] = true;
 }
@@ -125,4 +125,37 @@ bool Input::isDown(const std::string & name){
 	unsigned int index = _comboNames[name];
 
 	return _comboDown[index];
+}
+
+glm::vec2 Input::mousePos(){
+	int x, y;
+	SDL_GetMouseState(&x, &y);
+
+	return glm::vec2(x, y);
+}
+
+glm::vec2 Input::mouseRelativePos(){
+	int x, y;
+	SDL_GetRelativeMouseState(&x, &y);
+
+	return glm::vec2(x, y);
+}
+
+void Input::lockMouse(bool lock){
+	if (lock)
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	else
+		SDL_SetRelativeMouseMode(SDL_FALSE);
+}
+
+bool Input::mouseWasDown(unsigned int button){
+	return false;
+}
+
+bool Input::mouseIsDown(unsigned int button){
+	return false;
+}
+
+int Input::scrollAmount(){
+	return 0;
 }

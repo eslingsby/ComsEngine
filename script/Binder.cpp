@@ -6,9 +6,12 @@
 #include "EntityBind.hpp"
 #include "IdentificationBind.hpp"
 #include "IdentifierBind.hpp"
+#include "Vec4Bind.hpp"
+#include "Vec2Bind.hpp"
 #include "Vec3Bind.hpp"
 #include "TransformBind.hpp"
 #include "QuatBind.hpp"
+#include "InputBind.hpp"
 
 void Binder::_setMembers(lua_State* L, MemberReg* binder){
 	// {}
@@ -138,11 +141,15 @@ void Binder::bind(lua_State* L, Engine& engine){
 	bind(L, EngineBind::name, 0, EngineBind::global);
 	bind(L, EntityBind::name, EntityBind::constructor, 0, EntityBind::methods, EntityBind::meta);
 
-	bind(L, IdentificationBind::name, 0, IdentificationBind::global);bind(L, IdentificationBind::name, 0, IdentificationBind::global);
+	bind(L, IdentificationBind::name, 0, IdentificationBind::global);
+	bind(L, InputBind::name, 0, InputBind::global);
 
 	bind(L, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, 0, EntityBind::meta, IdentifierBind::getters);
 	bind(L, TransformBind::name, TransformBind::constructor, TransformBind::global, TransformBind::methods, EntityBind::meta, TransformBind::getters, TransformBind::setters);
 
-	bind(L, Vec3Bind::name, Vec3Bind::constructor, Vec3Bind::global, Vec3Bind::methods, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
+	bind(L, Vec2Bind::name, Vec2Bind::constructor, 0, 0, Vec2Bind::meta, Vec2Bind::getters, Vec2Bind::setters);
+	bind(L, Vec3Bind::name, Vec3Bind::constructor, 0, 0, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
+	bind(L, Vec4Bind::name, Vec4Bind::constructor, 0, 0, Vec4Bind::meta, Vec4Bind::getters, Vec4Bind::setters);
+	
 	bind(L, QuatBind::name, QuatBind::constructor, QuatBind::global, QuatBind::methods, QuatBind::meta, QuatBind::getters, QuatBind::setters);
 }

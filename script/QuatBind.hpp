@@ -55,27 +55,16 @@ namespace QuatBind{
 }
 
 inline int QuatBind::constructor(lua_State * L){
-	// number number number number   OR   L{}   or   {}
-
-	// ... L{}
 	LuaQuat* quat = (LuaQuat*)lua_newuserdata(L, sizeof(LuaQuat));
 	*quat = LuaQuat();
-	
-	if (lua_isnumber(L, -2) && lua_gettop(L) > 2){
-		(*quat).x = luaL_checknumber(L, -4);
-		(*quat).y = luaL_checknumber(L, -3);
-		(*quat).z = luaL_checknumber(L, -2);
-		(*quat).w = luaL_checknumber(L, -1);
-	}
-	else if (lua_isuserdata(L, -2) && lua_gettop(L) > 2){
-		if (luaL_testudata(L, -2, "Quat"))
-			*quat = *(LuaQuat*)lua_touserdata(L, -2);
-		else if (luaL_testudata(L, -2, "Vec3"))
-			*quat = LuaQuat(glm::radians(*(LuaVec3*)lua_touserdata(L, -2)));
-	}
 
 	luaL_getmetatable(L, name);
 	lua_setmetatable(L, -2);
+
+	if (luaL_testudata(L, 2, name))
+		*quat = *(LuaQuat*)lua_touserdata(L, 2);
+	else if (luaL_testudata(L, 2, "Vec3"))
+		*quat = LuaQuat(glm::radians(*(LuaVec3*)lua_touserdata(L, 2)));
 
 	return 1;
 }

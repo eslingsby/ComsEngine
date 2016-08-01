@@ -5,6 +5,7 @@
 #include "EntityRef.hpp"
 #include "Binder.hpp"
 #include "Identification.hpp"
+#include "Renderer.hpp"
 
 #include <iostream>
 #include <SDL_keycode.h>
@@ -30,7 +31,7 @@ Scripting::~Scripting(){
 void Scripting::load(){
 	_input = _engine.getSystem<Input>();
 
-	_input->addInput("reload", SDLK_LCTRL, SDLK_r);
+	_input->addInput("reload", SDL_SCANCODE_LCTRL, SDL_SCANCODE_R);
 
 	luaL_openlibs(_L);
 
@@ -44,14 +45,17 @@ void Scripting::load(){
 	// Testing code below (remove me)
 	uint64_t id = _engine.manager.createEntity();
 	_engine.manager.addComponent<Script>(id);
-	createInstance(id, "Single");
+	createInstance(id, "Camera");
+
+	_engine.getSystem<Renderer>()->setCamera(id);
 	
+	/*
 	for (unsigned int i = 0; i < 1024 * 4; i++){
 		id = _engine.manager.createEntity();
 		_engine.manager.addComponent<Script>(id);
 		_engine.manager.addComponent<Identifier>(id, "", "many_layer");
 		createInstance(id, "Many");
-	}
+	}*/
 }
 
 void Scripting::update(){

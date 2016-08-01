@@ -36,6 +36,7 @@ add_external_tar("glm-0.9.7.6" "https://github.com/g-truc/glm/archive/0.9.7.6.ta
 add_external_tar("lua-5.3.3" "https://www.lua.org/ftp/lua-5.3.3.tar.gz" "src" "")
 add_external_tar("googletest-release-1.7.0" "https://github.com/google/googletest/archive/release-1.7.0.tar.gz" "include" "")
 add_external_tar("glew-2.0.0" "https://sourceforge.net/projects/glew/files/glew/snapshots/glew-20160402.tgz" "include" "build/cmake")
+add_external_tar("tinyobjloader-0.9.24" "https://github.com/syoyo/tinyobjloader/archive/v0.9.24.tar.gz" "" "")
 
 add_subdirectory("base")
 add_subdirectory("default")
