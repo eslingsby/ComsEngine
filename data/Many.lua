@@ -24,7 +24,7 @@ function Many:load()
 end
 
 function Many:reset()
-	--self.killTime = math.random(0, 60)
+	self.killTime = math.random(0, 60)
 end
 
 function Many:update()

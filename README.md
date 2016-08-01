@@ -2,6 +2,13 @@
 
 Bare-bones ECS game engine written in C++, extended with Lua
 
+# To do
+
+- [ ] Full binding
+- [ ] Lua console
+- [ ] Script safety
+- [ ] Speed testing
+
 # Third Party
 
 - GTest, Google unit testing framework, [github.com/google/googletest](https://github.com/google/googletest)

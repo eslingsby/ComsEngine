@@ -41,7 +41,6 @@ GLuint Renderer::_loadShader(std::string shaderPath, uint32_t type){
 	if (success)
 		return shader;
 
-	// LAZY FOO CODE
 	int infoLogLength = 0;
 	int maxLength = infoLogLength;
 
@@ -67,7 +66,7 @@ void Renderer::_reshape(int width, int height, float fov){
 
 	float aspectRatio = ((float)width / (float)height);
 
-	gluPerspective(fov / aspectRatio, aspectRatio, 0.1, 512);
+	gluPerspective(fov / aspectRatio, aspectRatio, 0.1, 1024);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -112,10 +111,6 @@ void Renderer::load(){
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	reset();
-}
-
-void Renderer::reset(){
 	int windowWidth = std::stoi(_engine.getConfig("window.x"));
 	int windowHeight = std::stoi(_engine.getConfig("window.y"));
 
@@ -149,7 +144,7 @@ void Renderer::reset(){
 	_window = SDL_CreateWindow(windowTitle.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
 	_context = SDL_GL_CreateContext(_window);
-	
+
 	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_DEPTH_TEST);
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

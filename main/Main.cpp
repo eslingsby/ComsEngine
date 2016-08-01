@@ -2,7 +2,6 @@
 
 #include "Identification.hpp"
 #include "Scripting.hpp"
-#include "Physics.hpp"
 #include "Renderer.hpp"
 #include "Hierarchy.hpp"
 #include "Input.hpp"
@@ -38,8 +37,7 @@ int main(int argc, char* argv[]){
 	game.addSystem<Identification>(1, 1);
 	game.addSystem<Input>(2, 2);
 	game.addSystem<Scripting>(3, 3);
-	game.addSystem<Physics>(4, 4);
-	game.addSystem<Renderer>(5, 5);
+	game.addSystem<Renderer>(4, 4);
 	
 	return game.run(argc, argv);
 }

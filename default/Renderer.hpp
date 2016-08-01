@@ -37,7 +37,6 @@ public:
 	Renderer(Engine* engine);
 
 	void load() override;
-	void reset() override;
 	void update() override;
 	void exit() override;
 

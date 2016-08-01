@@ -6,10 +6,12 @@ function Camera:load()
 	
 	self.transform = self.entity:get(Transform)
 	
-	self.transform:position(Vec3(0, 0, 5))
+	self.transform:position(Vec3(0, 0, 128))
 	self.transform:rotation(Quat(Vec3(90, 0, 0)))
 	
-	self.speed = 10
+	self.speed = 50
+	
+	self.sensitivity = 0.25
 	
 	Input.addInput("forward", 26);
 	Input.addInput("back", 22);
@@ -26,7 +28,7 @@ function Camera:update()
 		return
 	end
 	
-	local mouse = Input.mouseRelativePos() * 0.25
+	local mouse = Input.mouseRelativePos() * self.sensitivity
 
 	self.transform:localRotate(Quat(Vec3(0, 0, -mouse.x)))
 	self.transform:rotate(Quat(Vec3(mouse.y, 0, 0)))

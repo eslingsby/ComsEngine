@@ -79,7 +79,6 @@ inline int TransformBind::constructor(lua_State* L){
 	return 1;
 }
 
-
 inline int TransformBind::_add(lua_State* L){
 	uint64_t id = luaL_checkinteger(L, 1);
 

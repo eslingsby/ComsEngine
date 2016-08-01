@@ -5,6 +5,8 @@ function Single:load()
 	self.entity:add(Mesh, "grid.obj")
 	self.entity:add(Identifier, "grid")
 
+	self.entity:get(Transform):scale(Vec3(10, 10, 10))
+	
 	-- Counters
 	self.seconds = 0
 	self.counter = 0
@@ -12,7 +14,7 @@ function Single:load()
 end
 
 function Single:reset()
-	os.execute("cls")
+	--os.execute("cls")
 
 	print("Reload triggered...\n")
 end
