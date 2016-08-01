@@ -1,4 +1,5 @@
 # ComsEngine
+<img width="100% "src="http://i.imgur.com/MYkPoi0.png"/>
 
 Bare-bones ECS game engine written in C++, extended with Lua
 
