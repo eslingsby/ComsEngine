@@ -2,7 +2,7 @@ local Camera = {}
 
 function Camera:load()	
 	self.entity:add(Transform)	
-	self.entity:add(Identification, "camera")
+	self.entity:add(Identifier, "camera")
 	
 	self.transform = self.entity:get(Transform)
 	

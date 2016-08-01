@@ -7,7 +7,7 @@ function Single:load()
 	self.frames = 0
 
 	-- Add identifier component with name
-	self.entity:add(Identifier, "camera")
+	--self.entity:add(Identifier, "camera")
 	--self.entity:add(Identifier, "camera")
 	
 	self.identifier = self.entity:get(Identifier)
