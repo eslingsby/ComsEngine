@@ -34,6 +34,8 @@ public:
 	void createInstance(uint64_t id, const std::string& type, unsigned int number = 0);
 	void destroyInstance(uint64_t id, const std::string& type, unsigned int number = 0);
 
+	int getInstance(uint64_t id, const std::string& type, unsigned int number = 0);
+
 	void registerFile(const std::string& type, const std::string& file);
 
 	void onCreate(uint64_t id) override;

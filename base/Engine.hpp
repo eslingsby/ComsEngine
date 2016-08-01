@@ -82,6 +82,8 @@ public:
 	inline void update();
 	inline int exit();
 
+	virtual void start(){}
+
 	// Automatically load and tick the engine
 	int run(int argc, char* argv[]);
 };

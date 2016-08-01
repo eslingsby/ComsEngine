@@ -1,14 +1,9 @@
 #include "Scripting.hpp"
 
 #include "Engine.hpp"
-
-#include "EntityRef.hpp"
 #include "Binder.hpp"
-#include "Identification.hpp"
-#include "Renderer.hpp"
 
 #include <iostream>
-#include <SDL_keycode.h>
 
 void Scripting::_callLoadFile(){
 	if (luaL_dofile(_L, (_scriptPath + "Load.lua").c_str())){
@@ -41,21 +36,6 @@ void Scripting::load(){
 	Binder::bind(_L, _engine);
 	
 	_callLoadFile();
-
-	// Testing code below (remove me)
-	uint64_t id = _engine.manager.createEntity();
-	_engine.manager.addComponent<Script>(id);
-	createInstance(id, "Camera");
-
-	_engine.getSystem<Renderer>()->setCamera(id);
-	
-	/*
-	for (unsigned int i = 0; i < 1024 * 4; i++){
-		id = _engine.manager.createEntity();
-		_engine.manager.addComponent<Script>(id);
-		_engine.manager.addComponent<Identifier>(id, "", "many_layer");
-		createInstance(id, "Many");
-	}*/
 }
 
 void Scripting::update(){
@@ -228,6 +208,20 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 
 	if (script->references->size() == 0)
 		_engine.manager.setComponentEnabled<Script>(id, false);
+}
+
+int Scripting::getInstance(uint64_t id, const std::string& type, unsigned int number){
+	Script* script = _engine.manager.getComponent<Script>(id);
+
+	assert(script);
+
+	assert(script->references);
+
+	assert(script->references->at(type).size() > number);
+
+	auto& referance = script->references->at(type)[number];
+
+	return referance.second;
 }
 
 void Scripting::registerFile(const std::string& type, const std::string& file){

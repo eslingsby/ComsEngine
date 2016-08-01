@@ -7,11 +7,6 @@
 #include <iostream>
 #include <glm\mat4x4.hpp>
 
-#include "EntityRef.hpp"
-#include "Transform.hpp"
-#include "Mesh.hpp"
-#include "Identifier.hpp"
-
 GLuint Renderer::_loadShader(std::string shaderPath, uint32_t type){
 	std::fstream file;
 
@@ -118,15 +113,6 @@ void Renderer::load(){
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 	reset();
-
-	// Testing cube
-	EntityRef entity(_engine.manager);
-
-	entity.create();
-
-	entity.addComponent<Transform>();
-	entity.addComponent<Mesh>("grid.obj");
-	entity.addComponent<Identifier>("grid");
 }
 
 void Renderer::reset(){
@@ -208,7 +194,6 @@ void Renderer::update(){
 
 	Transform* transform = _camera.getComponent<Transform>();
 
-	
 	glMultMatrixf(&glm::mat4_cast(transform->rotation)[0][0]);
 
 	glTranslatef(transform->position.x, transform->position.y, transform->position.z);
@@ -297,8 +282,12 @@ void Renderer::exit(){
 void Renderer::onCreate(uint64_t id){
 	Mesh* mesh = _engine.manager.getComponent<Mesh>(id);
 
-	if (mesh->loaded)
+	if (_meshes.find(mesh->source) != _meshes.end()){
+		*mesh = _meshes[mesh->source];
 		return;
+	}
+
+	assert(!mesh->loaded);
 
 	// tinyobj containers
 	std::vector<tinyobj::shape_t> shapes;
@@ -350,6 +339,8 @@ void Renderer::onCreate(uint64_t id){
 	mesh->vertexSize = vertexSize;
 
 	mesh->loaded = true;
+
+	_meshes[mesh->source] = *mesh;
 }
 
 uint64_t Renderer::cameraId(){

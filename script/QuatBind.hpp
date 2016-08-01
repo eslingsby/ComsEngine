@@ -88,7 +88,7 @@ inline int QuatBind::_add(lua_State * L){
 	LuaQuat* newQuat = (LuaQuat*)lua_newuserdata(L, sizeof(LuaQuat));
 	*newQuat = *quat + *other;
 
-	luaL_getmetatable(L, "Quat");
+	luaL_getmetatable(L, name);
 	lua_setmetatable(L, -2);
 
 	return 1;
@@ -100,7 +100,7 @@ inline int QuatBind::_unm(lua_State * L){
 	LuaQuat* newQuat = (LuaQuat*)lua_newuserdata(L, sizeof(LuaQuat));
 	*newQuat = -*quat;
 
-	luaL_getmetatable(L, "Quat");
+	luaL_getmetatable(L, name);
 	lua_setmetatable(L, -2);
 
 	return 1;
@@ -113,7 +113,7 @@ inline int QuatBind::_mul(lua_State * L){
 	LuaQuat* newQuat = (LuaQuat*)lua_newuserdata(L, sizeof(LuaQuat));
 	*newQuat = *quat * *other;
 
-	luaL_getmetatable(L, "Quat");
+	luaL_getmetatable(L, name);
 	lua_setmetatable(L, -2);
 
 	return 1;

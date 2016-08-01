@@ -126,7 +126,7 @@ inline int TransformBind::_rotation(lua_State * L){
 	luaL_getmetatable(L, "Quat");
 	lua_setmetatable(L, -2);
 
-	return 0;
+	return 1;
 }
 
 inline int TransformBind::_scale(lua_State * L){

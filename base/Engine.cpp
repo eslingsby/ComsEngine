@@ -17,6 +17,8 @@ int Engine::run(int argc, char* argv[]){
 
 	load();
 
+	start();
+
 	while (_running)
 		update();
 

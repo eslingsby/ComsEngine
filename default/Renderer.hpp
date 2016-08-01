@@ -25,6 +25,8 @@ class Renderer : public System<Transform, Mesh>{
 
 	Input* _input = nullptr;
 
+	std::unordered_map<std::string, Mesh> _meshes;
+
 	GLuint _loadShader(std::string shaderPath, uint32_t type);
 
 	void _reshape(int width, int height, float fov = 90.f);

@@ -7,7 +7,7 @@
 #include <string>
 
 struct Mesh : public Component<Mesh>{
-	const std::string source;
+	std::string source;
 
 	bool loaded = false;
 
@@ -19,5 +19,16 @@ struct Mesh : public Component<Mesh>{
 	size_t textureSize = 0;
 	size_t normalSize = 0;
 
-	Mesh(const std::string& source) : source(source){}
+	Mesh(const std::string& source = "") : source(source){}
+
+	void operator=(const Mesh& mesh){
+		loaded = mesh.loaded;
+		vertexBuffer = mesh.vertexBuffer;
+		indexBuffer = mesh.indexBuffer;
+		indexSize = mesh.indexSize;
+		vertexSize = mesh.vertexSize;
+		textureSize = mesh.textureSize;
+		normalSize = mesh.normalSize;
+		source = mesh.source;
+	}
 };

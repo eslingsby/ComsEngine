@@ -1,31 +1,14 @@
 local Single = {}
 
 function Single:load()
+	self.entity:add(Transform)
+	self.entity:add(Mesh, "grid.obj")
+	self.entity:add(Identifier, "grid")
+
 	-- Counters
 	self.seconds = 0
 	self.counter = 0
 	self.frames = 0
-
-	-- Add identifier component with name
-	--self.entity:add(Identifier, "camera")
-	--self.entity:add(Identifier, "camera")
-	
-	--self.identifier = self.entity:get(Identifier)
-	
-	self.entity:add(Transform)
-	self.transform = self.entity:get(Transform)
-	
-	--print(self.transform:position())
-	
-	self.transform:position(-self.transform:position())
-	
-	--print(self.transform:position())
-	
-	local quat = Quat(Vec3(0, 90, 0))
-	
-	print(quat:eulerAngles())
-	
-	--print("Entity " .. self.entity:id() .. " is called " .. self.identifier.name)
 end
 
 function Single:reset()
