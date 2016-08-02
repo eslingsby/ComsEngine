@@ -360,7 +360,11 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed && !BitHelper::getBit(T::type(), _masks[index]));
+	assert(index < _masks.size() && _states[index]);
+	
+	assert(_versions[index] == version && _states[index] != EntityState::Destroyed);
+
+	assert(!BitHelper::getBit(T::type(), _masks[index]));
 
 	if (T::type() >= _pools.size())
 		_pools.resize(T::type() + 1);

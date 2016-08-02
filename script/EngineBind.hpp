@@ -3,6 +3,8 @@
 #include "Binder.hpp"
 
 #include "Engine.hpp"
+#include "Renderer.hpp"
+#include "EntityRef.hpp"
 
 namespace EngineBind{
 	const char* name = "Engine";
@@ -13,6 +15,7 @@ namespace EngineBind{
 	inline static int _define(lua_State* L);
 	inline static int _register(lua_State* L);
 	inline static int _config(lua_State* L);
+	inline static int _camera(lua_State* L);
 
 	static const luaL_Reg global[] = {
 		{ "dt", _dt },
@@ -21,6 +24,7 @@ namespace EngineBind{
 		{ "define", _define },
 		{ "register", _register },
 		{ "config", _config },
+		{ "cameraEntity", _camera },
 		{ 0, 0 }
 	};
 }
@@ -73,7 +77,7 @@ int EngineBind::_config(lua_State * L){
 	std::string key = luaL_checkstring(L, 1);
 
 	if (lua_gettop(L) == 2){
-			std::string value = luaL_checkstring(L, 2);
+		std::string value = luaL_checkstring(L, 2);
 
 		Binder::getEngine(L).setConfig(key, value);
 
@@ -83,4 +87,19 @@ int EngineBind::_config(lua_State * L){
 	lua_pushstring(L, Binder::getEngine(L).getConfig(key).c_str());
 
 	return 1;
+}
+
+int EngineBind::_camera(lua_State * L){
+	if (lua_gettop(L) == 0){
+		Binder::createEntityRef(L, Binder::getSystem<Renderer>(L)->cameraId(), name);
+		return 1;
+	}
+
+	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+
+	assert(entity->valid());
+
+	Binder::getSystem<Renderer>(L)->setCamera(entity->id());
+
+	return 0;
 }

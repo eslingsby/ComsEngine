@@ -77,12 +77,11 @@ public:
 	inline void reset(bool data = false);
 
 	// Manually load and tick the engine (mainly for testing speed)
-	inline void init(int argc, char* argv[]);
-	inline void load();
-	inline void update();
-	inline int exit();
-
-	virtual void start(){}
+	virtual inline void init(int argc, char* argv[]);
+	virtual inline void load();
+	virtual inline void start(){}
+	virtual inline void update();
+	virtual inline int exit();
 
 	// Automatically load and tick the engine
 	int run(int argc, char* argv[]);

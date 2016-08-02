@@ -5,13 +5,6 @@
 
 #include <iostream>
 
-void Scripting::_callLoadFile(){
-	if (luaL_dofile(_L, (_scriptPath + "Load.lua").c_str())){
-		std::cout << lua_tostring(_L, -1) << "\n";
-		lua_pop(_L, 1);
-	}
-}
-
 Scripting::Scripting(Engine* engine, const std::string& scriptPath) : System(engine), _L(luaL_newstate()){
 	if (scriptPath != "")
 		_scriptPath = scriptPath + "\\";
@@ -35,12 +28,12 @@ void Scripting::load(){
 
 	Binder::bind(_L, _engine);
 	
-	_callLoadFile();
+	callFile("Load.lua");
 }
 
 void Scripting::update(){
 	if (_input->wasDown("reload")){
-		_callLoadFile();
+		callFile("Load.lua");
 		_engine.reset();
 
 		_reloaded = true;
@@ -106,6 +99,13 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			// -
 			lua_pop(_L, 1);
 		}
+	}
+}
+
+void Scripting::callFile(const std::string& file){
+	if (luaL_dofile(_L, (_scriptPath + file).c_str())){
+		std::cout << lua_tostring(_L, -1) << "\n";
+		lua_pop(_L, 1);
 	}
 }
 

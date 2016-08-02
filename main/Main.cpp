@@ -8,25 +8,7 @@
 
 struct Game : public Engine{
 	void start() override{
-		uint64_t id = manager.createEntity();
-		manager.addComponent<Script>(id);
-		getSystem<Scripting>()->createInstance(id, "Camera");
-
-		getSystem<Renderer>()->setCamera(id);
-
-		EntityRef entity(manager);
-
-		entity.create();
-
-		entity.addComponent<Script>();
-		getSystem<Scripting>()->createInstance(entity.id(), "Single");
-
-		for (unsigned int i = 0; i < 1024 * 4; i++){
-			id = manager.createEntity();
-
-			manager.addComponent<Script>(id);
-			getSystem<Scripting>()->createInstance(id, "Many");
-		}
+		getSystem<Scripting>()->callFile("Start.lua");
 	}
 };
 

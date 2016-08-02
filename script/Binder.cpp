@@ -141,7 +141,7 @@ void Binder::bind(lua_State* L, Engine& engine){
 	assert(scripting);
 
 	bind(L, EngineBind::name, 0, EngineBind::global);
-	bind(L, EntityBind::name, EntityBind::constructor, 0, EntityBind::methods, EntityBind::meta);
+	bind(L, EntityBind::name, EntityBind::constructor, EntityBind::global, EntityBind::methods, EntityBind::meta);
 
 	bind(L, IdentificationBind::name, 0, IdentificationBind::global);
 	bind(L, InputBind::name, 0, InputBind::global);
