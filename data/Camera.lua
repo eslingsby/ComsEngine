@@ -17,9 +17,11 @@ function Camera:load()
 	Input.addInput("back", 22);
 	Input.addInput("left", 4);
 	Input.addInput("right", 7);
-	Input.addInput("quit", 41);
+	Input.addInput("escape", 41);
 	
-	Input.lockMouse(true);
+	self.lock = true
+	
+	Input.lockMouse(self.lock)
 end
 
 function Camera:reset()
@@ -27,13 +29,29 @@ function Camera:reset()
 end
 
 function Camera:update()
-	if (Input.wasDown("quit")) then
-		Engine.shutdown()
+	local focused = false
+
+	if (Input.wasDown("escape")) then
+		if (self.lock) then
+			self.lock = false
+		else
+			self.lock = true
+			focused = true
+		end
+	
+		Input.lockMouse(self.lock)		
+	end
+	
+	if (not self.lock) then
 		return
 	end
 	
 	local mouse = Input.mouseRelativePos() * self.sensitivity
 
+	if (focused) then
+		mouse = Vec3(0, 0, 0)
+	end
+	
 	self.transform:localRotate(Quat(Vec3(0, 0, -mouse.x)))
 	self.transform:rotate(Quat(Vec3(mouse.y, 0, 0)))
 	

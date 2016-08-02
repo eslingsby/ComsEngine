@@ -32,7 +32,6 @@ function Grid:update()
 	self.seconds = self.seconds + 1 * Engine.dt()
 	self.counter = self.counter + 1 * Engine.dt()
 	self.frames = self.frames + 1
-
 	
 	-- Every second print information
 	if (self.counter > 1) then
@@ -40,7 +39,7 @@ function Grid:update()
 		
 		print("Total Frames", "- " .. self.frames)
 		print("FPS", "", "- " .. 1 / Engine.dt())
-		print("Scripts Left", "- " .. Identification.hasLayer("many_layer"))
+		print("Scripts Left", "- " .. Identification.hasLayer("cube_layer"))
 		print("References Left", "- " .. Engine.references())
 		print("")
 		

@@ -3,7 +3,7 @@ local Cube = {}
 function Cube:load()
 	self.entity:add(Transform)
 	self.entity:add(Mesh, "mesh/cube.obj")
-	self.entity:add(Identifier, "", "Cube_layer")
+	self.entity:add(Identifier, "", "cube_layer")
 
 	self.seconds = 0
 	
