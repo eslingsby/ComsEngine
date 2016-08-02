@@ -1,9 +1,9 @@
-local Many = {}
+local Cube = {}
 
-function Many:load()
+function Cube:load()
 	self.entity:add(Transform)
-	self.entity:add(Mesh, "cube.obj")
-	self.entity:add(Identifier, "", "many_layer")
+	self.entity:add(Mesh, "mesh/cube.obj")
+	self.entity:add(Identifier, "", "Cube_layer")
 
 	self.seconds = 0
 	
@@ -16,36 +16,30 @@ function Many:load()
 	
 	self.transform:position(Vec3(math.random(-distance, distance), math.random(-distance, distance), math.random(-distance, distance)))
 	
-	--print(self.cameraId.name)
-	
 	local spin = 512
 	
 	self.movement = Vec3(math.random(-spin, spin), math.random(-spin, spin), math.random(-spin, spin))
 end
 
-function Many:reset()
+function Cube:reset()
 	self.killTime = math.random(0, 60)
 end
 
-function Many:update()
+function Cube:update()
 	self.seconds = self.seconds + 1 * Engine.dt()
-
 	
 	self.transform:localRotate(Quat(self.movement * Engine.dt()))
-	
-	--print(self.camera:id())
-	--print(self.cameraId.name)
+	self.transform:localTranslate(Vec3(0, 0, 1024 * Engine.dt()))
 	
 	-- Destroy self
 	if (self.seconds > self.killTime) then
-		--print("Goodbye! ID - " .. self.entity:id())
 		local cube = Entity.create()
 		
 		cube:add(Script)
-        cube:get(Script):create("Many")
+        cube:get(Script):create("Cube")
 		
 		self.entity:destroy()
 	end
 end
 
-return Many
+return Cube

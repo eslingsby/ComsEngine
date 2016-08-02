@@ -7,14 +7,14 @@ Engine.cameraEntity(camera)
 local grid = Entity.create()
 
 grid:add(Script)
-grid:get(Script):create("Single")
+grid:get(Script):create("Grid")
 
 local i = 0
-while i < 1024 do
+while i < 512 do
 	local cube = Entity.create()
 	
 	cube:add(Script)
-	cube:get(Script):create("Many")
+	cube:get(Script):create("Cube")
 	
 	i = i + 1
 end

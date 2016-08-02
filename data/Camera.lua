@@ -9,7 +9,7 @@ function Camera:load()
 	self.transform:position(Vec3(0, 0, 128))
 	self.transform:rotation(Quat(Vec3(90, 0, 0)))
 	
-	self.speed = 50
+	self.speed = 512
 	
 	self.sensitivity = 0.25
 	
@@ -20,6 +20,10 @@ function Camera:load()
 	Input.addInput("quit", 41);
 	
 	Input.lockMouse(true);
+end
+
+function Camera:reset()
+	self.speed = 512
 end
 
 function Camera:update()

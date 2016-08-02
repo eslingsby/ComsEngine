@@ -66,7 +66,7 @@ void Renderer::_reshape(int width, int height, float fov){
 
 	float aspectRatio = ((float)width / (float)height);
 
-	gluPerspective(fov / aspectRatio, aspectRatio, 0.1, 1024);
+	gluPerspective(fov / aspectRatio, aspectRatio, 0.1, 1024 * 4);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -194,9 +194,6 @@ void Renderer::update(){
 	glTranslatef(transform->position.x, transform->position.y, transform->position.z);
 
 	glScalef(transform->scale.x, transform->scale.y, transform->scale.z);
-
-	//printf("%f %f %f\n", transform->position.x, transform->position.y, transform->position.z);
-	//printf("%f %f %f\n", glm::eulerAngles(transform->rotation).x, glm::eulerAngles(transform->rotation).y, glm::eulerAngles(transform->rotation).z);
 
 	glUseProgram(_programId);
 

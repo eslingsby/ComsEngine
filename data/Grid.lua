@@ -1,8 +1,8 @@
-local Single = {}
+local Grid = {}
 
-function Single:load()
+function Grid:load()
 	self.entity:add(Transform)
-	self.entity:add(Mesh, "grid.obj")
+	self.entity:add(Mesh, "mesh/grid.obj")
 	self.entity:add(Identifier, "grid")
 
 	self.entity:get(Transform):scale(Vec3(10, 10, 10))
@@ -13,7 +13,7 @@ function Single:load()
 	self.frames = 0
 end
 
-function Single:reset()
+function Grid:reset()
 	--local i = 0
 	--while i < 256 do
 	--	local cube = Entity.create()
@@ -27,7 +27,7 @@ function Single:reset()
 	--print("Reload triggered...\n")
 end
 
-function Single:update()
+function Grid:update()
 	-- Update counters
 	self.seconds = self.seconds + 1 * Engine.dt()
 	self.counter = self.counter + 1 * Engine.dt()
@@ -56,4 +56,4 @@ function Single:update()
 	--end
 end
 
-return Single
+return Grid
