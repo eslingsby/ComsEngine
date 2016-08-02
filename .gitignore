@@ -17,6 +17,4 @@ thirdparty/
 
 !CMakeLists.txt
 
-!data/*.lua
-!data/*.obj
-!data/*.gls
+!data/**
