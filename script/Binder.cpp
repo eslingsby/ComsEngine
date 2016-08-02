@@ -148,8 +148,8 @@ void Binder::bind(lua_State* L, Engine& engine){
 
 	bind(L, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, 0, EntityBind::meta, IdentifierBind::getters);
 	bind(L, TransformBind::name, TransformBind::constructor, TransformBind::global, TransformBind::methods, EntityBind::meta, TransformBind::getters, TransformBind::setters);
-	bind(L, MeshBind::name, MeshBind::constructor, MeshBind::global);
-	bind(L, ScriptBind::name, ScriptBind::constructor, ScriptBind::global, ScriptBind::methods);
+	bind(L, MeshBind::name, MeshBind::constructor, MeshBind::global, 0, EntityBind::meta);
+	bind(L, ScriptBind::name, ScriptBind::constructor, ScriptBind::global, ScriptBind::methods, EntityBind::meta);
 
 	bind(L, Vec2Bind::name, Vec2Bind::constructor, 0, 0, Vec2Bind::meta, Vec2Bind::getters, Vec2Bind::setters);
 	bind(L, Vec3Bind::name, Vec3Bind::constructor, 0, 0, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);

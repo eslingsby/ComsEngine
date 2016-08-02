@@ -184,6 +184,9 @@ inline void EntityManager::removeReference(uint64_t id){
 	assert(index < _masks.size() && _states[index] && _versions[index] == version && _references[index] != 0);
 
 	_references[index]--;
+
+	if (!_references[index] && _states[index] == EntityState::Destroyed)
+		_eraseEntity(index);
 }
 
 inline void EntityManager::_eraseEntity(uint32_t index){

@@ -10,7 +10,7 @@ grid:add(Script)
 grid:get(Script):create("Single")
 
 local i = 0
-while i < 1024 * 4 do
+while i < 1024 do
 	local cube = Entity.create()
 	
 	cube:add(Script)

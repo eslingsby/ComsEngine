@@ -14,9 +14,17 @@ function Single:load()
 end
 
 function Single:reset()
-	--os.execute("cls")
-
-	print("Reload triggered...\n")
+	--local i = 0
+	--while i < 256 do
+	--	local cube = Entity.create()
+	--	
+	--	cube:add(Script)
+	--	cube:get(Script):create("Many")
+	--	
+	--	i = i + 1
+	--end
+	--
+	--print("Reload triggered...\n")
 end
 
 function Single:update()
@@ -41,11 +49,11 @@ function Single:update()
 	end
 	
 	-- Shut down after 70 seconds
-	if (self.seconds > 70) then
+	--if (self.seconds > 70) then
 		--print("End of program...\n")
 		--self.entity:destroy()
 		--Engine.shutdown()
-	end
+	--end
 end
 
 return Single

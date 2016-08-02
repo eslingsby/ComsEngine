@@ -39,6 +39,11 @@ function Many:update()
 	-- Destroy self
 	if (self.seconds > self.killTime) then
 		--print("Goodbye! ID - " .. self.entity:id())
+		local cube = Entity.create()
+		
+		cube:add(Script)
+        cube:get(Script):create("Many")
+		
 		self.entity:destroy()
 	end
 end

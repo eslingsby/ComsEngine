@@ -47,8 +47,18 @@ void Scripting::update(){
 }
 
 void Scripting::onProcess(uint64_t id, Script& script){
-	if (!script.references)
+	if (!script.references || !script.references->size())
 		return;
+
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	static unsigned int test = 0;
+
+	if (index > test){
+		test = index;
+		printf("%d %d\n", index, version);
+	}
 
 	for (Script::RefMap::iterator i = script.references->begin(); i != script.references->end(); i++){
 		for (auto reference : i->second){
@@ -269,10 +279,11 @@ void Scripting::onDestroy(uint64_t id){
 	if (!script->references)
 		return;
 
-	for (Script::RefMap::iterator i = script->references->begin(); i != script->references->end(); i++)
+	for (Script::RefMap::iterator i = script->references->begin(); i != script->references->end(); i++){
 		for (auto referance : i->second)
 			if (referance.first)
 				luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
+	}
 
 	delete script->references;
 }
