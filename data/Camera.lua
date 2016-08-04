@@ -23,6 +23,8 @@ function Camera:load()
 	
 	Input.lockMouse(self.lock)
 	
+	Engine.camera(self.entity)
+	
 	self.start = true
 end
 

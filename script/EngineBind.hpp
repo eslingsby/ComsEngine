@@ -24,7 +24,7 @@ namespace EngineBind{
 		{ "define", _define },
 		{ "register", _register },
 		{ "config", _config },
-		{ "cameraEntity", _camera },
+		{ "camera", _camera },
 		{ 0, 0 }
 	};
 }
@@ -95,7 +95,7 @@ int EngineBind::_camera(lua_State * L){
 		return 1;
 	}
 
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, "Entity");
 
 	assert(entity->valid());
 

@@ -61,19 +61,10 @@ inline int EntityBind::_create(lua_State* L){
 }
 
 inline int EntityBind::_add(lua_State* L){
-	// U{} G{} ...
-	if (Binder::requireSelfData(L, name))
-		return 0;
-
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	// U{} G{} ... function()
 	lua_getfield(L, 2, "add");
-
-	if (!lua_isfunction(L, -1)){
-		Binder::error(L, name, "Type provided is not System (has no add method)");
-		return 0;
-	}
 
 	// U{} G{} function() ... 
 	lua_insert(L, 3);
@@ -91,19 +82,10 @@ inline int EntityBind::_add(lua_State* L){
 }
 
 inline int EntityBind::_get(lua_State* L){
-	// U{} G{}
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
-
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	// U{} G{} function()
 	luaL_getmetafield(L, 2, "__call");
-
-	if (!lua_isfunction(L, -1)){
-		Binder::error(L, name, "Type provided is not System (has no __call method)");
-		return 0;
-	}
 
 	// U{} G{} function() integer
 	lua_pushinteger(L, entity->id());
@@ -115,30 +97,21 @@ inline int EntityBind::_get(lua_State* L){
 }
 
 inline int EntityBind::_id(lua_State * L){
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
-
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	lua_pushinteger(L, entity->id());
 	return 1;
 }
 
 inline int EntityBind::_destroy(lua_State * L){
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
-
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	entity->destroy();
 	return 0;
 }
 
 inline int EntityBind::_destroyed(lua_State * L){
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
-
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	if (entity->state() == EntityManager::Destroyed)
 		lua_pushboolean(L, 1);
@@ -149,20 +122,15 @@ inline int EntityBind::_destroyed(lua_State * L){
 }
 
 inline int EntityBind::_invalidate(lua_State * L){
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
-
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	entity->invalidate();
 	return 0;
 }
 
 inline int EntityBind::_valid(lua_State * L){
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
 	lua_pushboolean(L, (int)entity->valid());
 	return 1;
 }

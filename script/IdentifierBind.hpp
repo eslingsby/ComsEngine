@@ -12,11 +12,18 @@ namespace IdentifierBind{
 
 	inline int _add(lua_State* L);
 
+	inline static int _invalidate(lua_State* L);
+
 	inline int _name(lua_State* L, void* value);
 	inline int _layer(lua_State* L, void* value);
 
 	static const luaL_Reg global[] = {
 		{ "add", _add },
+		{ 0, 0 }
+	};
+
+	static const luaL_Reg meta[] = {
+		{ "__gc", _invalidate },
 		{ 0, 0 }
 	};
 
@@ -41,7 +48,7 @@ inline int IdentifierBind::_add(lua_State* L){
 	Engine& engine = Binder::getEngine(L);
 
 	if (engine.manager.hasComponents<Identifier>(id)){
-		Binder::error(L, "Identifier", "Entity already has component!");
+		Binder::error(L, name, "Entity already has component!");
 		return 0;
 	}
 
@@ -53,21 +60,22 @@ inline int IdentifierBind::_add(lua_State* L){
 	return 0;
 }
 
-inline int IdentifierBind::_name(lua_State * L, void * value){
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
+int IdentifierBind::_invalidate(lua_State * L){
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	entity->invalidate();
+	return 0;
+}
+
+inline int IdentifierBind::_name(lua_State * L, void * value){
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 	lua_pushstring(L, entity->getComponent<Identifier>()->name.c_str());
 
 	return 1;
 }
 
 inline int IdentifierBind::_layer(lua_State * L, void * value){
-	if (Binder::requireSelfData(L, "Entity"))
-		return 0;
-
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 	lua_pushstring(L, entity->getComponent<Identifier>()->layer.c_str());
 
 	return 1;

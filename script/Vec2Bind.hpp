@@ -58,7 +58,7 @@ inline int Vec2Bind::constructor(lua_State* L){
 
 inline int Vec2Bind::_print(lua_State* L){
 	// L{}
-	LuaVec2* vec = (LuaVec2*)lua_touserdata(L, 1);
+	LuaVec2* vec = (LuaVec2*)luaL_checkudata(L, 1, name);
 	std::string combined = std::to_string((*vec).x) + "," + std::to_string((*vec).y);
 
 	// L{} string

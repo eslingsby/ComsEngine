@@ -5,8 +5,6 @@ camera:get(Script):create("Camera")
 --camera:get(Script):create("Clock")
 
 -- Grid setup
-Engine.cameraEntity(camera)
-
 local grid = Entity.create()
 grid:add(Script)
 grid:get(Script):create("Grid")

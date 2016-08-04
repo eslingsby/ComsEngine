@@ -13,12 +13,19 @@ namespace ScriptBind{
 
 	inline int _add(lua_State* L);
 
+	inline static int _invalidate(lua_State* L);
+
 	inline int _create(lua_State* L);
 	inline int _remove(lua_State* L);
 	inline int _get(lua_State* L);
 
 	static const luaL_Reg global[] = {
 		{ "add", _add },
+		{ 0, 0 }
+	};
+
+	static const luaL_Reg meta[] = {
+		{ "__gc", _invalidate },
 		{ 0, 0 }
 	};
 
@@ -42,7 +49,7 @@ inline int ScriptBind::_add(lua_State* L){
 	Engine& engine = Binder::getEngine(L);
 
 	if (engine.manager.hasComponents<Script>(id)){
-		Binder::error(L, "Script", "Entity already has component!");
+		Binder::error(L, name, "Entity already has component!");
 		return 0;
 	}
 
@@ -51,8 +58,15 @@ inline int ScriptBind::_add(lua_State* L){
 	return 0;
 }
 
+int ScriptBind::_invalidate(lua_State * L){
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	entity->invalidate();
+	return 0;
+}
+
 inline int ScriptBind::_create(lua_State* L){
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	assert(entity->valid());
 
@@ -65,7 +79,7 @@ inline int ScriptBind::_create(lua_State* L){
 }
 
 inline int ScriptBind::_remove(lua_State* L){
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	assert(entity->valid());
 
@@ -78,7 +92,7 @@ inline int ScriptBind::_remove(lua_State* L){
 }
 
 inline int ScriptBind::_get(lua_State* L){
-	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 	
 	assert(entity->valid());
 

@@ -62,15 +62,15 @@ inline int QuatBind::constructor(lua_State * L){
 	lua_setmetatable(L, -2);
 
 	if (luaL_testudata(L, 2, name))
-		*quat = *(LuaQuat*)lua_touserdata(L, 2);
+		*quat = *(LuaQuat*)luaL_checkudata(L, 2, name);
 	else if (luaL_testudata(L, 2, "Vec3"))
-		*quat = LuaQuat(glm::radians(*(LuaVec3*)lua_touserdata(L, 2)));
+		*quat = LuaQuat(glm::radians(*(LuaVec3*)luaL_checkudata(L, 2, "Vec3")));
 
 	return 1;
 }
 
 int QuatBind::_eulerAngles(lua_State * L){
-	LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 1);
+	LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 1, name);
 
 	LuaVec3* vec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
 	*vec = glm::degrees(glm::eulerAngles(*quat));
@@ -82,8 +82,8 @@ int QuatBind::_eulerAngles(lua_State * L){
 }
 
 inline int QuatBind::_add(lua_State * L){
-	LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 1);
-	LuaQuat* other = (LuaQuat*)lua_touserdata(L, 2);
+	LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 1, name);
+	LuaQuat* other = (LuaQuat*)luaL_checkudata(L, 2, name);
 
 	LuaQuat* newQuat = (LuaQuat*)lua_newuserdata(L, sizeof(LuaQuat));
 	*newQuat = *quat + *other;
@@ -95,7 +95,7 @@ inline int QuatBind::_add(lua_State * L){
 }
 
 inline int QuatBind::_unm(lua_State * L){
-	LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 1);
+	LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 1, name);
 
 	LuaQuat* newQuat = (LuaQuat*)lua_newuserdata(L, sizeof(LuaQuat));
 	*newQuat = -*quat;
@@ -107,8 +107,8 @@ inline int QuatBind::_unm(lua_State * L){
 }
 
 inline int QuatBind::_mul(lua_State * L){
-	LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 1);
-	LuaQuat* other = (LuaQuat*)lua_touserdata(L, 2);
+	LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 1, name);
+	LuaQuat* other = (LuaQuat*)luaL_checkudata(L, 2, name);
 
 	LuaQuat* newQuat = (LuaQuat*)lua_newuserdata(L, sizeof(LuaQuat));
 	*newQuat = *quat * *other;
@@ -120,8 +120,8 @@ inline int QuatBind::_mul(lua_State * L){
 }
 
 inline int QuatBind::_eq(lua_State * L){
-	LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 1);
-	LuaQuat* other = (LuaQuat*)lua_touserdata(L, 2);
+	LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 1, name);
+	LuaQuat* other = (LuaQuat*)luaL_checkudata(L, 2, name);
 
 	lua_pushboolean(L, *quat == *other);
 
@@ -129,7 +129,7 @@ inline int QuatBind::_eq(lua_State * L){
 }
 
 int QuatBind::_print(lua_State * L){
-	LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 1);
+	LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 1, name);
 	std::string combined = std::to_string((*quat).x) + "," + std::to_string((*quat).y) + "," + std::to_string((*quat).z) + "," + std::to_string((*quat).w);
 
 	// L{} string

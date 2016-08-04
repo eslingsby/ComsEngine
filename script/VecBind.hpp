@@ -30,7 +30,7 @@ namespace VecBind{
 
 template <typename T>
 inline int VecBind::_length(lua_State* L, const char* name){
-	T* vec = (T*)lua_touserdata(L, 1);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
 
 	lua_pushnumber(L, vec->length());
 	return 1;
@@ -39,10 +39,10 @@ inline int VecBind::_length(lua_State* L, const char* name){
 template <typename T>
 inline int VecBind::_add(lua_State* L, const char* name){
 	// L{} number   OR   L{} L{}
-	T* vec = (T*)lua_touserdata(L, 1);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
 
 	if (lua_isuserdata(L, 2)){
-		T* other = (T*)lua_touserdata(L, 2);
+		T* other = (T*)luaL_checkudata(L, 2, name);
 		T* newVec = (T*)lua_newuserdata(L, sizeof(T));
 		(*newVec) = (*vec) + (*other);
 	}
@@ -60,7 +60,7 @@ inline int VecBind::_add(lua_State* L, const char* name){
 
 template <typename T>
 inline int VecBind::_unm(lua_State * L, const char* name){
-	T* vec = (T*)lua_touserdata(L, 1);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
 
 	T* newVec = (T*)lua_newuserdata(L, sizeof(T));
 	*newVec = T(-*vec);
@@ -74,10 +74,10 @@ inline int VecBind::_unm(lua_State * L, const char* name){
 template <typename T>
 inline int VecBind::_sub(lua_State * L, const char* name){
 	// L{} number   OR   L{} L{}
-	T* vec = (T*)lua_touserdata(L, 1);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
 
 	if (lua_isuserdata(L, 2)){
-		T* other = (T*)lua_touserdata(L, 2);
+		T* other = (T*)luaL_checkudata(L, 2, name);
 		T* newVec = (T*)lua_newuserdata(L, sizeof(T));
 		(*newVec) = (*vec) - (*other);
 	}
@@ -96,13 +96,13 @@ inline int VecBind::_sub(lua_State * L, const char* name){
 template <typename T>
 inline int VecBind::_mul(lua_State * L, const char* name){
 	// L{} number   OR   L{} L{}
-	T* vec = (T*)lua_touserdata(L, 1);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
 
 	if (lua_isuserdata(L, 2)){
 		T* newVec = (T*)lua_newuserdata(L, sizeof(T));
 
 		if (luaL_testudata(L, 2, name)){
-			T* other = (T*)lua_touserdata(L, 2);
+			T* other = (T*)luaL_checkudata(L, 2, name);
 			(*newVec) = (*vec) * (*other);
 		}
 	}
@@ -121,17 +121,17 @@ inline int VecBind::_mul(lua_State * L, const char* name){
 template <typename T>
 inline int VecBind::_mulAdv(lua_State * L, const char* name){
 	// L{} number   OR   L{} L{}
-	T* vec = (T*)lua_touserdata(L, 1);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
 
 	if (lua_isuserdata(L, 2)){
 		T* newVec = (T*)lua_newuserdata(L, sizeof(T));
 
 		if (luaL_testudata(L, 2, name)){
-			T* other = (T*)lua_touserdata(L, 2);
+			T* other = (T*)luaL_checkudata(L, 2, name);
 			(*newVec) = (*vec) * (*other);
 		}
 		else if (luaL_testudata(L, 2, "Quat")){
-			LuaQuat* quat = (LuaQuat*)lua_touserdata(L, 2);
+			LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 2, "Quat");
 			(*newVec) = (*vec) * (*quat);
 		}
 	}
@@ -150,10 +150,10 @@ inline int VecBind::_mulAdv(lua_State * L, const char* name){
 template <typename T>
 inline int VecBind::_div(lua_State * L, const char* name){
 	// L{} number   OR   L{} L{}
-	T* vec = (T*)lua_touserdata(L, 1);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
 
 	if (lua_isuserdata(L, 2)){
-		T* other = (T*)lua_touserdata(L, 2);
+		T* other = (T*)luaL_checkudata(L, 2, name);
 		T* newVec = (T*)lua_newuserdata(L, sizeof(T));
 		(*newVec) = (*vec) / (*other);
 	}
@@ -171,8 +171,8 @@ inline int VecBind::_div(lua_State * L, const char* name){
 
 template <typename T>
 inline int VecBind::_eq(lua_State * L, const char* name){
-	T* vec = (T*)lua_touserdata(L, 1);
-	T* other = (T*)lua_touserdata(L, 2);
+	T* vec = (T*)luaL_checkudata(L, 1, name);
+	T* other = (T*)luaL_checkudata(L, 2, name);
 
 	lua_pushboolean(L, (int)(*vec == *other));
 

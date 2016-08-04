@@ -60,7 +60,7 @@ inline int Vec3Bind::constructor(lua_State* L){
 
 inline int Vec3Bind::_print(lua_State* L){
 	// L{}
-	LuaVec3* vec = (LuaVec3*)lua_touserdata(L, 1);
+	LuaVec3* vec = (LuaVec3*)luaL_checkudata(L, 1, name);
 	std::string combined = std::to_string((*vec).x) + "," + std::to_string((*vec).y) + "," + std::to_string((*vec).z);
 
 	// L{} string
