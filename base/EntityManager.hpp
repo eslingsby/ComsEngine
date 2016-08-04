@@ -8,9 +8,6 @@
 #include <tuple>
 #include <set>
 
-// To-do
-// - Make reload function
-
 class EntityManager{
 	// Byte pools for each component type
 	std::vector<BasePool*> _pools;
@@ -40,12 +37,28 @@ class EntityManager{
 	// System register for calling BaseSystem events
 	std::set<BaseSystem*> _systems;
 
+	uint8_t _error = 0;
+
 	// Non-copyable overloads
 	EntityManager(const EntityManager& other) = delete;
 	EntityManager& operator=(const EntityManager& other) = delete;
 
 	// Erase entity component's from object pools
 	inline void _eraseEntity(uint32_t index);
+	
+	inline bool _checkRange(uint32_t index);
+	inline bool _checkSlot(uint32_t index);
+	inline bool _checkDestroyed(uint32_t index);
+	inline bool _checkVersion(uint32_t index, uint32_t version);
+	inline bool _checkComponent(uint32_t index, uint8_t type);
+	inline bool _checkNoComponent(uint32_t index, uint8_t type);
+
+	inline bool _checkPool(uint8_t type);
+
+	inline void _verboseError();
+
+	inline uint8_t _getError();
+
 
 	// Fill component type tuple with relevent components at existing entity index
 	// Entry point of compile time recursive function
@@ -83,110 +96,185 @@ public:
 	// Entity states for entity _states vector
 	enum EntityState : uint8_t{ Empty, Active, Inactive, Destroyed };
 
+	enum EntityError : uint8_t{ Okay, Invalid, Destructed, Component, NoComponent };
+
 	EntityManager();
 	~EntityManager();
 
-	// Create new empty entity. Manager will re-use previously destroyed entity location if available,
-	// and will increment the entity version. A 64 bit entity ID is made up the entitie's
-	// index in memory, and its version number, ensuring all IDs refer to specific versions.
 	inline uint64_t createEntity();
+	
+	inline uint8_t destroyEntity(uint64_t id);
 
-	// Destroy entity and components, and erase if entity has no references.
-	// If entity has references, entity will be erased when all references are gone, meanwhile the
-	// onDestroy function will be called as usual, and entity will stop being processed by systems.
-	inline void destroyEntity(uint64_t id);
+	inline uint8_t setEntityActive(uint64_t id, bool active);
 
-	// Set if entity gets processed by systems
-	inline void setEntityActive(uint64_t id, bool active);
-
-	// Set if component gets processed by systems
 	template <typename T>
-	inline void setComponentEnabled(uint64_t id, bool enabled);
+	inline uint8_t setComponentEnabled(uint64_t id, bool enabled);
 
-	// Create and attach new unique component to existing entity
 	template <typename T, typename ...Ts>
 	inline T* const addComponent(uint64_t id, Ts... args);
 
 	template <typename T, typename ...Ts>
 	inline T* const changeComponent(uint64_t id, Ts... args);
 
-	// Get unique component pointer from existing entity
 	template <typename T>
 	inline T* const getComponent(uint64_t id);
 
-	// Pass all valid entities to a system via system's onProcess(Ts... args) function
 	template <typename ...Ts>
 	inline void processEntities(System<Ts...>* system);
 	
-	// Get the state of existing entity, states being defined in EntityState enum
 	inline uint8_t getEntityState(uint64_t id);
 
-	// Get the 32 bit mask of representing components owned by existing entity
-	//
-	//		Each component class has a type integer, in the below example assume that
-	//		Transform has a type number of 0, and Velocity has a type number of 4
-	//
-	//		uint64_t id = manager.createEntity();
-	//		manager.addComponent<Transform>(id, 0.f, 0.f, 0.f);
-	//		manager.addComponent<Velocity>(id, 10.f);
-	//
-	//		manager.getEntityMask(id);		// = 0xb10001000000000000000000000000000
-	//
 	inline uint32_t getEntityMask(uint64_t id);
 
-	// Returns true if entity has components
-	//
-	//		bool result = manager.hasComponents<Transform, Velocity>(id);
-	//
 	template <typename ...Ts>
 	inline bool hasComponents(uint64_t id);
 
-	// Returns if entity ID is valid
 	inline bool entityExists(uint64_t id);
 
-	// Increments an entitie's reference count, causing it not to be fully erased on destroy
-	inline void addReference(uint64_t id);
+	inline uint8_t addReference(uint64_t id);
 
-	// Decrements an entitie's reference count
-	inline void removeReference(uint64_t id);
+	inline uint8_t removeReference(uint64_t id);
 
-	// Subscribes system to entity events via onCreate, onDestroy, onActivate, onDeactivate functions
 	template<typename T>
-	inline void registerSystem(T* system);
+	inline uint8_t registerSystem(T* system);
 
 	inline void eraseDestroyed();
 
-	inline unsigned int totalReferences();
+	inline uint8_t totalReferences();
 
 	inline void purge();
+
+	inline std::string errorString(uint8_t error);
 };
 
+inline bool EntityManager::_checkRange(uint32_t index){
+	if (index < _masks.size())
+		return true;
+
+	_error = EntityError::Invalid;
+	_verboseError();
+
+	return false;
+}
+
+inline bool EntityManager::_checkSlot(uint32_t index){
+	if (_states[index] != EntityState::Empty)
+		return true;
+
+	_error = EntityError::Invalid;
+	_verboseError();
+
+	return false;
+}
+
+inline bool EntityManager::_checkDestroyed(uint32_t index){
+	if (_states[index] != EntityState::Destroyed)
+		return true;
+
+	_error = EntityError::Destructed;
+	_verboseError();
+
+	return false;
+}
+
+inline bool EntityManager::_checkVersion(uint32_t index, uint32_t version){
+	if (_versions[index] == version)
+		return true;
+
+	_error = EntityError::Invalid;
+	_verboseError();
+
+	return false;
+}
+
+inline bool EntityManager::_checkComponent(uint32_t index, uint8_t type){
+	if (BitHelper::getBit(type, _masks[index]))
+		return true;
+
+	_error = EntityError::NoComponent;
+	_verboseError();
+
+	return false;
+}
+
+inline bool EntityManager::_checkNoComponent(uint32_t index, uint8_t type){
+	if (!BitHelper::getBit(type, _masks[index]))
+		return true;
+
+	_error = EntityError::Component;
+	_verboseError();
+
+	return false;
+}
+
+inline bool EntityManager::_checkPool(uint8_t type){
+	if (type < _pools.size() && _pools[type])
+		return true;
+	
+	_error = EntityError::NoComponent;
+	_verboseError();
+
+	return false;
+}
+
+inline uint8_t EntityManager::_getError(){
+	//assert(_error);
+
+	uint8_t error = _error;
+
+	_error = 0;
+
+	return error;
+}
+
+inline void EntityManager::_verboseError(){
+#ifdef _DEBUG
+	if (_error)
+		printf("%s", errorString(_error).c_str());
+#endif
+}
+
 template<typename T>
-inline void EntityManager::registerSystem(T* system){
-	assert(_systems.find(system) == _systems.end());
+inline uint8_t EntityManager::registerSystem(T* system){
+	if (_systems.find(system) != _systems.end())
+		return _getError();
+
+	//assert(_systems.find(system) == _systems.end());
 
 	_systems.insert(system);
+
+	return EntityError::Okay;
 }
 
-inline void EntityManager::addReference(uint64_t id){
+inline uint8_t EntityManager::addReference(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
+		return _getError();
+
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version);
 
 	_references[index]++;
+
+	return EntityError::Okay;
 }
 
-inline void EntityManager::removeReference(uint64_t id){
+inline uint8_t EntityManager::removeReference(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && _references[index] != 0);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _references[index] != 0))
+		return _getError();
+
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version && _references[index] != 0);
 
 	_references[index]--;
 
 	if (!_references[index] && _states[index] == EntityState::Destroyed)
 		_eraseEntity(index);
+
+	return EntityError::Okay;
 }
 
 inline void EntityManager::_eraseEntity(uint32_t index){
@@ -240,7 +328,7 @@ inline void EntityManager::eraseDestroyed(){
 	}
 }
 
-inline unsigned int EntityManager::totalReferences(){
+inline uint8_t EntityManager::totalReferences(){
 	unsigned int total = 0;
 
 	for (unsigned int i : _references)
@@ -251,6 +339,22 @@ inline unsigned int EntityManager::totalReferences(){
 
 inline void EntityManager::purge(){
 	_purge = true;
+}
+
+inline std::string EntityManager::errorString(uint8_t error){
+	std::string prefix = "EntityManager Error! Entity ";
+	std::string suffix = ".\n";
+
+	if (error == EntityError::Invalid)
+		return prefix + "ID is invalid" + suffix;
+	else if (error == EntityError::Destructed)
+		return prefix + "is destroyed" + suffix;
+	else if (error == EntityError::Component)
+		return prefix + "already has component" + suffix;
+	else if (error == EntityError::NoComponent)
+		return prefix + "does not have component" + suffix;
+
+	return prefix + "is okay" + suffix;
 }
 
 template<typename ...Ts>
@@ -264,12 +368,12 @@ template<uint32_t I, typename ...Ts>
 inline void EntityManager::_fillTuple(std::vector<BasePool*>& pools, uint32_t index, std::tuple<Ts*...>& t){
 	using T = typename std::tuple_element<I, std::tuple<Ts...>>::type;
 
-	assert(pools.size() > T::type());
+	//assert(_checkPool(T::type()));	
 
 	if (pools[T::type()]){
 		T* component = pools[T::type()]->get<T>(index);
 
-		assert(component != nullptr);
+		//assert(component != nullptr);
 
 		std::get<I>(t) = pools[T::type()]->get<T>(index);
 	}
@@ -294,7 +398,7 @@ inline uint64_t EntityManager::createEntity(){
 		index = _entities;
 	}
 
-	assert(!_states[index]);
+	//assert(!_states[index]);
 
 	_states[index] = EntityState::Active;
 
@@ -309,28 +413,33 @@ inline uint64_t EntityManager::createEntity(){
 	return BitHelper::combine(index, _versions[index]);
 }
 
-inline void EntityManager::destroyEntity(uint64_t id){
+inline uint8_t EntityManager::destroyEntity(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version);
 
-	if (_states[index] == EntityState::Destroyed)
-		return;
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkDestroyed(index)))
+		return _getError();
 
 	_states[index] = EntityState::Destroyed;
 
 	_destroyed.push(id);
+
+	return EntityError::Okay;
 }
 
-inline void EntityManager::setEntityActive(uint64_t id, bool active){
+inline uint8_t EntityManager::setEntityActive(uint64_t id, bool active){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkDestroyed(index)))
+		return _getError();
 
-	if ((active && _states[index] == EntityState::Active) || (!active && _states[index] == EntityState::Inactive))
-		return;
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
+		
+	//if ((active && _checkState(index, EntityState::Active)) || (!active && _checkState(index, EntityState::Inactive)))
+	//	return _getError();
 
 	if (active)
 		_states[index] = EntityState::Active;
@@ -346,16 +455,23 @@ inline void EntityManager::setEntityActive(uint64_t id, bool active){
 				system->onDeactivate(id);
 		}
 	}
+
+	return EntityError::Okay;
 }
 
 template <typename T>
-inline void EntityManager::setComponentEnabled(uint64_t id, bool enabled){
+inline uint8_t EntityManager::setComponentEnabled(uint64_t id, bool enabled){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && BitHelper::getBit(T::type(), _masks[index]) && _states[index] != EntityState::Destroyed);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkComponent(index, T::type()) && _checkDestroyed(index)))
+		return _getError();
+
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version && BitHelper::getBit(T::type(), _masks[index]) && _states[index] != EntityState::Destroyed);
 
 	_enabled[index] = BitHelper::setBit(T::type(), enabled, _enabled[index]);
+
+	return EntityError::Okay;
 }
 
 template <typename T, typename ...Ts>
@@ -363,11 +479,14 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index]);
-	
-	assert(_versions[index] == version && _states[index] != EntityState::Destroyed);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkNoComponent(index, T::type()) && _checkDestroyed(index)))
+		return nullptr;
 
-	assert(!BitHelper::getBit(T::type(), _masks[index]));
+	//assert(index < _masks.size() && _states[index]);
+	
+	//assert(_versions[index] == version && _states[index] != EntityState::Destroyed);
+
+	//assert(!BitHelper::getBit(T::type(), _masks[index]));
 
 	if (T::type() >= _pools.size())
 		_pools.resize(T::type() + 1);
@@ -393,11 +512,14 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 }
 
 template<typename T, typename ...Ts>
-inline T * const EntityManager::changeComponent(uint64_t id, Ts ...args){
+inline T* const EntityManager::changeComponent(uint64_t id, Ts ...args){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
+	if (!(_checkPool(T::type()) && _checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkComponent(index, T::type()) && _checkDestroyed(index)))
+		return nullptr;
+
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version && _states[index] != EntityState::Destroyed);
 
 	if (BitHelper::getBit(T::type(), _masks[index]))
 		_pools[T::type()]->erase(index);
@@ -410,8 +532,11 @@ inline T* const EntityManager::getComponent(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	if (T::type() >= _pools.size() || !_pools[T::type()] || index > _states.size() || !_states[index] || _versions[index] != version)
+	if (!(_checkPool(T::type()) && _checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkComponent(index, T::type())))
 		return nullptr;
+
+	//if (T::type() >= _pools.size() || !_pools[T::type()] || index > _states.size() || !_states[index] || _versions[index] != version)
+	//	return nullptr;
 
 	return _pools[T::type()]->get<T>(index);
 }
@@ -436,7 +561,10 @@ inline uint8_t EntityManager::getEntityState(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
+		return EntityState::Empty;
+
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version);
 
 	return _states[index];
 }
@@ -445,7 +573,10 @@ inline uint32_t EntityManager::getEntityMask(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
+		return EntityError::Okay;
+
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version);
 
 	return _masks[index];
 }
@@ -455,7 +586,10 @@ inline bool EntityManager::hasComponents(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	assert(index < _masks.size() && _states[index] && _versions[index] == version);
+	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
+		return false;
+
+	//assert(index < _masks.size() && _states[index] && _versions[index] == version);
 
 	uint32_t mask = BitHelper::createMask<Ts...>();
 
@@ -466,5 +600,6 @@ inline bool EntityManager::entityExists(uint64_t id){
 	uint32_t index = BitHelper::front(id);
 	uint32_t version = BitHelper::back(id);
 
-	return (index < _masks.size() && _states[index] && _versions[index] == version);
+	//return (index < _masks.size() && _states[index] && _versions[index] == version);
+	return _checkRange(index) && _checkSlot(index) && _checkVersion(index, version);
 }
