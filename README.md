@@ -6,7 +6,7 @@ Bare-bones ECS game engine written in C++, extended with Lua
 # To do
 
 - [X] Full binding
-- [ ] Lua console
+- [X] Lua console
 - [ ] Script safety
 - [ ] Speed testing
 

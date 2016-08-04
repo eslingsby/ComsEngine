@@ -41,6 +41,11 @@ inline int ScriptBind::_add(lua_State* L){
 
 	Engine& engine = Binder::getEngine(L);
 
+	if (engine.manager.hasComponents<Script>(id)){
+		Binder::error(L, "Script", "Entity already has component!");
+		return 0;
+	}
+
 	engine.manager.addComponent<Script>(id);
 
 	return 0;

@@ -2,6 +2,8 @@
 
 #include "Engine.hpp"
 
+#include <glm\gtc\matrix_transform.hpp>
+
 Hierarchy::Hierarchy(Engine* engine) : System(engine){}
 
 void Hierarchy::onCreate(uint64_t id){
@@ -76,6 +78,13 @@ void Hierarchy::localRotate(uint64_t id, glm::quat rotation){
 	assert(transfrom);
 
 	transfrom->rotation *= rotation;
+}
+
+void Hierarchy::lookAt(uint64_t id, glm::vec3 target, glm::vec3 up){
+	Transform* transfrom = _engine.manager.getComponent<Transform>(id);
+	assert(transfrom);
+
+	transfrom->rotation = glm::quat_cast(glm::lookAt(transfrom->position, target, up));
 }
 
 glm::vec3 Hierarchy::globalPosition(uint64_t id){

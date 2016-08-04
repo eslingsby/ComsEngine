@@ -4,6 +4,29 @@
 #include "Binder.hpp"
 
 #include <iostream>
+#include <thread>
+#include <atomic>
+
+#define SCRIPTING_CONSOLE
+
+#ifdef SCRIPTING_CONSOLE
+std::thread* _console = nullptr;
+
+std::atomic<bool> _consoleDone = false;
+std::string _consoleCommand = "";
+
+static void consoleThread(){
+	std::string message = "";
+
+	while (message == ""){
+		std::cout << ">>> ";
+		std::getline(std::cin, message);
+	}
+
+	_consoleCommand = message;
+	_consoleDone = true;
+}
+#endif
 
 Scripting::Scripting(Engine* engine, const std::string& scriptPath) : System(engine), _L(luaL_newstate()){
 	if (scriptPath != "")
@@ -29,9 +52,32 @@ void Scripting::load(){
 	Binder::bind(_L, _engine);
 	
 	callFile("Load.lua");
+
+#ifdef SCRIPTING_CONSOLE
+	_console = new std::thread(consoleThread);
+#endif
 }
 
 void Scripting::update(){
+#ifdef SCRIPTING_CONSOLE
+	if (_consoleDone == true){
+		// process command
+
+		if (luaL_dostring(_L, _consoleCommand.c_str())){
+			std::cout << "\n" << lua_tostring(_L, -1) << "\n\n";
+			lua_pop(_L, 1);
+		}
+
+		_consoleCommand = "";
+		_consoleDone = false;
+
+		_console->join();
+		delete _console;
+
+		_console = new std::thread(consoleThread);
+	}
+#endif
+
 	if (_input->wasDown("reload")){
 		callFile("Load.lua");
 		_engine.reset();
@@ -181,6 +227,7 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 
 void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
+
 	assert(script);
 
 	assert(script->references);

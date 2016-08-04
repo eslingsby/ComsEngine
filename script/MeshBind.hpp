@@ -31,6 +31,11 @@ inline int MeshBind::_add(lua_State* L){
 
 	Engine& engine = Binder::getEngine(L);
 
+	if (engine.manager.hasComponents<Mesh>(id)){
+		Binder::error(L, "Mesh", "Entity already has component!");
+		return 0;
+	}
+
 	engine.manager.addComponent<Mesh>(id, luaL_checkstring(L, 2));
 
 	return 0;

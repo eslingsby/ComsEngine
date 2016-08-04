@@ -23,11 +23,13 @@ namespace TransformBind{
 	inline int _rotate(lua_State* L);
 	inline int _localRotate(lua_State* L);
 
-	inline int _globalPosition(lua_State* L);
-	inline int _globalRotation(lua_State* L);
-	inline int _globalScale(lua_State* L);
+	inline int _lookAt(lua_State* L);
 
-	inline int _parent(lua_State* L);
+	//inline int _globalPosition(lua_State* L);
+	//inline int _globalRotation(lua_State* L);
+	//inline int _globalScale(lua_State* L);
+	//
+	//inline int _parent(lua_State* L);
 
 	inline int _x(lua_State* L, void* value);
 	inline int _y(lua_State* L, void* value);
@@ -48,11 +50,13 @@ namespace TransformBind{
 		{ "rotate", _rotate },
 		{ "localRotate", _localRotate },
 
-		{ "globalPosition", _globalPosition },
-		{ "globalRotation", _globalRotation },
-		{ "globalScale", _globalScale },
+		{ "lookAt", _lookAt },
 
-		{ "parent", _parent },
+		//{ "globalPosition", _globalPosition },
+		//{ "globalRotation", _globalRotation },
+		//{ "globalScale", _globalScale },
+		//
+		//{ "parent", _parent },
 		{ 0, 0 }
 	};
 
@@ -81,8 +85,13 @@ inline int TransformBind::constructor(lua_State* L){
 
 inline int TransformBind::_add(lua_State* L){
 	uint64_t id = luaL_checkinteger(L, 1);
-
+	
 	Engine& engine = Binder::getEngine(L);
+
+	if (engine.manager.hasComponents<Transform>(id)){
+		Binder::error(L, "Transform", "Entity already has component!");
+		return 0;
+	}
 
 	if (lua_gettop(L) > 1)
 		engine.manager.addComponent<Transform>(id, luaL_checkinteger(L, 2));
@@ -190,29 +199,41 @@ int TransformBind::_localRotate(lua_State * L){
 	return 0;
 }
 
-int TransformBind::_globalPosition(lua_State * L){
+int TransformBind::_lookAt(lua_State* L){
 	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
+	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);
+
+	LuaVec3* target = (LuaVec3*)lua_touserdata(L, 2);
+	LuaVec3* up = (LuaVec3*)lua_touserdata(L, 3);
+	
+	hierarchy->lookAt(entity->id(), *target, *up);
 
 	return 0;
 }
 
-int TransformBind::_globalRotation(lua_State * L){
-	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
-
-	return 0;
-}
-
-int TransformBind::_globalScale(lua_State * L){
-	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
-
-	return 0;
-}
-
-int TransformBind::_parent(lua_State * L){
-	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
-
-	return 0;
-}
+//int TransformBind::_globalPosition(lua_State * L){
+//	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
+//
+//	return 0;
+//}
+//
+//int TransformBind::_globalRotation(lua_State * L){
+//	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
+//
+//	return 0;
+//}
+//
+//int TransformBind::_globalScale(lua_State * L){
+//	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
+//
+//	return 0;
+//}
+//
+//int TransformBind::_parent(lua_State * L){
+//	Hierarchy* hierarchy = Binder::getSystem<Hierarchy>(L);
+//
+//	return 0;
+//}
 
 inline int TransformBind::_x(lua_State * L, void * value){
 	EntityRef* entity = (EntityRef*)lua_touserdata(L, 1);

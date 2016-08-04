@@ -19,9 +19,11 @@ function Camera:load()
 	Input.addInput("right", 7);
 	Input.addInput("escape", 41);
 	
-	self.lock = true
+	self.lock = false
 	
 	Input.lockMouse(self.lock)
+	
+	self.start = true
 end
 
 function Camera:reset()
@@ -48,8 +50,12 @@ function Camera:update()
 	
 	local mouse = Input.mouseRelativePos() * self.sensitivity
 
-	if (focused) then
+	if (focused or self.start) then
 		mouse = Vec3(0, 0, 0)
+		
+		if (self.start) then
+			self.start = false
+		end
 	end
 	
 	self.transform:localRotate(Quat(Vec3(0, 0, -mouse.x)))

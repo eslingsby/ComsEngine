@@ -21,6 +21,8 @@ public:
 	void rotate(uint64_t id, glm::quat rotation);
 	void localRotate(uint64_t id, glm::quat rotation);
 
+	void lookAt(uint64_t id, glm::vec3 target, glm::vec3 up);
+
 	// Global transform data recursively calculated from transfrom parents
 	glm::vec3 globalPosition(uint64_t id);
 	glm::quat globalRotation(uint64_t id);
