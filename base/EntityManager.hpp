@@ -8,6 +8,17 @@
 #include <tuple>
 #include <set>
 
+struct EntityDebug{
+	uint32_t index;
+	uint32_t version;
+	uint8_t state;
+	uint32_t mask;
+	uint32_t enabled;
+	uint16_t references;
+
+	bool valid = false;
+};
+
 class EntityManager{
 	// Byte pools for each component type
 	std::vector<BasePool*> _pools;
@@ -146,6 +157,8 @@ public:
 	inline uint8_t getError();
 
 	inline std::string getErrorString();
+
+	inline int fillEntityDebug(uint64_t id, EntityDebug& debug);
 };
 
 inline bool EntityManager::_checkRange(uint32_t index){
@@ -352,6 +365,24 @@ inline uint8_t EntityManager::getError(){
 
 inline std::string EntityManager::getErrorString(){
 	return errorString(getError());
+}
+
+inline int EntityManager::fillEntityDebug(uint64_t id, EntityDebug& debug){
+	uint32_t index = BitHelper::front(id);
+	uint32_t version = BitHelper::back(id);
+
+	if (!_checkRange(index))
+		return getError();
+
+	debug.index = index;
+	debug.version = _versions[index];
+	debug.valid = version == _versions[index];
+	debug.mask = _masks[index];
+	debug.references = _references[index];
+	debug.state = _states[index];
+	debug.enabled = _enabled[index];
+	
+	return EntityError::Okay;
 }
 
 template<typename ...Ts>

@@ -20,7 +20,6 @@ static void consoleThread(){
 
 	while (message == ""){
 		printf(">>> ");
-		//std::cout << ">>> ";
 		std::getline(std::cin, message);
 	}
 
@@ -62,14 +61,9 @@ void Scripting::load(){
 void Scripting::update(){
 #ifdef SCRIPTING_CONSOLE
 	if (_consoleDone == true){
-		// process command
-
-		if (luaL_dostring(_L, _consoleCommand.c_str())){
+		if (luaL_dostring(_L, _consoleCommand.c_str()))
 			Binder::printStackError(_L);
-			//std::cout << "\n" << lua_tostring(_L, -1) << "\n\n";
-			//lua_pop(_L, 1);
-		}
-
+		
 		_consoleCommand = "";
 		_consoleDone = false;
 
@@ -95,69 +89,119 @@ void Scripting::update(){
 }
 
 void Scripting::onProcess(uint64_t id, Script& script){
-	if (!script.references || !script.references->size())
-		return;
+	// NEW BEGIN
+	for (unsigned int i = 0; i < Script::maxReferences; i++){
+		if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Active)
+			return;
 
-	for (Script::RefMap::iterator i = script.references->begin(); i != script.references->end(); i++){
-		for (auto reference : i->second){
-			if (!reference.first)
-				continue;
-			
+		if (script.testingReferences[i] != -1){
+			int reference = script.testingReferences[i];
+	
 			// {}
-			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
-			
+			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference);
+	
 			if (_reloaded){
 				// {} function()
 				lua_getfield(_L, -1, "reset");
-
+	
 				if (!lua_isnil(_L, -1)){
 					// {} function() {}
-					lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
-
+					lua_rawgeti(_L, LUA_REGISTRYINDEX, reference);
+	
 					// {}
-					if (lua_pcall(_L, 1, 0, 0)){
+					if (lua_pcall(_L, 1, 0, 0))
 						Binder::printStackError(_L);
-						//std::cout << lua_tostring(_L, -1) << "\n";
-						//lua_pop(_L, 1);
-					}
 				}
 				else{
 					lua_pop(_L, 1);
 				}
 			}
-
+	
 			// {}
-
+	
 			// {} function()
 			lua_getfield(_L, -1, "update");
-			
+	
 			if (!lua_isnil(_L, -1)){
 				// {} function() {}
-				lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
-			
+				lua_rawgeti(_L, LUA_REGISTRYINDEX, reference);
+	
 				// {}
-				if (lua_pcall(_L, 1, 0, 0)){
+				if (lua_pcall(_L, 1, 0, 0))
 					Binder::printStackError(_L);
-					//std::cout << lua_tostring(_L, -1) << "\n";
-					//lua_pop(_L, 1);
-				}
 			}
 			else{
 				lua_pop(_L, 1);
 			}
-			
+	
 			// -
 			lua_pop(_L, 1);
 		}
 	}
+	// NEW END
+
+	// OLD BEGIN
+	//if (!script.references || !script.references->size())
+	//	return;
+	//
+	//for (Script::RefMap::iterator i = script.references->begin(); i != script.references->end(); i++){
+	//	for (auto reference : i->second){
+	//		if (!reference.first)
+	//			continue;
+	//		
+	//		// {}
+	//		lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
+	//		
+	//		if (_reloaded){
+	//			// {} function()
+	//			lua_getfield(_L, -1, "reset");
+	//
+	//			if (!lua_isnil(_L, -1)){
+	//				// {} function() {}
+	//				lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
+	//
+	//				// {}
+	//				if (lua_pcall(_L, 1, 0, 0)){
+	//					Binder::printStackError(_L);
+	//					//std::cout << lua_tostring(_L, -1) << "\n";
+	//					//lua_pop(_L, 1);
+	//				}
+	//			}
+	//			else{
+	//				lua_pop(_L, 1);
+	//			}
+	//		}
+	//
+	//		// {}
+	//
+	//		// {} function()
+	//		lua_getfield(_L, -1, "update");
+	//		
+	//		if (!lua_isnil(_L, -1)){
+	//			// {} function() {}
+	//			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
+	//		
+	//			// {}
+	//			if (lua_pcall(_L, 1, 0, 0)){
+	//				Binder::printStackError(_L);
+	//				//std::cout << lua_tostring(_L, -1) << "\n";
+	//				//lua_pop(_L, 1);
+	//			}
+	//		}
+	//		else{
+	//			lua_pop(_L, 1);
+	//		}
+	//		
+	//		// -
+	//		lua_pop(_L, 1);
+	//	}
+	//}
+	// OLD END
 }
 
 void Scripting::callFile(const std::string& file){
-	if (luaL_dofile(_L, (_scriptPath + file).c_str())){
+	if (luaL_dofile(_L, (_scriptPath + file).c_str()))
 		Binder::printStackError(_L);
-		//std::cout << lua_tostring(_L, -1) << "\n";
-		//lua_pop(_L, 1);
-	}
 }
 
 void Scripting::createInstance(uint64_t id, const std::string& type, unsigned int number){
@@ -198,84 +242,145 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	// function()
 	int reference = luaL_ref(_L, LUA_REGISTRYINDEX);
 	
-	if (!script->references)
-		script->references = new Script::RefMap();
 
-	if (script->references->find(type) == script->references->end())
-		script->references->insert({ type, Script::RefVec() });
+	// NEW BEGIN
+	for (unsigned int i = 0; i < Script::maxReferences; i++){
+		if (script->testingReferences[i] == -1){
+			strcat_s(script->testingIdentifiers[i], type.c_str());
+			script->testingReferences[i] = reference;
+			break;
+		}
+	
+		assert(i != Script::maxReferences - 1);
+	
+		if (i == Script::maxReferences - 1){
+			return;
+		}
+	}
+	// NEW END
 
-	if (script->references->at(type).size() <= number)
-		script->references->at(type).resize(number + 1);
-
-	auto& referance = script->references->at(type)[number];
-
-	assert(!referance.first);
-
-	referance.first = true;
-	referance.second = reference;
+	// OLD BEGIN
+	//if (!script->references)
+	//	script->references = new Script::RefMap();
+	//
+	//if (script->references->find(type) == script->references->end())
+	//	script->references->insert({ type, Script::RefVec() });
+	//
+	//if (script->references->at(type).size() <= number)
+	//	script->references->at(type).resize(number + 1);
+	//
+	//auto& referance = script->references->at(type)[number];
+	//
+	//assert(!referance.first);
+	//
+	//referance.first = true;
+	//referance.second = reference;
+	// OLD END
 
 	// -
 	if (!lua_isnil(_L, -1)){
-		lua_rawgeti(_L, LUA_REGISTRYINDEX, referance.second);
+		lua_rawgeti(_L, LUA_REGISTRYINDEX, reference);
 
-		if (lua_pcall(_L, 1, 0, 0)){
+		if (lua_pcall(_L, 1, 0, 0))
 			Binder::printStackError(_L);
-			//std::cout << lua_tostring(_L, -1) << "\n";
-			//lua_pop(_L, 1);
-		}
 	}
 	else{
 		lua_pop(_L, 1);
 	}
 
-	if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
-		_engine.manager.setComponentEnabled<Script>(id, true);
+	// OLD BEGIN
+	//if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
+	//	_engine.manager.setComponentEnabled<Script>(id, true);
+	// OLD END
 }
 
 void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	assert(script);
+	// NEW BEGIN
+	unsigned int index = 0;
 
-	assert(script->references);
+	for (unsigned int i = 0; i < Script::maxReferences; i++){
+		if (script->testingReferences[i] != -1){
+			const char* identifier = script->testingIdentifiers[i];
+			int reference = script->testingReferences[i];
+		
+			if (identifier == type.c_str() && index == number){
+				luaL_unref(_L, LUA_REGISTRYINDEX, reference);
+				script->testingReferences[i] = -1;
+				strcpy_s(script->testingIdentifiers[i], "");
+				break;
+			}
 
-	assert(script->references->at(type).size() > number);
-
-	auto& referance = script->references->at(type)[number];
-
-	assert(referance.first);
-	referance.first = false;
-
-	luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
-
-	bool empty = true;
-
-	for (auto& referances : script->references->at(type)){
-		if (referances.first){
-			empty = false;
-			break;
+			if (identifier == type.c_str())
+				index++;
 		}
 	}
+	// NEW END
 
-	if (empty)
-		script->references->erase(type);
-
-	if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
-		_engine.manager.setComponentEnabled<Script>(id, false);
+	// OLD BEGIN
+	//assert(script);
+	//
+	//assert(script->references);
+	//
+	//assert(script->references->at(type).size() > number);
+	//
+	//auto& referance = script->references->at(type)[number];
+	//
+	//assert(referance.first);
+	//referance.first = false;
+	//
+	//luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
+	//
+	//bool empty = true;
+	//
+	//for (auto& referances : script->references->at(type)){
+	//	if (referances.first){
+	//		empty = false;
+	//		break;
+	//	}
+	//}
+	//
+	//if (empty)
+	//	script->references->erase(type);
+	//
+	//if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
+	//	_engine.manager.setComponentEnabled<Script>(id, false);
+	// OLD END
 }
 
 int Scripting::getInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	assert(script);
+	// NEW BEGIN
+	unsigned int index = 0;
 
-	assert(script->references);
+	for (unsigned int i = 0; i < Script::maxReferences; i++){
+		if (script->testingReferences[i] != -1){
+			const char* identifier = script->testingIdentifiers[i];
 
-	assert(script->references->at(type).size() > number);
+			if (identifier == type.c_str() && index == number)
+				return script->testingReferences[i];
 
-	auto& referance = script->references->at(type)[number];
+			if (identifier == type.c_str())
+				index++;
+		}
+	}
 
-	return referance.second;
+	return -1;
+	// NEW OLD
+
+	// OLD BEGIN
+	//assert(script);
+	//
+	//assert(script->references);
+	//
+	//assert(script->references->at(type).size() > number);
+	//
+	//auto& referance = script->references->at(type)[number];
+	//
+	//return referance.second;
+	// OLD END
 }
 
 void Scripting::registerFile(const std::string& type, const std::string& file){
@@ -284,16 +389,12 @@ void Scripting::registerFile(const std::string& type, const std::string& file){
 	// function()
 	if (luaL_loadfile(_L, name.c_str())){
 		Binder::printStackError(_L);
-		//printf("%s\n", lua_tostring(_L, -1));
-		//lua_pop(_L, 1);
 		return;
 	}
 
 	// {}
 	if (lua_pcall(_L, 0, 1, 0)){
 		Binder::printStackError(_L);
-		//printf("%s\n", lua_tostring(_L, -1));
-		//lua_pop(_L, 1);
 		return;
 	}
 
@@ -316,20 +417,40 @@ void Scripting::registerFile(const std::string& type, const std::string& file){
 }
 
 void Scripting::onCreate(uint64_t id){
-	_engine.manager.setComponentEnabled<Script>(id, false);
+	// NEW BEGIN
+	Script* script = _engine.manager.getComponent<Script>(id);
+
+	memset(script->testingReferences, -1, sizeof(script->testingReferences));
+	memset(script->testingIdentifiers, 0, sizeof(script->testingIdentifiers));
+	// NEW END
+
+	// OLD BEGIN
+	//_engine.manager.setComponentEnabled<Script>(id, false);
+	// OLD END
 }
 
 void Scripting::onDestroy(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	if (!script->references)
-		return;
+	// NEW BEGIN
+	for (unsigned int i = 0; i < Script::maxReferences; i++){
+		int reference = script->testingReferences[i];
 
-	for (Script::RefMap::iterator i = script->references->begin(); i != script->references->end(); i++){
-		for (auto referance : i->second)
-			if (referance.first)
-				luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
+		if (reference != -1)
+			luaL_unref(_L, LUA_REGISTRYINDEX, reference);
 	}
+	// NEW END
 
-	delete script->references;
+	// OLD BEGIN
+	//if (!script->references)
+	//	return;
+	//
+	//for (Script::RefMap::iterator i = script->references->begin(); i != script->references->end(); i++){
+	//	for (auto referance : i->second)
+	//		if (referance.first)
+	//			luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
+	//}
+	//
+	//delete script->references;
+	// OLD END
 }
