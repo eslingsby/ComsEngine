@@ -31,7 +31,7 @@ public:
 
 	void callFile(const std::string& file);
 
-	void createInstance(uint64_t id, const std::string& type, unsigned int number = 0);
+	void createInstance(uint64_t id, const std::string& type);
 	void destroyInstance(uint64_t id, const std::string& type, unsigned int number = 0);
 
 	int getInstance(uint64_t id, const std::string& type, unsigned int number = 0);

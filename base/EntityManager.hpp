@@ -241,7 +241,7 @@ inline void EntityManager::_verboseError(){
 template<typename T>
 inline uint8_t EntityManager::registerSystem(T* system){
 	if (_systems.find(system) != _systems.end())
-		return getError();
+		return _error;
 
 	_systems.insert(system);
 
@@ -253,7 +253,7 @@ inline uint8_t EntityManager::addReference(uint64_t id){
 	uint32_t version = BitHelper::back(id);
 
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
-		return getError();
+		return _error;
 
 	_references[index]++;
 
@@ -265,7 +265,7 @@ inline uint8_t EntityManager::removeReference(uint64_t id){
 	uint32_t version = BitHelper::back(id);
 
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _references[index] != 0))
-		return getError();
+		return _error;
 
 	_references[index]--;
 
@@ -372,7 +372,7 @@ inline int EntityManager::fillEntityDebug(uint64_t id, EntityDebug& debug){
 	uint32_t version = BitHelper::back(id);
 
 	if (!_checkRange(index))
-		return getError();
+		return _error;
 
 	debug.index = index;
 	debug.version = _versions[index];
@@ -441,7 +441,7 @@ inline uint8_t EntityManager::destroyEntity(uint64_t id){
 	uint32_t version = BitHelper::back(id);
 
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkDestroyed(index)))
-		return getError();
+		return _error;
 
 	_states[index] = EntityState::Destroyed;
 
@@ -455,7 +455,7 @@ inline uint8_t EntityManager::setEntityActive(uint64_t id, bool active){
 	uint32_t version = BitHelper::back(id);
 
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkDestroyed(index)))
-		return getError();
+		return _error;
 
 	if (active)
 		_states[index] = EntityState::Active;
@@ -481,7 +481,7 @@ inline uint8_t EntityManager::setComponentEnabled(uint64_t id, bool enabled){
 	uint32_t version = BitHelper::back(id);
 
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkComponent(index, T::type()) && _checkDestroyed(index)))
-		return getError();
+		return _error;
 
 	_enabled[index] = BitHelper::setBit(T::type(), enabled, _enabled[index]);
 

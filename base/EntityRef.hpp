@@ -146,7 +146,6 @@ inline void EntityRef::invalidate(){
 
 	if (_valid){
 		_manager->removeReference(_id);
-
 		_valid = false;
 	}
 }
@@ -180,8 +179,6 @@ inline void EntityRef::setActive(bool active){
 }
 
 inline void EntityRef::destroy(){
-	invalidate();
-
 	_manager->destroyEntity(_id);
 }
 

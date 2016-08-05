@@ -12,7 +12,7 @@ namespace MeshBind{
 
 	inline int _add(lua_State* L);
 
-	inline static int _invalidate(lua_State* L);
+	inline static int _gc(lua_State* L);
 
 	static const luaL_Reg global[] = {
 		{ "add", _add },
@@ -20,7 +20,7 @@ namespace MeshBind{
 	};
 
 	static const luaL_Reg meta[] = {
-		{ "__gc", _invalidate },
+		{ "__gc", _gc },
 		{ 0, 0 }
 	};
 }
@@ -29,8 +29,9 @@ inline int MeshBind::constructor(lua_State* L){
 	Engine& engine = Binder::getEngine(L);
 	uint64_t id = luaL_checkinteger(L, -1);
 
-	if (!engine.manager.getComponent<Mesh>(id))
-		luaL_error(L, engine.manager.getErrorString().c_str());
+	engine.manager.getComponent<Mesh>(id);
+
+	Binder::checkEngineError(L);
 
 	Binder::createEntityRef(L, id, name);
 
@@ -44,16 +45,15 @@ inline int MeshBind::_add(lua_State* L){
 
 	engine.manager.addComponent<Mesh>(id, luaL_checkstring(L, 2));
 
-	uint8_t error = engine.manager.getError();
-	if (error)
-		luaL_error(L, engine.manager.errorString(error).c_str());
+	Binder::checkEngineError(L);
 
 	return 0;
 }
 
-int MeshBind::_invalidate(lua_State * L){
+int MeshBind::_gc(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	entity->invalidate();
+
 	return 0;
 }

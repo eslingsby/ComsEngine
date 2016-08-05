@@ -20,8 +20,10 @@ namespace EntityBind{
 	inline static int _invalidate(lua_State* L);
 	inline static int _valid(lua_State* L);
 
+	inline static int _gc(lua_State* L);
+
 	static const luaL_Reg meta[] = {
-		{ "__gc", _invalidate },
+		{ "__gc", _gc },
 		{ 0, 0 }
 	};
 
@@ -63,6 +65,8 @@ inline int EntityBind::_create(lua_State* L){
 inline int EntityBind::_add(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
+	Binder::checkEntity(L, entity);
+
 	if (!lua_istable(L, 2))
 		luaL_argerror(L, 2, "not engine component");
 
@@ -82,6 +86,8 @@ inline int EntityBind::_add(lua_State* L){
 	// U{} G{} function() ... int
 	lua_pushinteger(L, entity->id());
 
+	Binder::checkEngineError(L);
+
 	// U{} G{} function() int ... 
 	lua_insert(L, 4);
 	
@@ -94,6 +100,8 @@ inline int EntityBind::_add(lua_State* L){
 
 inline int EntityBind::_get(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	Binder::checkEntity(L, entity);
 
 	if (!lua_istable(L, 2))
 		luaL_argerror(L, 2, "not engine component");
@@ -111,6 +119,8 @@ inline int EntityBind::_get(lua_State* L){
 	// U{} G{} function() integer
 	lua_pushinteger(L, entity->id());
 
+	Binder::checkEngineError(L);
+
 	// U{} G{} U{}
 	if (lua_pcall(L, 1, 1, 0)){
 		Binder::printStackError(L);
@@ -123,6 +133,8 @@ inline int EntityBind::_get(lua_State* L){
 inline int EntityBind::_id(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
+	Binder::checkEntity(L, entity);
+
 	lua_pushinteger(L, entity->id());
 	return 1;
 }
@@ -130,7 +142,12 @@ inline int EntityBind::_id(lua_State * L){
 inline int EntityBind::_destroy(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
+	Binder::checkEntity(L, entity);
+
 	entity->destroy();
+
+	Binder::checkEngineError(L);
+
 	return 0;
 }
 
@@ -142,13 +159,20 @@ inline int EntityBind::_destroyed(lua_State * L){
 	else
 		lua_pushboolean(L, 0);
 
+	Binder::checkEngineError(L);
+
 	return 1;
 }
 
 inline int EntityBind::_invalidate(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
+	Binder::checkEntity(L, entity);
+
 	entity->invalidate();
+
+	Binder::checkEngineError(L);
+
 	return 0;
 }
 
@@ -156,5 +180,16 @@ inline int EntityBind::_valid(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	lua_pushboolean(L, (int)entity->valid());
+
+	Binder::checkEngineError(L);
+
 	return 1;
+}
+
+int EntityBind::_gc(lua_State * L){
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	entity->invalidate();
+
+	return 0;
 }

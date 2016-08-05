@@ -97,7 +97,7 @@ int EngineBind::_camera(lua_State * L){
 
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, "Entity");
 
-	assert(entity->valid());
+	Binder::checkEntity(L, entity);
 
 	Binder::getSystem<Renderer>(L)->setCamera(entity->id());
 

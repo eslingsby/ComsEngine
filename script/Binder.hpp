@@ -41,9 +41,11 @@ namespace Binder{
 
 	inline static void printStackError(lua_State* L);
 
-	inline static bool requireSelfData(lua_State* L, const std::string& name);
+	inline static bool checkEngineError(lua_State* L);
 
 	inline static void printStack(lua_State* L);
+
+	inline static void checkEntity(lua_State* L, EntityRef* entity);
 
 	inline static int getInt(lua_State* L, void* value);
 	inline static int setInt(lua_State* L, void* value);
@@ -149,9 +151,22 @@ void Binder::printStackError(lua_State* L){
 	int line = info.currentline;
 	const char* src = info.short_src;
 
-	printf("\n'%s:%d: %s'\n", src, line, str);
+	printf("\n%s:%d: %s\n", src, line, str);
 
 	lua_pop(L, 1);
+}
+
+bool Binder::checkEngineError(lua_State * L){
+	Engine& engine = Binder::getEngine(L);
+
+	uint8_t error = engine.manager.getError();
+
+	if (error){
+		luaL_error(L, engine.manager.errorString(error).c_str());
+		return true;
+	}
+
+	return false;
 }
 
 inline void Binder::printStack(lua_State* L){
@@ -170,6 +185,11 @@ inline void Binder::printStack(lua_State* L){
 		printf(", ");
 	}
 	printf("\n");
+}
+
+inline void Binder::checkEntity(lua_State * L, EntityRef* entity){
+	if (!entity->valid())
+		luaL_error(L, "entity reference no longer valid");
 }
 
 inline int Binder::getInt(lua_State* L, void* value){

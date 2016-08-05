@@ -12,7 +12,7 @@ namespace IdentifierBind{
 
 	inline int _add(lua_State* L);
 
-	inline static int _invalidate(lua_State* L);
+	inline static int _gc(lua_State* L);
 
 	inline int _name(lua_State* L, void* value);
 	inline int _layer(lua_State* L, void* value);
@@ -23,7 +23,7 @@ namespace IdentifierBind{
 	};
 
 	static const luaL_Reg meta[] = {
-		{ "__gc", _invalidate },
+		{ "__gc", _gc },
 		{ 0, 0 }
 	};
 
@@ -38,8 +38,9 @@ inline int IdentifierBind::constructor(lua_State* L){
 	Engine& engine = Binder::getEngine(L);
 	uint64_t id = luaL_checkinteger(L, -1);
 	
-	if (!engine.manager.getComponent<Identifier>(id))
-		luaL_error(L, engine.manager.getErrorString().c_str());
+	engine.manager.getComponent<Identifier>(id);
+
+	Binder::checkEngineError(L);
 
 	Binder::createEntityRef(L, id, name);
 
@@ -56,22 +57,24 @@ inline int IdentifierBind::_add(lua_State* L){
 	else
 		engine.manager.addComponent<Identifier>(id, luaL_checkstring(L, 2));
 
-	uint8_t error = engine.manager.getError();
-	if (error)
-		luaL_error(L, engine.manager.errorString(error).c_str());
+	Binder::checkEngineError(L);
 
 	return 0;
 }
 
-int IdentifierBind::_invalidate(lua_State * L){
+int IdentifierBind::_gc(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	entity->invalidate();
+
 	return 0;
 }
 
 inline int IdentifierBind::_name(lua_State * L, void * value){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	Binder::checkEntity(L, entity);
+
 	lua_pushstring(L, entity->getComponent<Identifier>()->name.c_str());
 
 	return 1;
@@ -79,6 +82,9 @@ inline int IdentifierBind::_name(lua_State * L, void * value){
 
 inline int IdentifierBind::_layer(lua_State * L, void * value){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	Binder::checkEntity(L, entity);
+
 	lua_pushstring(L, entity->getComponent<Identifier>()->layer.c_str());
 
 	return 1;

@@ -89,7 +89,6 @@ void Scripting::update(){
 }
 
 void Scripting::onProcess(uint64_t id, Script& script){
-	// NEW BEGIN
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
 		if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Active)
 			return;
@@ -138,65 +137,6 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			lua_pop(_L, 1);
 		}
 	}
-	// NEW END
-
-	// OLD BEGIN
-	//if (!script.references || !script.references->size())
-	//	return;
-	//
-	//for (Script::RefMap::iterator i = script.references->begin(); i != script.references->end(); i++){
-	//	for (auto reference : i->second){
-	//		if (!reference.first)
-	//			continue;
-	//		
-	//		// {}
-	//		lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
-	//		
-	//		if (_reloaded){
-	//			// {} function()
-	//			lua_getfield(_L, -1, "reset");
-	//
-	//			if (!lua_isnil(_L, -1)){
-	//				// {} function() {}
-	//				lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
-	//
-	//				// {}
-	//				if (lua_pcall(_L, 1, 0, 0)){
-	//					Binder::printStackError(_L);
-	//					//std::cout << lua_tostring(_L, -1) << "\n";
-	//					//lua_pop(_L, 1);
-	//				}
-	//			}
-	//			else{
-	//				lua_pop(_L, 1);
-	//			}
-	//		}
-	//
-	//		// {}
-	//
-	//		// {} function()
-	//		lua_getfield(_L, -1, "update");
-	//		
-	//		if (!lua_isnil(_L, -1)){
-	//			// {} function() {}
-	//			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference.second);
-	//		
-	//			// {}
-	//			if (lua_pcall(_L, 1, 0, 0)){
-	//				Binder::printStackError(_L);
-	//				//std::cout << lua_tostring(_L, -1) << "\n";
-	//				//lua_pop(_L, 1);
-	//			}
-	//		}
-	//		else{
-	//			lua_pop(_L, 1);
-	//		}
-	//		
-	//		// -
-	//		lua_pop(_L, 1);
-	//	}
-	//}
-	// OLD END
 }
 
 void Scripting::callFile(const std::string& file){
@@ -204,7 +144,7 @@ void Scripting::callFile(const std::string& file){
 		Binder::printStackError(_L);
 }
 
-void Scripting::createInstance(uint64_t id, const std::string& type, unsigned int number){
+void Scripting::createInstance(uint64_t id, const std::string& type){
 	Script* script = _engine.manager.getComponent<Script>(id);
 	assert(script);
 	
@@ -242,8 +182,6 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	// function()
 	int reference = luaL_ref(_L, LUA_REGISTRYINDEX);
 	
-
-	// NEW BEGIN
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
 		if (script->testingReferences[i] == -1){
 			strcat_s(script->testingIdentifiers[i], type.c_str());
@@ -257,25 +195,6 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 			return;
 		}
 	}
-	// NEW END
-
-	// OLD BEGIN
-	//if (!script->references)
-	//	script->references = new Script::RefMap();
-	//
-	//if (script->references->find(type) == script->references->end())
-	//	script->references->insert({ type, Script::RefVec() });
-	//
-	//if (script->references->at(type).size() <= number)
-	//	script->references->at(type).resize(number + 1);
-	//
-	//auto& referance = script->references->at(type)[number];
-	//
-	//assert(!referance.first);
-	//
-	//referance.first = true;
-	//referance.second = reference;
-	// OLD END
 
 	// -
 	if (!lua_isnil(_L, -1)){
@@ -287,17 +206,11 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 	else{
 		lua_pop(_L, 1);
 	}
-
-	// OLD BEGIN
-	//if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
-	//	_engine.manager.setComponentEnabled<Script>(id, true);
-	// OLD END
 }
 
 void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	// NEW BEGIN
 	unsigned int index = 0;
 
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
@@ -316,43 +229,11 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 				index++;
 		}
 	}
-	// NEW END
-
-	// OLD BEGIN
-	//assert(script);
-	//
-	//assert(script->references);
-	//
-	//assert(script->references->at(type).size() > number);
-	//
-	//auto& referance = script->references->at(type)[number];
-	//
-	//assert(referance.first);
-	//referance.first = false;
-	//
-	//luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
-	//
-	//bool empty = true;
-	//
-	//for (auto& referances : script->references->at(type)){
-	//	if (referances.first){
-	//		empty = false;
-	//		break;
-	//	}
-	//}
-	//
-	//if (empty)
-	//	script->references->erase(type);
-	//
-	//if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
-	//	_engine.manager.setComponentEnabled<Script>(id, false);
-	// OLD END
 }
 
 int Scripting::getInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	// NEW BEGIN
 	unsigned int index = 0;
 
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
@@ -368,19 +249,6 @@ int Scripting::getInstance(uint64_t id, const std::string& type, unsigned int nu
 	}
 
 	return -1;
-	// NEW OLD
-
-	// OLD BEGIN
-	//assert(script);
-	//
-	//assert(script->references);
-	//
-	//assert(script->references->at(type).size() > number);
-	//
-	//auto& referance = script->references->at(type)[number];
-	//
-	//return referance.second;
-	// OLD END
 }
 
 void Scripting::registerFile(const std::string& type, const std::string& file){
@@ -417,40 +285,19 @@ void Scripting::registerFile(const std::string& type, const std::string& file){
 }
 
 void Scripting::onCreate(uint64_t id){
-	// NEW BEGIN
 	Script* script = _engine.manager.getComponent<Script>(id);
 
 	memset(script->testingReferences, -1, sizeof(script->testingReferences));
 	memset(script->testingIdentifiers, 0, sizeof(script->testingIdentifiers));
-	// NEW END
-
-	// OLD BEGIN
-	//_engine.manager.setComponentEnabled<Script>(id, false);
-	// OLD END
 }
 
 void Scripting::onDestroy(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	// NEW BEGIN
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
 		int reference = script->testingReferences[i];
 
 		if (reference != -1)
 			luaL_unref(_L, LUA_REGISTRYINDEX, reference);
 	}
-	// NEW END
-
-	// OLD BEGIN
-	//if (!script->references)
-	//	return;
-	//
-	//for (Script::RefMap::iterator i = script->references->begin(); i != script->references->end(); i++){
-	//	for (auto referance : i->second)
-	//		if (referance.first)
-	//			luaL_unref(_L, LUA_REGISTRYINDEX, referance.second);
-	//}
-	//
-	//delete script->references;
-	// OLD END
 }

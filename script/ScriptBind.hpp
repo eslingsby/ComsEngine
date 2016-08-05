@@ -13,7 +13,7 @@ namespace ScriptBind{
 
 	inline int _add(lua_State* L);
 
-	inline static int _invalidate(lua_State* L);
+	inline static int _gc(lua_State* L);
 
 	inline int _create(lua_State* L);
 	inline int _remove(lua_State* L);
@@ -25,7 +25,7 @@ namespace ScriptBind{
 	};
 
 	static const luaL_Reg meta[] = {
-		{ "__gc", _invalidate },
+		{ "__gc", _gc },
 		{ 0, 0 }
 	};
 
@@ -41,8 +41,9 @@ inline int ScriptBind::constructor(lua_State* L){
 	Engine& engine = Binder::getEngine(L);
 	uint64_t id = luaL_checkinteger(L, -1);
 
-	if (!engine.manager.getComponent<Script>(id))
-		luaL_error(L, engine.manager.getErrorString().c_str());
+	engine.manager.getComponent<Script>(id);
+
+	Binder::checkEngineError(L);
 
 	Binder::createEntityRef(L, id, name);
 
@@ -56,29 +57,25 @@ inline int ScriptBind::_add(lua_State* L){
 
 	engine.manager.addComponent<Script>(id);
 	
-	uint8_t error = engine.manager.getError();
-	if (error)
-		luaL_error(L, engine.manager.errorString(error).c_str());
+	Binder::checkEngineError(L);
 
 	return 0;
 }
 
-int ScriptBind::_invalidate(lua_State * L){
+int ScriptBind::_gc(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	entity->invalidate();
+
 	return 0;
 }
 
 inline int ScriptBind::_create(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
-	assert(entity->valid());
+	Binder::checkEntity(L, entity);
 
-	if (lua_gettop(L) >= 3)
-		Binder::getSystem<Scripting>(L)->createInstance(entity->id(), luaL_checkstring(L, 2), (unsigned int)luaL_checkinteger(L, 3));
-	else
-		Binder::getSystem<Scripting>(L)->createInstance(entity->id(), luaL_checkstring(L, 2));
+	Binder::getSystem<Scripting>(L)->createInstance(entity->id(), luaL_checkstring(L, 2));
 
 	return 0;
 }
@@ -86,7 +83,7 @@ inline int ScriptBind::_create(lua_State* L){
 inline int ScriptBind::_remove(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
-	assert(entity->valid());
+	Binder::checkEntity(L, entity);
 
 	if (lua_gettop(L) >= 3)
 		Binder::getSystem<Scripting>(L)->destroyInstance(entity->id(), luaL_checkstring(L, 2), (unsigned int)luaL_checkinteger(L, 3));
@@ -99,7 +96,7 @@ inline int ScriptBind::_remove(lua_State* L){
 inline int ScriptBind::_get(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 	
-	assert(entity->valid());
+	Binder::checkEntity(L, entity);
 
 	int reference = -1;
 
