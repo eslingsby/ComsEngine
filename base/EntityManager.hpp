@@ -327,8 +327,8 @@ inline void EntityManager::purge(){
 }
 
 inline std::string EntityManager::errorString(uint8_t error){
-	std::string prefix = "EntityManager Error! Entity ";
-	std::string suffix = ".";
+	std::string prefix = "EntityManager error (entity ";
+	std::string suffix = ")";
 
 	if (error == EntityError::Invalid)
 		return prefix + "ID is invalid" + suffix;

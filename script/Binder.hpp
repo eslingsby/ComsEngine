@@ -37,7 +37,7 @@ namespace Binder{
 
 	inline static void createEntityRef(lua_State* L, uint64_t id, const std::string& type);
 
-	inline static void error(lua_State* L, const std::string& name, const std::string& error);
+	inline static void error(lua_State* L, const std::string& error);
 
 	inline static void printStackError(lua_State* L);
 
@@ -121,33 +121,37 @@ inline void Binder::createEntityRef(lua_State* L, uint64_t id, const std::string
 	lua_setmetatable(L, -2);
 }
 
-inline void Binder::error(lua_State* L, const std::string& name, const std::string& error){
-	lua_pushstring(L, (name + " Error! " + error + ".").c_str());
-	lua_error(L);
-}
-
-void Binder::printStackError(lua_State * L){
+inline void Binder::error(lua_State* L, const std::string& error){
 	lua_Debug info;
-
-	lua_getstack(L, 1, &info);
-	lua_getinfo(L, "nSl", &info);
-
+	
+	int x = lua_getstack(L, 1, &info);
+	int y = lua_getinfo(L, "nSl", &info);
+	
 	int line = info.currentline;
 	const char* src = info.short_src;
 
-	//printf("\nERROR! Line: %d\nSource:%s\n%s\n", line, src, lua_tostring(L, -1));
-
-	printf("'%s:%d: %s'\n", src, line, lua_tostring(L, -1));
-
-	lua_pop(L, 1);
+	luaL_error(L, "'%s:%d: %s'\n", src, line, error.c_str());
 }
 
-inline bool Binder::requireSelfData(lua_State* L, const std::string& name){
-	if (lua_isuserdata(L, 1))
-		return false;
+void Binder::printStackError(lua_State* L){
+	lua_Debug info;
+	
+	const char* str = lua_tostring(L, -1);
+	lua_pop(L, 1);
 
-	error(L, name, "Method requires self as argument, use ':' operator instead of '.'");
-	return true;
+	if (!lua_getstack(L, 1, &info)){
+		printf("\n%s\n", str);		
+		return;
+	}
+
+	int y = lua_getinfo(L, "nSl", &info);
+	
+	int line = info.currentline;
+	const char* src = info.short_src;
+
+	printf("\n'%s:%d: %s'\n", src, line, str);
+
+	lua_pop(L, 1);
 }
 
 inline void Binder::printStack(lua_State* L){

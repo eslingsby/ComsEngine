@@ -65,7 +65,7 @@ void Scripting::update(){
 		// process command
 
 		if (luaL_dostring(_L, _consoleCommand.c_str())){
-			Binder::printStack(_L);
+			Binder::printStackError(_L);
 			//std::cout << "\n" << lua_tostring(_L, -1) << "\n\n";
 			//lua_pop(_L, 1);
 		}
@@ -116,7 +116,7 @@ void Scripting::onProcess(uint64_t id, Script& script){
 
 					// {}
 					if (lua_pcall(_L, 1, 0, 0)){
-						Binder::printStack(_L);
+						Binder::printStackError(_L);
 						//std::cout << lua_tostring(_L, -1) << "\n";
 						//lua_pop(_L, 1);
 					}
@@ -137,7 +137,7 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			
 				// {}
 				if (lua_pcall(_L, 1, 0, 0)){
-					Binder::printStack(_L);
+					Binder::printStackError(_L);
 					//std::cout << lua_tostring(_L, -1) << "\n";
 					//lua_pop(_L, 1);
 				}
@@ -154,7 +154,7 @@ void Scripting::onProcess(uint64_t id, Script& script){
 
 void Scripting::callFile(const std::string& file){
 	if (luaL_dofile(_L, (_scriptPath + file).c_str())){
-		Binder::printStack(_L);
+		Binder::printStackError(_L);
 		//std::cout << lua_tostring(_L, -1) << "\n";
 		//lua_pop(_L, 1);
 	}
@@ -219,7 +219,7 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 		lua_rawgeti(_L, LUA_REGISTRYINDEX, referance.second);
 
 		if (lua_pcall(_L, 1, 0, 0)){
-			Binder::printStack(_L);
+			Binder::printStackError(_L);
 			//std::cout << lua_tostring(_L, -1) << "\n";
 			//lua_pop(_L, 1);
 		}

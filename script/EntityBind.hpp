@@ -63,6 +63,9 @@ inline int EntityBind::_create(lua_State* L){
 inline int EntityBind::_add(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
+	if (!lua_istable(L, 2))
+		luaL_argerror(L, 2, "not engine component");
+
 	lua_getfield(L, 2, Binder::typeName);
 	
 	if (lua_isnil(L, -1) || luaL_checknumber(L, -1) != Binder::EngineType::Component)
@@ -91,6 +94,9 @@ inline int EntityBind::_add(lua_State* L){
 
 inline int EntityBind::_get(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	if (!lua_istable(L, 2))
+		luaL_argerror(L, 2, "not engine component");
 
 	lua_getfield(L, 2, Binder::typeName);
 
