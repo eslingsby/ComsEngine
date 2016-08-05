@@ -38,7 +38,13 @@ namespace ScriptBind{
 }
 
 inline int ScriptBind::constructor(lua_State* L){
-	Binder::createEntityRef(L, luaL_checkinteger(L, -1), name);
+	Engine& engine = Binder::getEngine(L);
+	uint64_t id = luaL_checkinteger(L, -1);
+
+	if (!engine.manager.getComponent<Script>(id))
+		luaL_error(L, engine.manager.getErrorString().c_str());
+
+	Binder::createEntityRef(L, id, name);
 
 	return 1;
 }
@@ -49,6 +55,10 @@ inline int ScriptBind::_add(lua_State* L){
 	Engine& engine = Binder::getEngine(L);
 
 	engine.manager.addComponent<Script>(id);
+	
+	uint8_t error = engine.manager.getError();
+	if (error)
+		luaL_error(L, engine.manager.errorString(error).c_str());
 
 	return 0;
 }

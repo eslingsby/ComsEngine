@@ -83,9 +83,13 @@ namespace TransformBind{
 }
 
 inline int TransformBind::constructor(lua_State* L){
-	// {} integer
+	Engine& engine = Binder::getEngine(L);
+	uint64_t id = luaL_checkinteger(L, -1);
 
-	Binder::createEntityRef(L, luaL_checkinteger(L, -1), name);
+	if (!engine.manager.getComponent<Transform>(id))
+		luaL_error(L, engine.manager.getErrorString().c_str());
+
+	Binder::createEntityRef(L, id, name);
 
 	return 1;
 }
@@ -99,6 +103,10 @@ inline int TransformBind::_add(lua_State* L){
 		engine.manager.addComponent<Transform>(id, luaL_checkinteger(L, 2));
 	else
 		engine.manager.addComponent<Transform>(id);
+
+	uint8_t error = engine.manager.getError();
+	if (error)
+		luaL_error(L, engine.manager.errorString(error).c_str());
 
 	return 0;
 }

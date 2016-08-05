@@ -83,7 +83,8 @@ inline int EntityBind::_add(lua_State* L){
 	lua_insert(L, 4);
 	
 	// U{} G{}
-	lua_pcall(L, lua_gettop(L) - 3, 0, 0);
+	if (lua_pcall(L, lua_gettop(L) - 3, 0, 0))
+		Binder::printStackError(L);
 
 	return 0;
 }
@@ -105,7 +106,10 @@ inline int EntityBind::_get(lua_State* L){
 	lua_pushinteger(L, entity->id());
 
 	// U{} G{} U{}
-	lua_pcall(L, 1, 1, 0);
+	if (lua_pcall(L, 1, 1, 0)){
+		Binder::printStackError(L);
+		return 0;
+	}
 
 	return 1;
 }

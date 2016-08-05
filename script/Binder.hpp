@@ -39,6 +39,8 @@ namespace Binder{
 
 	inline static void error(lua_State* L, const std::string& name, const std::string& error);
 
+	inline static void printStackError(lua_State* L);
+
 	inline static bool requireSelfData(lua_State* L, const std::string& name);
 
 	inline static void printStack(lua_State* L);
@@ -122,6 +124,22 @@ inline void Binder::createEntityRef(lua_State* L, uint64_t id, const std::string
 inline void Binder::error(lua_State* L, const std::string& name, const std::string& error){
 	lua_pushstring(L, (name + " Error! " + error + ".").c_str());
 	lua_error(L);
+}
+
+void Binder::printStackError(lua_State * L){
+	lua_Debug info;
+
+	lua_getstack(L, 1, &info);
+	lua_getinfo(L, "nSl", &info);
+
+	int line = info.currentline;
+	const char* src = info.short_src;
+
+	//printf("\nERROR! Line: %d\nSource:%s\n%s\n", line, src, lua_tostring(L, -1));
+
+	printf("'%s:%d: %s'\n", src, line, lua_tostring(L, -1));
+
+	lua_pop(L, 1);
 }
 
 inline bool Binder::requireSelfData(lua_State* L, const std::string& name){

@@ -144,6 +144,8 @@ public:
 	inline std::string errorString(uint8_t error);
 
 	inline uint8_t getError();
+
+	inline std::string getErrorString();
 };
 
 inline bool EntityManager::_checkRange(uint32_t index){
@@ -326,7 +328,7 @@ inline void EntityManager::purge(){
 
 inline std::string EntityManager::errorString(uint8_t error){
 	std::string prefix = "EntityManager Error! Entity ";
-	std::string suffix = ".\n";
+	std::string suffix = ".";
 
 	if (error == EntityError::Invalid)
 		return prefix + "ID is invalid" + suffix;
@@ -346,6 +348,10 @@ inline uint8_t EntityManager::getError(){
 	_error = 0;
 
 	return error;
+}
+
+inline std::string EntityManager::getErrorString(){
+	return errorString(getError());
 }
 
 template<typename ...Ts>

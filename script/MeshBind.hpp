@@ -26,9 +26,13 @@ namespace MeshBind{
 }
 
 inline int MeshBind::constructor(lua_State* L){
-	// {} integer
+	Engine& engine = Binder::getEngine(L);
+	uint64_t id = luaL_checkinteger(L, -1);
 
-	Binder::createEntityRef(L, luaL_checkinteger(L, -1), name);
+	if (!engine.manager.getComponent<Mesh>(id))
+		luaL_error(L, engine.manager.getErrorString().c_str());
+
+	Binder::createEntityRef(L, id, name);
 
 	return 1;
 }
@@ -39,6 +43,10 @@ inline int MeshBind::_add(lua_State* L){
 	Engine& engine = Binder::getEngine(L);
 
 	engine.manager.addComponent<Mesh>(id, luaL_checkstring(L, 2));
+
+	uint8_t error = engine.manager.getError();
+	if (error)
+		luaL_error(L, engine.manager.errorString(error).c_str());
 
 	return 0;
 }

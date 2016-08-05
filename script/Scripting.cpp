@@ -19,7 +19,8 @@ static void consoleThread(){
 	std::string message = "";
 
 	while (message == ""){
-		std::cout << ">>> ";
+		printf(">>> ");
+		//std::cout << ">>> ";
 		std::getline(std::cin, message);
 	}
 
@@ -64,8 +65,9 @@ void Scripting::update(){
 		// process command
 
 		if (luaL_dostring(_L, _consoleCommand.c_str())){
-			std::cout << "\n" << lua_tostring(_L, -1) << "\n\n";
-			lua_pop(_L, 1);
+			Binder::printStack(_L);
+			//std::cout << "\n" << lua_tostring(_L, -1) << "\n\n";
+			//lua_pop(_L, 1);
 		}
 
 		_consoleCommand = "";
@@ -114,8 +116,9 @@ void Scripting::onProcess(uint64_t id, Script& script){
 
 					// {}
 					if (lua_pcall(_L, 1, 0, 0)){
-						std::cout << lua_tostring(_L, -1) << "\n";
-						lua_pop(_L, 1);
+						Binder::printStack(_L);
+						//std::cout << lua_tostring(_L, -1) << "\n";
+						//lua_pop(_L, 1);
 					}
 				}
 				else{
@@ -134,8 +137,9 @@ void Scripting::onProcess(uint64_t id, Script& script){
 			
 				// {}
 				if (lua_pcall(_L, 1, 0, 0)){
-					std::cout << lua_tostring(_L, -1) << "\n";
-					lua_pop(_L, 1);
+					Binder::printStack(_L);
+					//std::cout << lua_tostring(_L, -1) << "\n";
+					//lua_pop(_L, 1);
 				}
 			}
 			else{
@@ -150,8 +154,9 @@ void Scripting::onProcess(uint64_t id, Script& script){
 
 void Scripting::callFile(const std::string& file){
 	if (luaL_dofile(_L, (_scriptPath + file).c_str())){
-		std::cout << lua_tostring(_L, -1) << "\n";
-		lua_pop(_L, 1);
+		Binder::printStack(_L);
+		//std::cout << lua_tostring(_L, -1) << "\n";
+		//lua_pop(_L, 1);
 	}
 }
 
@@ -214,8 +219,9 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 		lua_rawgeti(_L, LUA_REGISTRYINDEX, referance.second);
 
 		if (lua_pcall(_L, 1, 0, 0)){
-			std::cout << lua_tostring(_L, -1) << "\n";
-			lua_pop(_L, 1);
+			Binder::printStack(_L);
+			//std::cout << lua_tostring(_L, -1) << "\n";
+			//lua_pop(_L, 1);
 		}
 	}
 	else{
@@ -277,15 +283,17 @@ void Scripting::registerFile(const std::string& type, const std::string& file){
 
 	// function()
 	if (luaL_loadfile(_L, name.c_str())){
-		printf("%s\n", lua_tostring(_L, -1));
-		lua_pop(_L, 1);
+		Binder::printStackError(_L);
+		//printf("%s\n", lua_tostring(_L, -1));
+		//lua_pop(_L, 1);
 		return;
 	}
 
 	// {}
 	if (lua_pcall(_L, 0, 1, 0)){
-		printf("%s\n", lua_tostring(_L, -1));
-		lua_pop(_L, 1);
+		Binder::printStackError(_L);
+		//printf("%s\n", lua_tostring(_L, -1));
+		//lua_pop(_L, 1);
 		return;
 	}
 

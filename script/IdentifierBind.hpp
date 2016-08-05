@@ -35,9 +35,13 @@ namespace IdentifierBind{
 }
 
 inline int IdentifierBind::constructor(lua_State* L){
-	// {} integer
+	Engine& engine = Binder::getEngine(L);
+	uint64_t id = luaL_checkinteger(L, -1);
+	
+	if (!engine.manager.getComponent<Identifier>(id))
+		luaL_error(L, engine.manager.getErrorString().c_str());
 
-	Binder::createEntityRef(L, luaL_checkinteger(L, -1), name);
+	Binder::createEntityRef(L, id, name);
 
 	return 1;
 }
@@ -51,6 +55,10 @@ inline int IdentifierBind::_add(lua_State* L){
 		engine.manager.addComponent<Identifier>(id, luaL_checkstring(L, 2), luaL_checkstring(L, 3));
 	else
 		engine.manager.addComponent<Identifier>(id, luaL_checkstring(L, 2));
+
+	uint8_t error = engine.manager.getError();
+	if (error)
+		luaL_error(L, engine.manager.errorString(error).c_str());
 
 	return 0;
 }
