@@ -95,11 +95,6 @@ inline int TransformBind::_add(lua_State* L){
 	
 	Engine& engine = Binder::getEngine(L);
 
-	if (engine.manager.hasComponents<Transform>(id)){
-		Binder::error(L, name, "Entity already has component!");
-		return 0;
-	}
-
 	if (lua_gettop(L) > 1)
 		engine.manager.addComponent<Transform>(id, luaL_checkinteger(L, 2));
 	else

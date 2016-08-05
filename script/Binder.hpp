@@ -18,12 +18,16 @@ namespace Binder{
 		bool nil;
 	} MemberReg;
 
+	const char typeName[] = "__EngineType";
+
+	enum EngineType : uint8_t{ Core = 1, Primitive = 2, System = 3, Component = 4 };
+
 	inline static int _indexHandler(lua_State* L);
 	inline static int _newindexHandler(lua_State* L);
 	
 	void _setMembers(lua_State* L, const MemberReg* binder);
 
-	void bind(lua_State* L, const std::string& type, lua_CFunction constructor = 0, const luaL_Reg* global = 0, const luaL_Reg* instance = 0, const luaL_Reg* meta = 0, const MemberReg* getters = 0, const MemberReg* setters = 0);
+	void bind(lua_State* L, uint8_t type, const std::string& name, lua_CFunction constructor = 0, const luaL_Reg* global = 0, const luaL_Reg* instance = 0, const luaL_Reg* meta = 0, const MemberReg* getters = 0, const MemberReg* setters = 0);
 	void bind(lua_State* L, Engine& engine);
 
 	inline Engine& getEngine(lua_State* L);
@@ -116,7 +120,7 @@ inline void Binder::createEntityRef(lua_State* L, uint64_t id, const std::string
 }
 
 inline void Binder::error(lua_State* L, const std::string& name, const std::string& error){
-	lua_pushstring(L, (name + " Error! " + error).c_str());
+	lua_pushstring(L, (name + " Error! " + error + ".").c_str());
 	lua_error(L);
 }
 

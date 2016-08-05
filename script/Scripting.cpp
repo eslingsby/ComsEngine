@@ -222,7 +222,8 @@ void Scripting::createInstance(uint64_t id, const std::string& type, unsigned in
 		lua_pop(_L, 1);
 	}
 
-	_engine.manager.setComponentEnabled<Script>(id, true);
+	if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
+		_engine.manager.setComponentEnabled<Script>(id, true);
 }
 
 void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
@@ -253,7 +254,7 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 	if (empty)
 		script->references->erase(type);
 
-	if (script->references->size() == 0)
+	if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Destroyed)
 		_engine.manager.setComponentEnabled<Script>(id, false);
 }
 

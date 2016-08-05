@@ -47,11 +47,6 @@ inline int IdentifierBind::_add(lua_State* L){
 
 	Engine& engine = Binder::getEngine(L);
 
-	if (engine.manager.hasComponents<Identifier>(id)){
-		Binder::error(L, name, "Entity already has component!");
-		return 0;
-	}
-
 	if (lua_gettop(L) > 2)
 		engine.manager.addComponent<Identifier>(id, luaL_checkstring(L, 2), luaL_checkstring(L, 3));
 	else

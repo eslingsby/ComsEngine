@@ -30,7 +30,7 @@ void Binder::_setMembers(lua_State* L, MemberReg* binder){
 	}
 }
 
-void Binder::bind(lua_State* L, const std::string& type, lua_CFunction constructor, const luaL_Reg* global, const luaL_Reg* instance, const luaL_Reg* meta, const MemberReg* getters, const MemberReg* setters){
+void Binder::bind(lua_State* L, uint8_t type, const std::string& name, lua_CFunction constructor, const luaL_Reg* global, const luaL_Reg* instance, const luaL_Reg* meta, const MemberReg* getters, const MemberReg* setters){
 	// Register methods
 	// {}
 	lua_newtable(L);
@@ -41,7 +41,7 @@ void Binder::bind(lua_State* L, const std::string& type, lua_CFunction construct
 	
 	// Register meta methods
 	// {} M{}
-	luaL_newmetatable(L, type.c_str());
+	luaL_newmetatable(L, name.c_str());
 	int metaTable = lua_gettop(L);
 
 	if (meta)
@@ -125,8 +125,15 @@ void Binder::bind(lua_State* L, const std::string& type, lua_CFunction construct
 	// {} M{} M{} {}
 	lua_setmetatable(L, globalTable);
 
+
+	// {} M{} M{} {} str
+	lua_pushinteger(L, type);
+
+	lua_setfield(L, globalTable, typeName);
+
+	
 	// {} M{} M{}
-	lua_setglobal(L, type.c_str());
+	lua_setglobal(L, name.c_str());
 
 	// -
 	lua_pop(L, 3);
@@ -140,19 +147,19 @@ void Binder::bind(lua_State* L, Engine& engine){
 
 	assert(scripting);
 
-	bind(L, EngineBind::name, 0, EngineBind::global);
-	bind(L, EntityBind::name, EntityBind::constructor, EntityBind::global, EntityBind::methods, EntityBind::meta);
+	bind(L, EngineType::Core, EngineBind::name, 0, EngineBind::global);
+	bind(L, EngineType::Core, EntityBind::name, EntityBind::constructor, EntityBind::global, EntityBind::methods, EntityBind::meta);
 
-	bind(L, IdentificationBind::name, 0, IdentificationBind::global);
-	bind(L, InputBind::name, 0, InputBind::global);
+	bind(L, EngineType::System, IdentificationBind::name, 0, IdentificationBind::global);
+	bind(L, EngineType::System, InputBind::name, 0, InputBind::global);
 
-	bind(L, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, 0, IdentifierBind::meta, IdentifierBind::getters);
-	bind(L, TransformBind::name, TransformBind::constructor, TransformBind::global, TransformBind::methods, TransformBind::meta, TransformBind::getters, TransformBind::setters);
-	bind(L, MeshBind::name, MeshBind::constructor, MeshBind::global, 0, MeshBind::meta);
-	bind(L, ScriptBind::name, ScriptBind::constructor, ScriptBind::global, ScriptBind::methods, ScriptBind::meta);
+	bind(L, EngineType::Component, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, 0, IdentifierBind::meta, IdentifierBind::getters);
+	bind(L, EngineType::Component, TransformBind::name, TransformBind::constructor, TransformBind::global, TransformBind::methods, TransformBind::meta, TransformBind::getters, TransformBind::setters);
+	bind(L, EngineType::Component, MeshBind::name, MeshBind::constructor, MeshBind::global, 0, MeshBind::meta);
+	bind(L, EngineType::Component, ScriptBind::name, ScriptBind::constructor, ScriptBind::global, ScriptBind::methods, ScriptBind::meta);
 
-	bind(L, Vec2Bind::name, Vec2Bind::constructor, 0, 0, Vec2Bind::meta, Vec2Bind::getters, Vec2Bind::setters);
-	bind(L, Vec3Bind::name, Vec3Bind::constructor, 0, 0, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
-	bind(L, Vec4Bind::name, Vec4Bind::constructor, 0, 0, Vec4Bind::meta, Vec4Bind::getters, Vec4Bind::setters);
-	bind(L, QuatBind::name, QuatBind::constructor, QuatBind::global, QuatBind::methods, QuatBind::meta, QuatBind::getters, QuatBind::setters);
+	bind(L, EngineType::Primitive, Vec2Bind::name, Vec2Bind::constructor, 0, 0, Vec2Bind::meta, Vec2Bind::getters, Vec2Bind::setters);
+	bind(L, EngineType::Primitive, Vec3Bind::name, Vec3Bind::constructor, 0, 0, Vec3Bind::meta, Vec3Bind::getters, Vec3Bind::setters);
+	bind(L, EngineType::Primitive, Vec4Bind::name, Vec4Bind::constructor, 0, 0, Vec4Bind::meta, Vec4Bind::getters, Vec4Bind::setters);
+	bind(L, EngineType::Primitive, QuatBind::name, QuatBind::constructor, QuatBind::global, QuatBind::methods, QuatBind::meta, QuatBind::getters, QuatBind::setters);
 }
