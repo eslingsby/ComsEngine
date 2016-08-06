@@ -68,7 +68,7 @@
 	
 ## Quat (primitive)
 	Quat(quat)
-	Quat(quat)
+	Quat(vec3)
 	quat.x
 	quat.y
 	quat.z
