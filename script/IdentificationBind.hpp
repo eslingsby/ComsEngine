@@ -26,7 +26,14 @@ namespace IdentificationBind{
 inline int IdentificationBind::_getByName(lua_State* L){
 	Identification* identification = Binder::getSystem<Identification>(L);
 
-	uint64_t id = identification->getByName(luaL_checkstring(L, 1));
+	std::string name = luaL_checkstring(L, 1);
+
+	if (!identification->hasName(name)){
+		Binder::checkEngineError(L);
+		luaL_error(L, "no entity is bound to name");
+	}
+
+	uint64_t id = identification->getByName(name.c_str());
 
 	Binder::createEntityRef(L, id, "Entity");
 
@@ -36,7 +43,14 @@ inline int IdentificationBind::_getByName(lua_State* L){
 inline int IdentificationBind::_getByLayer(lua_State * L){
 	Identification* identification = Binder::getSystem<Identification>(L);
 
-	uint64_t id = identification->getByLayer(luaL_checkstring(L, 1), luaL_checkinteger(L, 2));
+	std::string name = luaL_checkstring(L, 1);
+
+	if (!identification->hasLayer(name)){
+		Binder::checkEngineError(L);
+		luaL_error(L, "no entity is bound to layer");
+	}
+
+	uint64_t id = identification->getByLayer(name.c_str(), luaL_checkinteger(L, 2));
 
 	Binder::createEntityRef(L, id, "Entity");
 

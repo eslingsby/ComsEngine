@@ -99,7 +99,8 @@ void Input::addInput(const std::string& name, SDL_Scancode key){
 }
 
 bool Input::wasDown(const std::string& name){
-	assert(_comboNames.find(name) != _comboNames.end());
+	if (_comboNames.find(name) == _comboNames.end())
+		return false;
 
 	unsigned int index = _comboNames[name];
 
@@ -109,18 +110,11 @@ bool Input::wasDown(const std::string& name){
 	}
 
 	return false;
-
-	// check _comboNames for name
-
-	// get vector index from _comboNames
-
-	// if true at _comboChecked[index] set false then return true
-
-	// else return false
 }
 
 bool Input::isDown(const std::string & name){
-	assert(_comboNames.find(name) != _comboNames.end());
+	if (_comboNames.find(name) == _comboNames.end())
+		return false;
 
 	unsigned int index = _comboNames[name];
 

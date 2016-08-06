@@ -75,7 +75,12 @@ inline int ScriptBind::_create(lua_State* L){
 
 	Binder::checkEntity(L, entity);
 
-	Binder::getSystem<Scripting>(L)->createInstance(entity->id(), luaL_checkstring(L, 2));
+	bool okay = Binder::getSystem<Scripting>(L)->createInstance(entity->id(), luaL_checkstring(L, 2));
+
+	if (!okay){
+		Binder::checkEngineError(L);
+		luaL_error(L, "reached max amount of script components OR script type is non-existent");
+	}
 
 	return 0;
 }
@@ -85,10 +90,17 @@ inline int ScriptBind::_remove(lua_State* L){
 
 	Binder::checkEntity(L, entity);
 
+	bool okay = true;
+
 	if (lua_gettop(L) >= 3)
-		Binder::getSystem<Scripting>(L)->destroyInstance(entity->id(), luaL_checkstring(L, 2), (unsigned int)luaL_checkinteger(L, 3));
+		okay = Binder::getSystem<Scripting>(L)->destroyInstance(entity->id(), luaL_checkstring(L, 2), (unsigned int)luaL_checkinteger(L, 3));
 	else
-		Binder::getSystem<Scripting>(L)->destroyInstance(entity->id(), luaL_checkstring(L, 2));
+		okay = Binder::getSystem<Scripting>(L)->destroyInstance(entity->id(), luaL_checkstring(L, 2));
+
+	if (!okay){
+		Binder::checkEngineError(L);
+		luaL_error(L, "script type is non-existent OR script version is non-existent");
+	}
 
 	return 0;
 }
@@ -105,7 +117,10 @@ inline int ScriptBind::_get(lua_State* L){
 	else
 		reference = Binder::getSystem<Scripting>(L)->getInstance(entity->id(), luaL_checkstring(L, 2));
 
-	assert(reference >= 0);
+	if (reference == -1){
+		Binder::checkEngineError(L);
+		luaL_error(L, "script type is non-existent OR script version is non-existent");
+	}
 
 	lua_rawgeti(L, LUA_REGISTRYINDEX, reference);
 

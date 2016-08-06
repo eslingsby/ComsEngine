@@ -7,7 +7,7 @@ Bare-bones ECS game engine written in C++, extended with Lua
 
 - [X] Full binding
 - [X] Lua console
-- [ ] Script safety
+- [X] Script safety
 - [ ] Speed testing
 
 # Third Party

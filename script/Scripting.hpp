@@ -31,12 +31,12 @@ public:
 
 	void callFile(const std::string& file);
 
-	void createInstance(uint64_t id, const std::string& type);
-	void destroyInstance(uint64_t id, const std::string& type, unsigned int number = 0);
+	bool createInstance(uint64_t id, const std::string& type);
+	bool destroyInstance(uint64_t id, const std::string& type, unsigned int number = 0);
 
 	int getInstance(uint64_t id, const std::string& type, unsigned int number = 0);
 
-	void registerFile(const std::string& type, const std::string& file);
+	bool registerFile(const std::string& type, const std::string& file);
 
 	void onCreate(uint64_t id) override;
 	void onDestroy(uint64_t id) override;

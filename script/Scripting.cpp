@@ -144,9 +144,11 @@ void Scripting::callFile(const std::string& file){
 		Binder::printStackError(_L);
 }
 
-void Scripting::createInstance(uint64_t id, const std::string& type){
+bool Scripting::createInstance(uint64_t id, const std::string& type){
 	Script* script = _engine.manager.getComponent<Script>(id);
-	assert(script);
+	
+	if (!script)
+		return false;
 	
 	// {}
 	lua_newtable(_L);
@@ -156,7 +158,7 @@ void Scripting::createInstance(uint64_t id, const std::string& type){
 
 	if (lua_isnil(_L, -1)){
 		lua_pop(_L, 2);
-		return;
+		return false;
 	}
 
 	// {}
@@ -180,20 +182,18 @@ void Scripting::createInstance(uint64_t id, const std::string& type){
 	lua_setfield(_L, -2, "entity");
 
 	// function()
-	int reference = luaL_ref(_L, LUA_REGISTRYINDEX);
+	int reference;
 	
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
 		if (script->testingReferences[i] == -1){
+			reference = luaL_ref(_L, LUA_REGISTRYINDEX);
 			strcat_s(script->testingIdentifiers[i], type.c_str());
 			script->testingReferences[i] = reference;
 			break;
 		}
 	
-		assert(i != Script::maxReferences - 1);
-	
-		if (i == Script::maxReferences - 1){
-			return;
-		}
+		if (i == Script::maxReferences - 1)
+			return false;
 	}
 
 	// -
@@ -206,10 +206,15 @@ void Scripting::createInstance(uint64_t id, const std::string& type){
 	else{
 		lua_pop(_L, 1);
 	}
+
+	return true;
 }
 
-void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
+bool Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
+
+	if (!script)
+		return false;
 
 	unsigned int index = 0;
 
@@ -222,17 +227,22 @@ void Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 				luaL_unref(_L, LUA_REGISTRYINDEX, reference);
 				script->testingReferences[i] = -1;
 				strcpy_s(script->testingIdentifiers[i], "");
-				break;
+				return true;
 			}
 
 			if (identifier == type.c_str())
 				index++;
 		}
 	}
+
+	return false;
 }
 
 int Scripting::getInstance(uint64_t id, const std::string& type, unsigned int number){
 	Script* script = _engine.manager.getComponent<Script>(id);
+
+	if (!script)
+		return -1;
 
 	unsigned int index = 0;
 
@@ -251,19 +261,19 @@ int Scripting::getInstance(uint64_t id, const std::string& type, unsigned int nu
 	return -1;
 }
 
-void Scripting::registerFile(const std::string& type, const std::string& file){
+bool Scripting::registerFile(const std::string& type, const std::string& file){
 	std::string name = _scriptPath + file.c_str();
 
 	// function()
 	if (luaL_loadfile(_L, name.c_str())){
 		Binder::printStackError(_L);
-		return;
+		return false;
 	}
 
 	// {}
 	if (lua_pcall(_L, 0, 1, 0)){
 		Binder::printStackError(_L);
-		return;
+		return false;
 	}
 
 	// {} M{}
@@ -282,6 +292,8 @@ void Scripting::registerFile(const std::string& type, const std::string& file){
 
 	if (_loadedScripts.find(combined) == _loadedScripts.end())
 		_loadedScripts.insert(combined);
+
+	return true;
 }
 
 void Scripting::onCreate(uint64_t id){
