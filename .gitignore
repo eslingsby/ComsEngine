@@ -8,6 +8,8 @@
 !*.cc
 !*.inl
 
+!*.html
+!*.css
 !*.md
 !.gitignore
 !LICENSE

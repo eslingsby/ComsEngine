@@ -1,0 +1,172 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - Entity</title>	
+	</head>
+
+	<body>
+		<div class="title">
+			<p>Entity (core object)</p>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>entity <b>Entity.create</b>()</p></div>
+			<div class="description">
+				<p>
+					Creates a new entity with no components, and returns a new entity instance to it.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p><b>entity:add</b>(component, ... args)</p></div>
+			<div class="description">
+				<p>
+					Creates and adds component to an entity.<br>
+					Type provided must by an engine component type (like Transform).<br>
+					<br>
+					Entity instance must be valid, not destroyed, and must not already have component.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						entity:add(Transform, Vec3(0, 0, 0))
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>component <b>entity:get</b>(component)</p></div>
+			<div class="description">
+				<p>
+					Gets component instance from entity.<br>
+					Type provided must by an engine component type (like Transform).<br>
+					<br>
+					Entity instance must be valid, and must have component.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						entity:add(Transform)<br>
+						<br>
+						transform = entity:get(Transform)
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>bool <b>entity:destroy</b>()</p></div>
+			<div class="description">
+				<p>
+					Destroys existing entity.<br>
+					Entity won't be de-referenced unless <span>entity:invalidate</span> is called after destruction.<br>
+					<span>entity:get</span> calls are still allowed as long as entity is valid.<br>
+					<br>
+					Entity instance must be valid and not already destroyed.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						entity:destroy()
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>bool <b>entity:invalidate</b>()</p></div>
+			<div class="description">
+				<p>
+					De-references the entity instance and makes it no longer linked to entity (also called on garbage collection).<br>
+					<span>entity:invalidate</span> does not destroy the entity, unless explicitly done before hand.<br>
+					<br>
+					Entity instance must be valid.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						entity:invalidate()
+					</p>
+				</div>
+				<p>
+					<span>entity:invalidate</span> can be called after <span>entity:destroy</span> to properly de-reference the entity instance.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						entity:destroy()<br>
+						entity:invalidate()
+					</p>
+				</div>
+			</div>
+			
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>bool <b>entity:id</b>()</p></div>
+			<div class="description">
+				<p>
+					Returns integer id of entity, primarily for comparing two entity instances.<br>
+					<br>
+					Entity instance must be valid and not destroyed.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						id = entity:id()
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>bool <b>entity:destroyed</b>()</p></div>
+			<div class="description">
+				<p>
+					Returns if the entity has been destroyed from anywhere in the engine.<br>
+					<br>
+					Entity instance must be valid.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						destroyed = entity:destroyed()
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>bool <b>entity:valid</b>()</p></div>
+			<div class="description">
+				<p>
+						Returns if the entity instance instance is still valid.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						valid = entity:valid()
+					</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
