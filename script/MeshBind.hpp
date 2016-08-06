@@ -11,6 +11,7 @@ namespace MeshBind{
 	inline int constructor(lua_State* L);
 
 	inline int _add(lua_State* L);
+	inline int _has(lua_State* L);
 
 	inline static int _gc(lua_State* L);
 
@@ -18,6 +19,7 @@ namespace MeshBind{
 
 	static const luaL_Reg global[] = {
 		{ "add", _add },
+		{ "has", _has },
 		{ 0, 0 }
 	};
 
@@ -58,6 +60,20 @@ inline int MeshBind::_add(lua_State* L){
 	Binder::checkEngineError(L);
 
 	return 0;
+}
+
+int MeshBind::_has(lua_State * L){
+	uint64_t id = luaL_checkinteger(L, 1);
+
+	Engine& engine = Binder::getEngine(L);
+
+	bool has = engine.manager.hasComponents<Mesh>(id);
+
+	Binder::checkEngineError(L);
+
+	lua_pushboolean(L, has);
+
+	return 1;
 }
 
 int MeshBind::_gc(lua_State * L){

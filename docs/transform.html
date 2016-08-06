@@ -1,0 +1,154 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - Transform</title>	
+	</head>
+
+	<body>
+		<div class="title">
+			<p>Transform (component object)</p>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p><b>entity:add</b>(Transform c, Vec3 position = (0, 0, 0), Quat rotation = (0, 0, 0, 1), Vec3 scale = (1, 1, 1))</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						entity:add(Transform, Vec3(0, 0, 0), Quat(Vec3(180, 0, 0)), Vec3(1, 1, 1))
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>Vec3 <b>transform:position</b>() | <b>transform:position</b>(Vec3 position)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						entity:add(Transform)<br>
+						transform = entity:get(Transform)<br>
+						<br>
+						position = transform:position()<br>
+						<br>
+						transform:position(Vec3(0, 0, 0))
+					</p>
+				</div>
+			</div>
+		</div>
+
+		
+		<div class="section">
+			<div class="label shadow"><p>Quat <b>transform:rotation</b>() | <b>transform:rotation</b>(Quat rotation)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						entity:add(Transform)<br>
+						transform = entity:get(Transform)<br>
+						<br>
+						rotation = transform:rotation()<br>
+						<br>
+						transform:rotation(Quat(Vec3(0, 0, 0)))
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Vec3 <b>transform:scale</b>() | <b>transform:scale</b>(Vec3 scale)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						entity:add(Transform)<br>
+						transform = entity:get(Transform)<br>
+						<br>
+						scale = transform:scale()<br>
+						<br>
+						transform:scale(Vec3(0, 0, 0))
+					</p>
+				</div>
+			</div>
+		</div>
+				
+		<div class="section">
+			<div class="label shadow"><p><b>transform:translate</b>(Vec3 translation) | <b>transform:localTranslate</b>(Vec3 translation)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						entity:add(Transform)<br>
+						transform = entity:get(Transform)<br>
+						<br>
+						transform:translate(Vec3(0, 0, 1) * Engine.dt())<br>
+						<br>
+						transform:localTranslate(Vec3(0, 0, 1) * Engine.dt())
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="section">
+			<div class="label shadow"><p><b>transform:rotate</b>(Quat rotation) | <b>transform:localRotate</b>(Quat rotation)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						entity:add(Transform)<br>
+						transform = entity:get(Transform)<br>
+						<br>
+						transform:rotate(Quat(Vec3(0, 90, 0)))<br>
+						<br>
+						transform:localRotate(Quat(Vec3(0, 90, 0)))
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div class="section">
+			<div class="label shadow"><p><b>transform:lookAt</b>(Vec3 target, Vec3 up)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						entity:add(Transform)<br>
+						transform = entity:get(Transform)<br>
+						<br>
+						transform:lookAt(Vec3(0, 0, 0), Vec3(0, 1, 0))
+					</p>
+				</div>
+			</div>
+		</div>
+		
+	</body>
+</html>

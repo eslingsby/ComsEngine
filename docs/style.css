@@ -1,5 +1,18 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic);
 
+html{
+	overflow-y: scroll;
+}
+
+body{
+	padding-top:2%;
+	padding-left:2%;
+	padding-right:2%;
+	max-width:1024px;
+	min-width:512px;
+	margin:0 auto;
+}
+
 p{
 	margin:0;
 	font-family:'Open Sans', sans-serif;

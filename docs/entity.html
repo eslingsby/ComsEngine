@@ -14,21 +14,21 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>entity <b>Entity.create</b>()</p></div>
+			<div class="label shadow"><p>Entity <b>Entity.create</b>()</p></div>
 			<div class="description">
 				<p>
 					Creates a new entity with no components, and returns a new entity instance to it.
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						entity = Entity.create()
 					</p>
 				</div>
 			</div>
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p><b>entity:add</b>(component, ... args)</p></div>
+			<div class="label shadow"><p><b>entity:add</b>(Component c, ... args)</p></div>
 			<div class="description">
 				<p>
 					Creates and adds component to an entity.<br>
@@ -47,7 +47,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>component <b>entity:get</b>(component)</p></div>
+			<div class="label shadow"><p>Component <b>entity:get</b>(Component c)</p></div>
 			<div class="description">
 				<p>
 					Gets component instance from entity.<br>
@@ -58,16 +58,35 @@
 				<div class="code">
 					<p>
 						entity = Entity.create()<br>
-						entity:add(Transform)<br>
+						transform = entity:get(Transform)<br>
 						<br>
 						transform = entity:get(Transform)
 					</p>
 				</div>
 			</div>
 		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Bool <b>entity:has</b>(Component c)</p></div>
+			<div class="description">
+				<p>
+					Checks if entity has component.<br>
+					Type provided must by an engine component type (like Transform).<br>
+					<br>
+					Entity instance must be valid.
+				</p>
+				<div class="code">
+					<p>
+						entity = Entity.create()<br>
+						<br>
+						has = entity:has(Transform)
+					</p>
+				</div>
+			</div>
+		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>bool <b>entity:destroy</b>()</p></div>
+			<div class="label shadow"><p>Bool <b>entity:destroy</b>()</p></div>
 			<div class="description">
 				<p>
 					Destroys existing entity.<br>
@@ -87,7 +106,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>bool <b>entity:invalidate</b>()</p></div>
+			<div class="label shadow"><p>Bool <b>entity:invalidate</b>()</p></div>
 			<div class="description">
 				<p>
 					De-references the entity instance and makes it no longer linked to entity (also called on garbage collection).<br>
@@ -118,7 +137,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>bool <b>entity:id</b>()</p></div>
+			<div class="label shadow"><p>Bool <b>entity:id</b>()</p></div>
 			<div class="description">
 				<p>
 					Returns integer id of entity, primarily for comparing two entity instances.<br>
@@ -136,7 +155,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>bool <b>entity:destroyed</b>()</p></div>
+			<div class="label shadow"><p>Bool <b>entity:destroyed</b>()</p></div>
 			<div class="description">
 				<p>
 					Returns if the entity has been destroyed from anywhere in the engine.<br>
@@ -154,7 +173,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>bool <b>entity:valid</b>()</p></div>
+			<div class="label shadow"><p>Bool <b>entity:valid</b>()</p></div>
 			<div class="description">
 				<p>
 						Returns if the entity instance instance is still valid.

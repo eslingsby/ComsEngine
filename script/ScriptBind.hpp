@@ -12,8 +12,11 @@ namespace ScriptBind{
 	inline int constructor(lua_State* L);
 
 	inline int _add(lua_State* L);
+	inline int _has(lua_State* L);
 
 	inline static int _gc(lua_State* L);
+
+	inline static int _register(lua_State* L);
 
 	inline int _create(lua_State* L);
 	inline int _remove(lua_State* L);
@@ -21,6 +24,8 @@ namespace ScriptBind{
 
 	static const luaL_Reg global[] = {
 		{ "add", _add },
+		{ "has", _has },
+		{ "register", _register },
 		{ 0, 0 }
 	};
 
@@ -62,10 +67,30 @@ inline int ScriptBind::_add(lua_State* L){
 	return 0;
 }
 
+int ScriptBind::_has(lua_State * L){
+	uint64_t id = luaL_checkinteger(L, 1);
+
+	Engine& engine = Binder::getEngine(L);
+
+	bool has = engine.manager.hasComponents<Script>(id);
+
+	Binder::checkEngineError(L);
+
+	lua_pushboolean(L, has);
+
+	return 1;
+}
+
 int ScriptBind::_gc(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	entity->invalidate();
+
+	return 0;
+}
+
+int ScriptBind::_register(lua_State * L){
+	Binder::getSystem<Scripting>(L)->registerFile(luaL_checkstring(L, 1), luaL_checkstring(L, 2));
 
 	return 0;
 }

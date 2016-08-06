@@ -1,0 +1,81 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - Engine</title>	
+	</head>
+
+	<body>
+		<div class="title">
+			<p>Engine (core object)</p>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>number <b>Engine.dt</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						number = 100<br>
+						number = number * Engine.dt()
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Engine.shutdown</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						Engine.shutdown()
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Entity <b>Engine.camera</b>() | <b>Engine.camera</b>(Entity e)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						oldCamera = Engine.camera()<br>
+						<br>
+						newCamera = Entity.create()<br>
+						newCamera:add(Transform)<br>
+						<br>
+						Engine.camera(newCamera)
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>String <b>Engine.config</b>(String key) | <b>Engine.config</b>(String key, String value)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						title = Engine.config("title")<br>
+						<br>
+						Engine.config("title", "new title")<br>
+					</p>
+				</div>
+			</div>
+		</div>
+		
+	</body>
+</html>

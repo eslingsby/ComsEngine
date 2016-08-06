@@ -13,6 +13,7 @@ namespace EntityBind{
 
 	inline static int _add(lua_State* L);
 	inline static int _get(lua_State* L);
+	inline static int _has(lua_State* L);
 
 	inline static int _id(lua_State* L);
 	inline static int _destroy(lua_State* L);
@@ -35,6 +36,7 @@ namespace EntityBind{
 	static const luaL_Reg methods[] = {
 		{ "add", _add },
 		{ "get", _get },
+		{ "has", _has},
 		{ "id", _id },
 		{ "destroy", _destroy },
 		{ "destroyed", _destroyed },
@@ -126,6 +128,42 @@ inline int EntityBind::_get(lua_State* L){
 		Binder::printStackError(L);
 		return 0;
 	}
+
+	return 1;
+}
+
+int EntityBind::_has(lua_State * L){
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	Binder::checkEntity(L, entity);
+
+	if (!lua_istable(L, 2))
+		luaL_argerror(L, 2, "not engine component");
+
+	lua_getfield(L, 2, Binder::typeName);
+
+	if (lua_isnil(L, -1) || luaL_checknumber(L, -1) != Binder::EngineType::Component)
+		luaL_argerror(L, 2, "not engine component");
+
+	lua_pop(L, 1);
+
+	// U{} G{} function()
+	lua_getfield(L, 2, "has");
+
+	// U{} G{} function() 
+	lua_insert(L, 3);
+
+	// U{} G{} function() int
+	lua_pushinteger(L, entity->id());
+
+	Binder::checkEngineError(L);
+
+	// U{} G{} function() int 
+	lua_insert(L, 4);
+
+	// U{} G{}
+	if (lua_pcall(L, 1, 1, 0))
+		Binder::printStackError(L);
 
 	return 1;
 }
