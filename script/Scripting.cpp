@@ -93,8 +93,8 @@ void Scripting::onProcess(uint64_t id, Script& script){
 		if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Active)
 			return;
 
-		if (script.testingReferences[i] != -1){
-			int reference = script.testingReferences[i];
+		if (script.references[i] != -1){
+			int reference = script.references[i];
 	
 			// {}
 			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference);
@@ -185,10 +185,10 @@ bool Scripting::createInstance(uint64_t id, const std::string& type){
 	int reference;
 	
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
-		if (script->testingReferences[i] == -1){
+		if (script->references[i] == -1){
 			reference = luaL_ref(_L, LUA_REGISTRYINDEX);
-			strcat_s(script->testingIdentifiers[i], type.c_str());
-			script->testingReferences[i] = reference;
+			strcat_s(script->identifiers[i], type.c_str());
+			script->references[i] = reference;
 			break;
 		}
 	
@@ -219,18 +219,18 @@ bool Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 	unsigned int index = 0;
 
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
-		if (script->testingReferences[i] != -1){
-			const char* identifier = script->testingIdentifiers[i];
-			int reference = script->testingReferences[i];
+		if (script->references[i] != -1){
+			const char* identifier = script->identifiers[i];
+			int reference = script->references[i];
 		
-			if (identifier == type.c_str() && index == number){
+			if (type == identifier && index == number){
 				luaL_unref(_L, LUA_REGISTRYINDEX, reference);
-				script->testingReferences[i] = -1;
-				strcpy_s(script->testingIdentifiers[i], "");
+				script->references[i] = -1;
+				strcpy_s(script->identifiers[i], "");
 				return true;
 			}
 
-			if (identifier == type.c_str())
+			if (type == identifier)
 				index++;
 		}
 	}
@@ -247,13 +247,13 @@ int Scripting::getInstance(uint64_t id, const std::string& type, unsigned int nu
 	unsigned int index = 0;
 
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
-		if (script->testingReferences[i] != -1){
-			const char* identifier = script->testingIdentifiers[i];
+		if (script->references[i] != -1){
+			const char* identifier = script->identifiers[i];
 
-			if (identifier == type.c_str() && index == number)
-				return script->testingReferences[i];
+			if (type == identifier && index == number)
+				return script->references[i];
 
-			if (identifier == type.c_str())
+			if (type == identifier)
 				index++;
 		}
 	}
@@ -299,15 +299,15 @@ bool Scripting::registerFile(const std::string& type, const std::string& file){
 void Scripting::onCreate(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
-	memset(script->testingReferences, -1, sizeof(script->testingReferences));
-	memset(script->testingIdentifiers, 0, sizeof(script->testingIdentifiers));
+	memset(script->references, -1, sizeof(script->references));
+	memset(script->identifiers, 0, sizeof(script->identifiers));
 }
 
 void Scripting::onDestroy(uint64_t id){
 	Script* script = _engine.manager.getComponent<Script>(id);
 
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
-		int reference = script->testingReferences[i];
+		int reference = script->references[i];
 
 		if (reference != -1)
 			luaL_unref(_L, LUA_REGISTRYINDEX, reference);

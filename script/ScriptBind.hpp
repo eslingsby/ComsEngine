@@ -17,7 +17,7 @@ namespace ScriptBind{
 
 	inline int _create(lua_State* L);
 	inline int _remove(lua_State* L);
-	inline int _get(lua_State* L);
+	inline int _instance(lua_State* L);
 
 	static const luaL_Reg global[] = {
 		{ "add", _add },
@@ -32,7 +32,7 @@ namespace ScriptBind{
 	static const luaL_Reg methods[] = {
 		{ "create", _create },
 		{ "remove", _remove },
-		{ "get", _get },
+		{ "instance", _instance },
 		{ 0, 0 }
 	};
 }
@@ -105,7 +105,7 @@ inline int ScriptBind::_remove(lua_State* L){
 	return 0;
 }
 
-inline int ScriptBind::_get(lua_State* L){
+inline int ScriptBind::_instance(lua_State* L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 	
 	Binder::checkEntity(L, entity);
