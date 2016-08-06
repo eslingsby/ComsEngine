@@ -14,6 +14,8 @@ namespace MeshBind{
 
 	inline static int _gc(lua_State* L);
 
+	inline int _load(lua_State* L);
+
 	static const luaL_Reg global[] = {
 		{ "add", _add },
 		{ 0, 0 }
@@ -21,6 +23,11 @@ namespace MeshBind{
 
 	static const luaL_Reg meta[] = {
 		{ "__gc", _gc },
+		{ 0, 0 }
+	};
+
+	static const luaL_Reg methods[] = {
+		{ "load", _load },
 		{ 0, 0 }
 	};
 }
@@ -43,6 +50,9 @@ inline int MeshBind::_add(lua_State* L){
 
 	Engine& engine = Binder::getEngine(L);
 
+	if (!engine.manager.hasComponents<Transform>(id))
+		luaL_error(L, "mesh requires entity to have transform");
+
 	engine.manager.addComponent<Mesh>(id, luaL_checkstring(L, 2));
 
 	Binder::checkEngineError(L);
@@ -54,6 +64,16 @@ int MeshBind::_gc(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
 	entity->invalidate();
+
+	return 0;
+}
+
+int MeshBind::_load(lua_State * L){
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	Binder::checkEntity(L, entity);
+
+	Binder::getSystem<Renderer>(L)->load(entity->id(), luaL_checkstring(L, 2));
 
 	return 0;
 }

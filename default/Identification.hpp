@@ -33,4 +33,6 @@ public:
 
 	// Destroy all entities by layer
 	void destroyByLayer(const std::string& layer);
+
+	void rename(uint64_t id, const std::string& name, const std::string& layer);
 };

@@ -37,8 +37,6 @@ namespace Binder{
 
 	inline static void createEntityRef(lua_State* L, uint64_t id, const std::string& type);
 
-	inline static void error(lua_State* L, const std::string& error);
-
 	inline static void printStackError(lua_State* L);
 
 	inline static bool checkEngineError(lua_State* L);
@@ -115,24 +113,12 @@ inline T* Binder::getSystem(lua_State* L){
 	return system;
 }
 
-inline void Binder::createEntityRef(lua_State* L, uint64_t id, const std::string& type){
+inline void Binder::createEntityRef(lua_State* L, uint64_t id, const std::string& type = "Entity"){
 	void* location = lua_newuserdata(L, sizeof(EntityRef));
 	new(location) EntityRef(Binder::getEngine(L).manager, id);
 
 	luaL_getmetatable(L, type.c_str());
 	lua_setmetatable(L, -2);
-}
-
-inline void Binder::error(lua_State* L, const std::string& error){
-	lua_Debug info;
-	
-	int x = lua_getstack(L, 1, &info);
-	int y = lua_getinfo(L, "nSl", &info);
-	
-	int line = info.currentline;
-	const char* src = info.short_src;
-
-	luaL_error(L, "'%s:%d: %s'\n", src, line, error.c_str());
 }
 
 void Binder::printStackError(lua_State* L){

@@ -5,7 +5,7 @@ function Cube:load()
 	self.entity:add(Mesh, "mesh/cube.obj")
 	self.entity:add(Identifier, "", "cube_layer")
 
-	self.camera = Identification.getByName("camera"):get(Transform)
+	self.camera = Identifier.getByName("camera"):get(Transform)
 	
 	self.seconds = 0
 	

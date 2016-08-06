@@ -4,10 +4,9 @@
 
 #include <gl\glew.h>
 #include <gl\glu.h>
-#include <string>
 
 struct Mesh : public Component<Mesh>{
-	std::string source;
+	char source[128];
 
 	bool loaded = false;
 
@@ -19,7 +18,9 @@ struct Mesh : public Component<Mesh>{
 	size_t textureSize = 0;
 	size_t normalSize = 0;
 
-	Mesh(const std::string& source = "") : source(source){}
+	Mesh(const std::string& source = ""){
+		strcpy_s(Mesh::source, source.c_str());
+	}
 
 	void operator=(const Mesh& mesh){
 		loaded = mesh.loaded;
@@ -29,6 +30,6 @@ struct Mesh : public Component<Mesh>{
 		vertexSize = mesh.vertexSize;
 		textureSize = mesh.textureSize;
 		normalSize = mesh.normalSize;
-		source = mesh.source;
+		strcpy_s(source, mesh.source);
 	}
 };

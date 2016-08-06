@@ -4,6 +4,7 @@
 
 #include "Engine.hpp"
 #include "Identifier.hpp"
+#include "Identification.hpp"
 
 namespace IdentifierBind{
 	const char* name = "Identifier";
@@ -17,13 +18,29 @@ namespace IdentifierBind{
 	inline int _name(lua_State* L, void* value);
 	inline int _layer(lua_State* L, void* value);
 
+	inline int _rename(lua_State* L);
+
+	inline static int _getByName(lua_State* L);
+	inline static int _getByLayer(lua_State* L);
+	inline static int _hasName(lua_State* L);
+	inline static int _hasLayer(lua_State* L);
+
 	static const luaL_Reg global[] = {
 		{ "add", _add },
+		{ "getByName", _getByName },
+		{ "getByLayer", _getByLayer },
+		{ "hasName", _hasName },
+		{ "hasLayer", _hasLayer },
 		{ 0, 0 }
 	};
 
 	static const luaL_Reg meta[] = {
 		{ "__gc", _gc },
+		{ 0, 0 }
+	};
+
+	static const luaL_Reg methods[] = {
+		{ "rename", _rename },
 		{ 0, 0 }
 	};
 
@@ -75,7 +92,7 @@ inline int IdentifierBind::_name(lua_State * L, void * value){
 
 	Binder::checkEntity(L, entity);
 
-	lua_pushstring(L, entity->getComponent<Identifier>()->name.c_str());
+	lua_pushstring(L, entity->getComponent<Identifier>()->name);
 
 	return 1;
 }
@@ -85,7 +102,67 @@ inline int IdentifierBind::_layer(lua_State * L, void * value){
 
 	Binder::checkEntity(L, entity);
 
-	lua_pushstring(L, entity->getComponent<Identifier>()->layer.c_str());
+	lua_pushstring(L, entity->getComponent<Identifier>()->layer);
+
+	return 1;
+}
+
+int IdentifierBind::_rename(lua_State * L){
+	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
+
+	Binder::checkEntity(L, entity);
+
+	Binder::getSystem<Identification>(L)->rename(entity->id(), luaL_checkstring(L, 2), luaL_checkstring(L, 3));
+
+	return 0;
+}
+
+inline int IdentifierBind::_getByName(lua_State* L){
+	Identification* identification = Binder::getSystem<Identification>(L);
+
+	std::string name = luaL_checkstring(L, 1);
+
+	if (!identification->hasName(name)){
+		Binder::checkEngineError(L);
+		luaL_error(L, "no entity is bound to name");
+	}
+
+	uint64_t id = identification->getByName(name.c_str());
+
+	Binder::createEntityRef(L, id, "Entity");
+
+	return 1;
+}
+
+inline int IdentifierBind::_getByLayer(lua_State * L){
+	Identification* identification = Binder::getSystem<Identification>(L);
+
+	std::string name = luaL_checkstring(L, 1);
+
+	if (!identification->hasLayer(name)){
+		Binder::checkEngineError(L);
+		luaL_error(L, "no entity is bound to layer");
+	}
+
+	uint64_t id = identification->getByLayer(name.c_str(), luaL_checkinteger(L, 2));
+
+	Binder::createEntityRef(L, id, "Entity");
+
+	return 1;
+}
+
+inline int IdentifierBind::_hasName(lua_State * L){
+	Identification* identification = Binder::getSystem<Identification>(L);
+
+	lua_pushboolean(L, (int)identification->getByName(luaL_checkstring(L, 1)));
+
+	return 1;
+}
+
+inline int IdentifierBind::_hasLayer(lua_State * L){
+	Identification* identification = Binder::getSystem<Identification>(L);
+
+	lua_pushinteger(L, identification->hasLayer(luaL_checkstring(L, 1)));
 
 	return 1;
 }

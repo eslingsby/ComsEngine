@@ -27,12 +27,6 @@
 	bool Input.mouseRIsDown()
 	vec3 Input.mousePos()
 	vec3 Input.mouseRelativePos()
-	
-## Identification (system)
-	entity Identification.getByName(string name)
-	entity Identification.getByLayer(string layer, int number)
-	bool Identification.hasName(string name)
-	int Identification.hasLayer(string layer)
 
 ## Transform (component)
 	Transform(vec3 position, quat rotation, vec3 scale)
@@ -54,11 +48,17 @@
 	
 ## Identifier (component)
 	Identifier(string name, string layer)
+	entity Identifier.getByName(string name)
+	entity Identifier.getByLayer(string layer, int number)
+	bool Identifier.hasName(string name)
+	int Identifier.hasLayer(string layer)
+	identifier:rename(string name, string layer)
 	string identifier.name
 	string identifier.layer
 	
 ## Mesh (component)
 	Mesh(string file)
+	mesh:load(string file)
 	
 ## Script (component)
 	Script()
@@ -68,7 +68,7 @@
 	
 ## Quat (primitive)
 	Quat(quat)
-	Quat(quat)
+	Quat(vec3)
 	quat.x
 	quat.y
 	quat.z
@@ -83,7 +83,7 @@
 	
 ## Vec2 (primitive)
 	Vec2(number, number)
-	Vec2(Vec2)
+	Vec2(vec2)
 	vec2.x
 	vec2.y
 	-vec2
@@ -97,7 +97,7 @@
 	
 ## Vec3 (primitive)
 	Vec3(number, number, number)
-	Vec3(Vec3)
+	Vec3(vec3)
 	vec3.x
 	vec3.y
 	vec3.z
@@ -113,7 +113,7 @@
 	
 ## Vec4 (primitive)
 	Vec4(number, number, number, number)
-	Vec4(Vec4)
+	Vec4(vec4)
 	vec4.x
 	vec4.y
 	vec4.z

@@ -121,9 +121,6 @@ public:
 	template <typename T, typename ...Ts>
 	inline T* const addComponent(uint64_t id, Ts... args);
 
-	template <typename T, typename ...Ts>
-	inline T* const changeComponent(uint64_t id, Ts... args);
-
 	template <typename T>
 	inline T* const getComponent(uint64_t id);
 
@@ -517,20 +514,6 @@ inline T* const EntityManager::addComponent(uint64_t id, Ts... args){
 	}
 
 	return component;
-}
-
-template<typename T, typename ...Ts>
-inline T* const EntityManager::changeComponent(uint64_t id, Ts ...args){
-	uint32_t index = BitHelper::front(id);
-	uint32_t version = BitHelper::back(id);
-
-	if (!(_checkPool(T::type()) && _checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkComponent(index, T::type()) && _checkDestroyed(index)))
-		return nullptr;
-
-	if (BitHelper::getBit(T::type(), _masks[index]))
-		_pools[T::type()]->erase(index);
-
-	addComponent<T>(id, args..);
 }
 
 template<typename T>

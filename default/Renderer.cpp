@@ -346,3 +346,16 @@ void Renderer::setCamera(uint64_t id){
 
 	_camera = id;
 }
+
+void Renderer::load(uint64_t id, std::string file){
+	Mesh* mesh = _engine.manager.getComponent<Mesh>(id);
+
+	assert(mesh);
+
+	if (file.c_str() == mesh->source)
+		return;
+
+	*mesh = Mesh(file);
+
+	onCreate(id);
+}

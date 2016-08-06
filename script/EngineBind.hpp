@@ -91,7 +91,7 @@ int EngineBind::_config(lua_State * L){
 
 int EngineBind::_camera(lua_State * L){
 	if (lua_gettop(L) == 0){
-		Binder::createEntityRef(L, Binder::getSystem<Renderer>(L)->cameraId(), name);
+		Binder::createEntityRef(L, Binder::getSystem<Renderer>(L)->cameraId());
 		return 1;
 	}
 

@@ -22,7 +22,7 @@ function Clock:update()
 		
 		print("Total Frames", "- " .. self.frames)
 		print("FPS", "", "- " .. 1 / Engine.dt())
-		print("Scripts Left", "- " .. Identification.hasLayer("cube_layer"))
+		print("Scripts Left", "- " .. Identifier.hasLayer("cube_layer"))
 		print("References Left", "- " .. Engine.references() .. "\n")
 		
 		self.Clock = 0

@@ -77,3 +77,16 @@ void Identification::destroyByLayer(const std::string& layer){
 	for (uint64_t id : _layers[layer])
 		_engine.manager.destroyEntity(id);
 }
+
+void Identification::rename(uint64_t id, const std::string& name, const std::string& layer){
+	onDestroy(id);
+
+	Identifier* identifier = _engine.manager.getComponent<Identifier>(id);
+
+	strcpy_s(identifier->name, name.c_str());
+
+	if (layer != "")
+		strcpy_s(identifier->layer, layer.c_str());
+
+	onCreate(id);
+}

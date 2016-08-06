@@ -4,7 +4,6 @@
 
 #include "EngineBind.hpp"
 #include "EntityBind.hpp"
-#include "IdentificationBind.hpp"
 #include "IdentifierBind.hpp"
 #include "Vec4Bind.hpp"
 #include "Vec2Bind.hpp"
@@ -150,12 +149,11 @@ void Binder::bind(lua_State* L, Engine& engine){
 	bind(L, EngineType::Core, EngineBind::name, 0, EngineBind::global);
 	bind(L, EngineType::Core, EntityBind::name, EntityBind::constructor, EntityBind::global, EntityBind::methods, EntityBind::meta);
 
-	bind(L, EngineType::System, IdentificationBind::name, 0, IdentificationBind::global);
 	bind(L, EngineType::System, InputBind::name, 0, InputBind::global);
 
-	bind(L, EngineType::Component, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, 0, IdentifierBind::meta, IdentifierBind::getters);
+	bind(L, EngineType::Component, IdentifierBind::name, IdentifierBind::constructor, IdentifierBind::global, IdentifierBind::methods, IdentifierBind::meta, IdentifierBind::getters);
 	bind(L, EngineType::Component, TransformBind::name, TransformBind::constructor, TransformBind::global, TransformBind::methods, TransformBind::meta, TransformBind::getters, TransformBind::setters);
-	bind(L, EngineType::Component, MeshBind::name, MeshBind::constructor, MeshBind::global, 0, MeshBind::meta);
+	bind(L, EngineType::Component, MeshBind::name, MeshBind::constructor, MeshBind::global, MeshBind::methods, MeshBind::meta);
 	bind(L, EngineType::Component, ScriptBind::name, ScriptBind::constructor, ScriptBind::global, ScriptBind::methods, ScriptBind::meta);
 
 	bind(L, EngineType::Primitive, Vec2Bind::name, Vec2Bind::constructor, 0, 0, Vec2Bind::meta, Vec2Bind::getters, Vec2Bind::setters);

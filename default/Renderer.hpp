@@ -47,4 +47,6 @@ public:
 	uint64_t cameraId();
 
 	void setCamera(uint64_t id);
+
+	void load(uint64_t id, std::string file);
 };

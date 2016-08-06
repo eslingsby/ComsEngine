@@ -5,10 +5,13 @@
 #include <string>
 
 struct Identifier : public Component<Identifier>{
-	Identifier(const std::string& name = "", const std::string& layer = "") : name(name), layer(layer){}
+	Identifier(const std::string& name = "", const std::string& layer = ""){
+		strcpy_s(Identifier::name, name.c_str());
+		strcpy_s(Identifier::layer, layer.c_str());
+	}
 
-	const std::string name;
-	const std::string layer;
+	char name[32];
+	char layer[32];
 
 	bool validName = false;
 };
