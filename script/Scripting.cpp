@@ -115,8 +115,13 @@ void Scripting::onProcess(uint64_t id, Script& script){
 					lua_pop(_L, 1);
 				}
 			}
-	
 			// {}
+
+			if (_engine.manager.getEntityState(id) != EntityManager::EntityState::Active){
+				lua_pop(_L, 1);
+				return;
+			}
+
 	
 			// {} function()
 			lua_getfield(_L, -1, "update");

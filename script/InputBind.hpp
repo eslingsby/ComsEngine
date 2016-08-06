@@ -25,7 +25,7 @@ namespace InputBind{
 
 	inline static int _lockMouse(lua_State* L);
 
-	inline static int _scrollAmount(lua_State* L);
+	//inline static int _scrollAmount(lua_State* L);
 
 	static const luaL_Reg global[] = {
 		{ "addInput", _addInput },
@@ -38,7 +38,7 @@ namespace InputBind{
 		{ "mousePos", _mousePos },
 		{ "mouseRelativePos", _mouseRelativePos },
 		{ "lockMouse", _lockMouse },
-		{ "scrollAmount", _scrollAmount },
+		//{ "scrollAmount", _scrollAmount },
 		{ 0, 0 }
 	};
 }
@@ -140,8 +140,8 @@ int InputBind::_lockMouse(lua_State * L){
 	return 0;
 }
 
-int InputBind::_scrollAmount(lua_State * L){
-	Input* input = Binder::getSystem<Input>(L);
-
-	return 0;
-}
+//int InputBind::_scrollAmount(lua_State * L){
+//	Input* input = Binder::getSystem<Input>(L);
+//
+//	return 0;
+//}
