@@ -1,6 +1,6 @@
 ## Entity (core)
 	entity Entity.create()
-	entity:add(component, ...)
+	entity:add(component, ... args)
 	component entity:get(component)
 	int entity:id()
 	entity:destroy()
@@ -10,17 +10,17 @@
 ## Engine (core)
 	number Engine.dt()
 	Engine.shutdown()
-	Engine.register(string, string)
-	string Engine.config(string)
-	Engine.config(string, string)
+	Engine.register(string type, string file)
+	string Engine.config(string key)
+	Engine.config(string key, string value)
 	Engine.camera(entity)
 	entity Engine.camera()
 	
 ## Input (system)
-	Input.addInput(string, int)
-	bool Input.isDown(string)
-	bool Input.wasDown(string)
-	Input.lockMouse(bool)
+	Input.addInput(string name, int scancode)
+	bool Input.isDown(string name)
+	bool Input.wasDown(string name)
+	Input.lockMouse(bool locked)
 	bool Input.mouseLWasDown()
 	bool Input.mouseLIsDown()
 	bool Input.mouseRWasDown()
@@ -29,39 +29,42 @@
 	vec3 Input.mouseRelativePos()
 	
 ## Identification (system)
-	entity Identification.getByName(string)
-	entity Identification.getByLayer(string, int)
-	bool Identification.hasName(string)
-	int Identification.hasLayer(string)
+	entity Identification.getByName(string name)
+	entity Identification.getByLayer(string layer, int number)
+	bool Identification.hasName(string name)
+	int Identification.hasLayer(string layer)
 
 ## Transform (component)
-	Transform(vec3, vec3, vec3)
+	Transform(vec3 position, quat rotation, vec3 scale)
 	number transform.x
 	number transform.y
 	number transform.z
+	transform.x = number 
+	transform.y = number 
+	transform.z = number 
 	vec3 transform:position()
-	transform:position(vec3)
+	transform:position(vec3 position)
 	quat transform:rotation()
-	transform:rotation(quat)
-	transform:translate(vec3)
-	transform:localTranslate(vec3)
-	transform:rotate(quat)
-	transform:localRotate(quat)
-	transform:lookAt(vec3, vec3)
+	transform:rotation(quat rotation)
+	transform:translate(vec3 translation)
+	transform:localTranslate(vec3 translation)
+	transform:rotate(quat rotation)
+	transform:localRotate(quat rotation)
+	transform:lookAt(vec3 target, vec3 up)
 	
 ## Identifier (component)
-	Identifier(string, string)
+	Identifier(string name, string layer)
 	string identifier.name
 	string identifier.layer
 	
 ## Mesh (component)
-	Mesh(string)
+	Mesh(string file)
 	
 ## Script (component)
 	Script()
-	script:create(string)
-	script:remove(string, int)
-	script script:get(string, int)
+	script:create(string type)
+	script:remove(string type, int number)
+	script script:get(string type, int number)
 	
 ## Quat (primitive)
 	Quat(quat)
