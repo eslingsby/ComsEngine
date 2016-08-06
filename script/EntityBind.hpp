@@ -154,6 +154,8 @@ inline int EntityBind::_destroy(lua_State * L){
 inline int EntityBind::_destroyed(lua_State * L){
 	EntityRef* entity = (EntityRef*)luaL_checkudata(L, 1, name);
 
+	Binder::checkEntity(L, entity);
+
 	if (entity->state() == EntityManager::Destroyed)
 		lua_pushboolean(L, 1);
 	else

@@ -13,6 +13,12 @@
 class Input : public System<>{	
 	bool _quit = false;
 
+	bool _mouseLDown = false;
+	bool _mouseLWasDown = false;
+
+	bool _mouseRDown = false;
+	bool _mouseRWasDown = false;
+
 	std::unordered_map<std::string, unsigned int> _comboNames;
 	std::vector<std::pair<SDL_Scancode, SDL_Scancode>> _keyCombos;
 
@@ -47,8 +53,11 @@ public:
 	// Check if key is currently down
 	bool isDown(const std::string& name);
 
-	bool mouseWasDown(unsigned int button);
-	bool mouseIsDown(unsigned int button);
+	bool mouseLWasDown();
+	bool mouseLIsDown();
+
+	bool mouseRWasDown();
+	bool mouseRIsDown();
 
 	glm::vec2 mousePos();
 	glm::vec2 mouseRelativePos();

@@ -8,9 +8,9 @@
 !*.cc
 !*.inl
 
+!*.md
 !.gitignore
 !LICENSE
-!README.md
 
 CMakeFiles/
 thirdparty/

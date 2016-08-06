@@ -46,8 +46,25 @@ void Input::update(){
 			continue;
 		}
 
-		if (e.type != SDL_KEYDOWN && e.type != SDL_KEYUP)
+		if (e.type == SDL_MOUSEBUTTONDOWN){
+			if (e.button.button == SDL_BUTTON_LEFT){
+				_mouseLDown = true;
+				_mouseLWasDown = true;
+			}
+			else if (e.button.button == SDL_BUTTON_RIGHT){
+				_mouseRDown = true;
+				_mouseRWasDown = true;
+			}
+		}
+		else if (e.type == SDL_MOUSEBUTTONUP){
+			if (e.button.button == SDL_BUTTON_LEFT)
+				_mouseLDown = false;
+			else if (e.button.button == SDL_BUTTON_RIGHT)
+				_mouseRDown = false;
+		}
+		else if (e.type != SDL_KEYDOWN && e.type != SDL_KEYUP){
 			continue;
+		}
 
 		for (unsigned int i = 0; i < _keyCombos.size(); i++){
 			if (e.type == SDL_KEYDOWN){
@@ -142,12 +159,30 @@ void Input::lockMouse(bool lock){
 		SDL_SetRelativeMouseMode(SDL_FALSE);
 }
 
-bool Input::mouseWasDown(unsigned int button){
+bool Input::mouseLWasDown(){
+	if (_mouseLWasDown){
+		_mouseLWasDown = false;
+		return true;
+	}
+
 	return false;
 }
 
-bool Input::mouseIsDown(unsigned int button){
+bool Input::mouseLIsDown(){
+	return _mouseLDown;
+}
+
+bool Input::mouseRWasDown(){
+	if (_mouseRWasDown){
+		_mouseRWasDown = false;
+		return true;
+	}
+
 	return false;
+}
+
+bool Input::mouseRIsDown(){
+	return _mouseRDown;
 }
 
 int Input::scrollAmount(){

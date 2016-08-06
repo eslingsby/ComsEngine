@@ -14,8 +14,11 @@ namespace InputBind{
 
 	inline static int _isDown(lua_State* L);
 
-	inline static int _mouseWasDown(lua_State* L);
-	inline static int _mouseIsDown(lua_State* L);
+	inline static int _mouseLWasDown(lua_State* L);
+	inline static int _mouseLIsDown(lua_State* L);
+
+	inline static int _mouseRWasDown(lua_State* L);
+	inline static int _mouseRIsDown(lua_State* L);
 
 	inline static int _mousePos(lua_State* L);
 	inline static int _mouseRelativePos(lua_State* L);
@@ -28,8 +31,10 @@ namespace InputBind{
 		{ "addInput", _addInput },
 		{ "wasDown", _wasDown },
 		{ "isDown", _isDown },
-		{ "mouseWasDown", _mouseWasDown },
-		{ "mouseIsDown", _mouseIsDown },
+		{ "mouseLWasDown", _mouseLWasDown },
+		{ "mouseLIsDown", _mouseLIsDown },
+		{ "mouseRWasDown", _mouseRWasDown },
+		{ "mouseRIsDown", _mouseRIsDown },
 		{ "mousePos", _mousePos },
 		{ "mouseRelativePos", _mouseRelativePos },
 		{ "lockMouse", _lockMouse },
@@ -68,16 +73,36 @@ int InputBind::_isDown(lua_State* L){
 	return 1;
 }
 
-int InputBind::_mouseWasDown(lua_State * L){
+int InputBind::_mouseLWasDown(lua_State * L){
 	Input* input = Binder::getSystem<Input>(L);
 
-	return 0;
+	lua_pushboolean(L, (int)input->mouseLWasDown());
+
+	return 1;
 }
 
-int InputBind::_mouseIsDown(lua_State * L){
+int InputBind::_mouseLIsDown(lua_State * L){
 	Input* input = Binder::getSystem<Input>(L);
 
-	return 0;
+	lua_pushboolean(L, (int)input->mouseLIsDown());
+
+	return 1;
+}
+
+int InputBind::_mouseRWasDown(lua_State * L){
+	Input* input = Binder::getSystem<Input>(L);
+
+	lua_pushboolean(L, (int)input->mouseRWasDown());
+
+	return 1;
+}
+
+int InputBind::_mouseRIsDown(lua_State * L){
+	Input* input = Binder::getSystem<Input>(L);
+
+	lua_pushboolean(L, (int)input->mouseRIsDown());
+
+	return 1;
 }
 
 int InputBind::_mousePos(lua_State * L){
