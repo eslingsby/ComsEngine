@@ -13,7 +13,7 @@ grid:get(Script):create("Grid")
 math.randomseed(os.time())
 
 local i = 0
-while i < 1024 * 4 do
+while i < 1024 * 2 do
 	local cube = Entity.create()
 	
 	cube:add(Script)

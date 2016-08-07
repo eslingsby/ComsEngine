@@ -25,9 +25,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
-						entity:add(Mesh, "folder/model.obj")
+						entity:add(Mesh, "mesh/cube.obj")
 					</p>
 				</div>
 			</div>
@@ -42,10 +42,10 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
-						entity:add(Mesh, "folder/cube.obj")<br>
+						local entity = Entity.create()<br>
+						entity:add(Mesh, "mesh/cube.obj")<br>
 						<br>
-						entity:get(Mesh):reload("folder/sphere.obj")
+						entity:get(Mesh):reload("mesh/sphere.obj")
 					</p>
 				</div>
 			</div>

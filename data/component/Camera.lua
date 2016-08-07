@@ -1,8 +1,13 @@
 local Camera = {}
 
 function Camera:load()	
-	self.entity:add(Transform)	
-	self.entity:add(Identifier, "camera")
+	if (not self.entity:has(Transform)) then
+		self.entity:add(Transform)
+	end
+	
+	if (not self.entity:has(Identifier)) then
+		self.entity:add(Identifier, "camera")
+	end
 	
 	self.transform = self.entity:get(Transform)
 	
@@ -13,11 +18,11 @@ function Camera:load()
 	
 	self.sensitivity = 0.25
 	
-	Input.addInput("forward", 26);
-	Input.addInput("back", 22);
-	Input.addInput("left", 4);
-	Input.addInput("right", 7);
-	Input.addInput("escape", 41);
+	Input.addInput("forward", 26)
+	Input.addInput("back", 22)
+	Input.addInput("left", 4)
+	Input.addInput("right", 7)
+	Input.addInput("escape", 41)
 	
 	self.lock = false
 	
@@ -28,7 +33,7 @@ function Camera:load()
 	self.start = true
 end
 
-function Camera:reset()
+function Camera:reload()
 	self.speed = 512
 end
 

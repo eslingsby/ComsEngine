@@ -5,7 +5,7 @@
 		<meta charset="utf-8">	
 		<link rel="stylesheet" href="style.css">
 		
-		<title>ComsEngine - Custom Scripts</title>	
+		<title>ComsEngine - Custom</title>	
 	</head>
 
 	<body>
@@ -25,7 +25,7 @@
 					<br>
 					<span>Load.lua</span> is ran once before startup, and everytime a script reload is triggered with <span>CTRL + R</span>.<br>
 					<br>
-					<span>Start.lua</span> is ran once after the initial startup <span>Load.lua</span>, but never again.
+					<span>Start.lua</span> is ran once after <span>Load.lua</span>, but not after each reload.
 				</p>
 			</div>
 		</div>
@@ -34,11 +34,10 @@
 			<div class="label shadow"><p><b>Custom Scripts</b></p></div>
 			<div class="description">
 				<p>
-					Custom script definitions should be formatted as functions that return tables.<br>
-					<br>
-					To register a custom script definition for adding to entities and reloading, use <span>Script.register</span>.<br>
+					To register a custom script definition for adding to entities, use <span>Script.register</span>.<br>
 					<br>
 					To add a custom script instance to an entity, add a <span>Script</span> component, and use <span>script:create</span> to create an instance of the script.<br>
+					An entity's <span>Script</span> component can hold up to 8 Lua script instances of any type.<br>
 					<br>
 					Inside <span>MyScript.lua</span>
 				</p>
@@ -50,7 +49,7 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;-- called on creation<br>
 						end<br>
 						<br>
-						function MyScript:reset()<br>
+						function MyScript:reload()<br>
 						&nbsp;&nbsp;&nbsp;&nbsp;-- called on script reload<br>
 						end<br>
 						<br>
@@ -92,7 +91,7 @@
 					Script reloading recompiles every custom script file registered using <span>Script.register</span> without restarting.<br>
 					Script reloading is triggered with <span>CTRL + R</span>.<br>
 					<br>
-					The <span>reset</span> function is triggered in every custom script after reloading, before <span>update</span>.<br>
+					The <span>reload</span> function is triggered in every custom script after reloading, before <span>update</span>.<br>
 				</p>
 			</div>
 		</div>		

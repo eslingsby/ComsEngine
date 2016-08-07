@@ -25,7 +25,7 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
 						entity:add(Transform, Vec3(0, 0, 0), Quat(Vec3(180, 0, 0)), Vec3(1, 1, 1))
 					</p>
@@ -41,9 +41,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Transform)<br>
-						transform = entity:get(Transform)<br>
+						local transform = entity:get(Transform)<br>
 						<br>
 						position = transform:position()<br>
 						<br>
@@ -62,11 +62,11 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Transform)<br>
-						transform = entity:get(Transform)<br>
+						local transform = entity:get(Transform)<br>
 						<br>
-						rotation = transform:rotation()<br>
+						local rotation = transform:rotation()<br>
 						<br>
 						transform:rotation(Quat(Vec3(0, 0, 0)))
 					</p>
@@ -82,11 +82,11 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Transform)<br>
-						transform = entity:get(Transform)<br>
+						local transform = entity:get(Transform)<br>
 						<br>
-						scale = transform:scale()<br>
+						local scale = transform:scale()<br>
 						<br>
 						transform:scale(Vec3(0, 0, 0))
 					</p>
@@ -102,9 +102,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Transform)<br>
-						transform = entity:get(Transform)<br>
+						local transform = entity:get(Transform)<br>
 						<br>
 						transform:translate(Vec3(0, 0, 1) * Engine.dt())<br>
 						<br>
@@ -123,9 +123,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Transform)<br>
-						transform = entity:get(Transform)<br>
+						local transform = entity:get(Transform)<br>
 						<br>
 						transform:rotate(Quat(Vec3(0, 90, 0)))<br>
 						<br>
@@ -144,9 +144,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Transform)<br>
-						transform = entity:get(Transform)<br>
+						local transform = entity:get(Transform)<br>
 						<br>
 						transform:lookAt(Vec3(0, 0, 0), Vec3(0, 1, 0))
 					</p>

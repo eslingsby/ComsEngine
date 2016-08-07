@@ -25,7 +25,7 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()
+						local entity = Entity.create()
 					</p>
 				</div>
 			</div>
@@ -42,7 +42,7 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
 						entity:add(Transform, Vec3(0, 0, 0))
 					</p>
@@ -61,8 +61,8 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
-						transform = entity:get(Transform)<br>
+						local entity = Entity.create()<br>
+						local transform = entity:get(Transform)<br>
 						<br>
 						transform = entity:get(Transform)
 					</p>
@@ -81,16 +81,16 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
-						has = entity:has(Transform)
+						local has = entity:has(Transform)
 					</p>
 				</div>
 			</div>
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>Bool <b>entity:destroy</b>()</p></div>
+			<div class="label shadow"><p><b>entity:destroy</b>()</p></div>
 			<div class="description">
 				<p>
 					Destroys existing entity.<br>
@@ -101,7 +101,7 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
 						entity:destroy()
 					</p>
@@ -110,7 +110,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>Bool <b>entity:invalidate</b>()</p></div>
+			<div class="label shadow"><p><b>entity:invalidate</b>()</p></div>
 			<div class="description">
 				<p>
 					De-references the entity instance and makes it no longer linked to entity (also called on garbage collection).<br>
@@ -120,7 +120,7 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
 						entity:invalidate()
 					</p>
@@ -130,7 +130,7 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
 						entity:destroy()<br>
 						entity:invalidate()
@@ -141,7 +141,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>Bool <b>entity:id</b>()</p></div>
+			<div class="label shadow"><p>Int <b>entity:id</b>()</p></div>
 			<div class="description">
 				<p>
 					Returns integer id of entity, primarily for comparing two entity instances.<br>
@@ -150,9 +150,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
-						id = entity:id()
+						local id = entity:id()
 					</p>
 				</div>
 			</div>
@@ -168,9 +168,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
-						destroyed = entity:destroyed()
+						local destroyed = entity:destroyed()
 					</p>
 				</div>
 			</div>
@@ -184,9 +184,9 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
-						valid = entity:valid()
+						local valid = entity:valid()
 					</p>
 				</div>
 			</div>

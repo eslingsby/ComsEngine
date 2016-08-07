@@ -25,7 +25,7 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						<br>
 						entity:add(Script)
 					</p>
@@ -41,7 +41,7 @@
 				</p>
 				<div class="code">
 					<p>
-						Script.register("Type", "folder/file.lua")
+						Script.register("MyScript", "MyScript.lua")
 					</p>
 				</div>
 			</div>
@@ -55,10 +55,10 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Script)<br>
 						<br>
-						entity:get(Script):create("Type")
+						entity:get(Script):create("MyScript")
 					</p>
 				</div>
 			</div>
@@ -72,10 +72,31 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Script)<br>
+						entity:get(Script):create("MyScript")<br>
 						<br>
-						entity:get(Script):remove("Type", 1)
+						entity:get(Script):remove("MyScript")
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>Table <b>script:instance</b>(String type, Int number = 0)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						local entity = Entity.create()<br>
+						entity:add(Script)<br>
+						entity:get(Script):create("MyScript")<br>
+						<br>
+						local table = entity:get(Script):instance("MyScript")<br>
+						<br>
+						table.member = 0
 					</p>
 				</div>
 			</div>
@@ -89,30 +110,15 @@
 				</p>
 				<div class="code">
 					<p>
-						entity = Entity.create()<br>
+						local entity = Entity.create()<br>
 						entity:add(Script)<br>
+						entity:get(Script):create("MyScript")<br>
 						<br>
-						number = entity:get(Script):instances("Type")
+						local number = entity:get(Script):instances("MyScript")
 					</p>
 				</div>
 			</div>
 		</div>
 		
-		<div class="section">
-			<div class="label shadow"><p>Table <b>script:instance</b>(String type, Int number = 0)</p></div>
-			<div class="description">
-				<p>
-					Description
-				</p>
-				<div class="code">
-					<p>
-						entity = Entity.create()<br>
-						entity:add(Script)<br>
-						<br>
-						table = entity:get(Script):instance("Type")
-					</p>
-				</div>
-			</div>
-		</div>
 	</body>
 </html>

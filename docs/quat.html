@@ -18,14 +18,14 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>Quat <b>Quat</b>(Number x = 0, Number y = 0, Number z = 0,  Number w = 0) | Quat <b>Quat</b>(Quat other)</p></div>
+			<div class="label shadow"><p>Quat <b>Quat</b>(Number x = 0, Number y = 0, Number z = 0,  Number w = 1) | Quat <b>Quat</b>(Quat other)</p></div>
 			<div class="description">
 				<p>
 					Description
 				</p>
 				<div class="code">
 					<p>
-						quat = Quat()<br>
+						local quat = Quat(0, 0, 0, 1)<br>
 						<br>
 						quat = Quat(quat)<br>
 						<br>
@@ -43,11 +43,11 @@
 				</p>
 				<div class="code">
 					<p>
-						quat = Quat()<br>
+						local quat = Quat()<br>
 						<br>
 						quat.w = 1<br>
 						<br>
-						value = quat.w
+						local value = quat.w
 					</p>
 				</div>
 			</div>
@@ -61,9 +61,9 @@
 				</p>
 				<div class="code">
 					<p>
-						quat = Quat()<br>
+						local quat = Quat()<br>
 						<br>
-						value = quat.length
+						local value = quat.length
 					</p>
 				</div>
 			</div>
@@ -77,10 +77,10 @@
 				</p>
 				<div class="code">
 					<p>
-						vector = Vec3()<br>
-						quat = Quat()<br>
+						local vector = Vec3()<br>
+						local quat = Quat()<br>
 						<br>
-						vector = quat * vector
+						local vector = quat * vector
 					</p>
 				</div>
 			</div>

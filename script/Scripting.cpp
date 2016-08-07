@@ -101,7 +101,7 @@ void Scripting::onProcess(uint64_t id, Script& script){
 	
 			if (_reloaded){
 				// {} function()
-				lua_getfield(_L, -1, "reset");
+				lua_getfield(_L, -1, "reload");
 	
 				if (!lua_isnil(_L, -1)){
 					// {} function() {}
