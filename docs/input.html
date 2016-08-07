@@ -1,0 +1,165 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - Input</title>	
+	</head>
+
+	<body>
+		<div class="wrapper">
+			<iframe src="navigator.html" frameborder="0" scrolling="no"></iframe>
+		</div>
+	
+		<div class="title">
+			<p>Input (core object)</p>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p><b>Input.addInput</b>(String name, Int scancode)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						Input.addInput("forward", 26)<br>
+						Input.addInput("back", 22)<br>
+						Input.addInput("left", 4)<br>
+						Input.addInput("right", 7)<br>
+						Input.addInput("escape", 41)
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Bool <b>Input.wasDown</b>(String name)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						down = Input.wasDown("forward")
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Bool <b>Input.isDown</b>(String name)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						down = Input.isDown("forward")
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Bool <b>Input.mouseLWasDown</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						down = Input.mouseLWasDown()
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Bool <b>Input.mouseLIsDown</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						down = Input.mouseLIsDown()
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Bool <b>Input.mouseRWasDown</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						down = Input.mouseRWasDown()
+					</p>
+				</div>
+			</div>
+		</div>	
+		
+		<div class="section">
+			<div class="label shadow"><p>Bool <b>Input.mouseRIsDown</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						down = Input.mouseRIsDown()
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Vec3 <b>Input.mousePos</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						vector = Input.mousePos()
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Vec3 <b>Input.mouseRelativePos</b>()</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						vector = Input.mouseRelativePos()
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Input.lockMouse</b>(Bool locked)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						Input.lockMouse(true)
+					</p>
+				</div>
+			</div>
+		</div>
+		
+	</body>
+</html>

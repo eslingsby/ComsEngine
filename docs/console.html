@@ -1,0 +1,72 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - The Console</title>	
+	</head>
+
+	<body>
+		<div class="wrapper">
+			<iframe src="navigator.html" frameborder="0" scrolling="no"></iframe>
+		</div>
+	
+		<div class="title">
+			<p>The Console</p>
+		</div>
+		
+		<div class="section">
+			<div class="description">
+				<p>
+					The CMD window of the engine can be used as a console to execute single lines of Lua, providing no scripts are spamming text to it.<br>
+					<br>
+					Use it by assigning global variables.<br>
+					<br>
+					Console with no input.
+				</p>
+				<div class="code">
+					<p>
+						>>>
+					</p>
+				</div>
+				<p>
+					<br>
+					Creating a global variable.
+				</p>				
+				<div class="code">
+					<p>
+						>>> entity = Entity.create()<br>
+						>>>
+					</p>
+				</div>
+				<p>
+				<br>
+					Using global variable
+				</p>				
+				<div class="code">
+					<p>
+						>>> entity = Entity.create()<br>
+						>>> entity:add(Transform)<br>
+						>>>
+					</p>
+				</div>
+				<p>
+				<br>
+					Using print
+				</p>				
+				<div class="code">
+					<p>
+						>>> entity = Entity.create()<br>
+						>>> entity:add(Transform)<br>
+						>>> print(entity)<br>
+						userdata: 000000B5E252DE78<br>
+						>>>
+					</p>
+				</div>
+			</div>
+		</div>
+	
+	</body>
+</html>
