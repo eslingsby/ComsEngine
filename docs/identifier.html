@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p><b>entity:add</b>(Identifier c, String name, String layer)</p></div>
+			<div class="label shadow"><p><b>entity:add</b>(Identifier c, String name = "", String layer = "")</p></div>
 			<div class="description">
 				<p>
 					Description
@@ -38,21 +38,21 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Identifier.getByLayer("unique_name")
 					</p>
 				</div>
 			</div>
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p>Entity <b>Identifier.getByLayer</b>(String layer, Int number)</p></div>
+			<div class="label shadow"><p>Entity <b>Identifier.getByLayer</b>(String layer, Int number = 0)</p></div>
 			<div class="description">
 				<p>
 					Description
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Identifier.getByLayer("shared_layer", 2)
 					</p>
 				</div>
 			</div>
@@ -67,7 +67,7 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						has = Identifier.hasName("unique_name")
 					</p>
 				</div>
 			</div>
@@ -82,7 +82,7 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						number = Identifier.hasLayer("shared_layer")
 					</p>
 				</div>
 			</div>
@@ -97,7 +97,11 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Entity.create()<br>
+						entity:add(Identifier, "", "shared_layer")<br>
+						identifier = entity:get(Identifier)<br>
+						<br>
+						identifier:rename("new_name", "new_layer")
 					</p>
 				</div>
 			</div>
@@ -111,7 +115,11 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Entity.create()<br>
+						entity:add(Identifier, "", "shared_layer")<br>
+						identifier = entity:get(Identifier)<br>
+						<br>
+						print(identifier.name)		
 					</p>
 				</div>
 			</div>
@@ -125,7 +133,11 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Entity.create()<br>
+						entity:add(Identifier, "", "shared_layer")<br>
+						identifier = entity:get(Identifier)<br>
+						<br>
+						print(identifier.layer)		
 					</p>
 				</div>
 			</div>

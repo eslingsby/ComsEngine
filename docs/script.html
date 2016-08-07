@@ -37,7 +37,7 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						Script.register("Type", "folder/file.lua")
 					</p>
 				</div>
 			</div>
@@ -51,21 +51,27 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Entity.create()<br>
+						entity:add(Script)<br>
+						<br>
+						entity:get(Script):create("Type")
 					</p>
 				</div>
 			</div>
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b>script:remove</b>(String type, Int number)</p></div>
+			<div class="label shadow"><p><b>script:remove</b>(String type, Int number = 0)</p></div>
 			<div class="description">
 				<p>
 					Description
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Entity.create()<br>
+						entity:add(Script)<br>
+						<br>
+						entity:get(Script):remove("Type", 1)
 					</p>
 				</div>
 			</div>
@@ -79,21 +85,27 @@
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Entity.create()<br>
+						entity:add(Script)<br>
+						<br>
+						number = entity:get(Script):instances("Type")
 					</p>
 				</div>
 			</div>
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p>Table <b>script:instance</b>(String type, Int number)</p></div>
+			<div class="label shadow"><p>Table <b>script:instance</b>(String type, Int number = 0)</p></div>
 			<div class="description">
 				<p>
 					Description
 				</p>
 				<div class="code">
 					<p>
-						code
+						entity = Entity.create()<br>
+						entity:add(Script)<br>
+						<br>
+						table = entity:get(Script):instance("Type")
 					</p>
 				</div>
 			</div>

@@ -1,0 +1,94 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - Example Scripts</title>	
+	</head>
+
+	<body>
+		<div class="title">
+			<p>Example Scripts</p>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Grid</b></p></div>
+			<div class="description">
+				<p>
+					Provides a large wireframe grid at the origin point.
+				</p>
+				<div class="code">
+					<p>
+						local camera = Entity.create()<br>
+						camera:add(Script)<br>
+						<br>
+						camera:get(Script):create("Grid")
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Camera</b></p></div>
+			<div class="description">
+				<p>
+					Press the <span>ESC</span> key to lock the mouse and gain first-person style controls over the camera. Use <span>WASD</span> to move.
+				</p>
+				<div class="code">
+					<p>
+						local camera = Entity.create()<br>
+						camera:add(Script)<br>
+						<br>
+						camera:get(Script):create("Camera")
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Clock</b></p></div>
+			<div class="description">
+				<p>
+					Measures the FPS of the current simulation and prints out information every second.
+				</p>
+				<div class="code">
+					<p>
+						local camera = Entity.create()<br>
+						camera:add(Script)<br>
+						<br>
+						camera:get(Script):create("Clock")
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Cube</b></p></div>
+			<div class="description">
+				<p>
+					Creates a randomly positioned entity that destroys itself after a random period of time, and creates a new entity upon destruction.<br>
+					Used in large quantities to stress test the engine.
+				</p>
+				<div class="code">
+					<p>
+						math.randomseed(os.time())<br>
+						<br>
+						local i = 0<br>
+						while i < 1024 do<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;local cube = Entity.create()<br>
+							<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;cube:add(Script)<br>
+						<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;cube:get(Script):create("Cube")<br>
+							<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;i = i + 1<br>
+						end
+					</p>
+				</div>
+			</div>
+		</div>
+	
+	</body>
+</html>

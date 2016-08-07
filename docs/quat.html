@@ -1,0 +1,95 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - Quat</title>	
+	</head>
+
+	<body>
+		<div class="title">
+			<p>Quat (primitive object)</p>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p>Quat <b>Quat</b>(Number x = 0, Number y = 0, Number z = 0,  Number w = 0) | Quat <b>Quat</b>(Quat other)</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						quat = Quat()<br>
+						<br>
+						quat = Quat(quat)<br>
+						<br>
+						quat = Quat(Vec3(0, 90, 0))
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Number <b>quat.x</b> | <b>quat.x</b> = Number | Number <b>quat.y</b> | <b>quat.y</b> = Number | Number <b>quat.z</b> | <b>quat.z</b> = Number | Number <b>quat.w</b> | <b>quat.w</b> = Number</p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						quat = Quat()<br>
+						<br>
+						quat.w = 1<br>
+						<br>
+						value = quat.w
+					</p>
+				</div>
+			</div>
+		</div>
+				
+		<div class="section">
+			<div class="label shadow"><p>Number <b>quat.length</b></p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						quat = Quat()<br>
+						<br>
+						value = quat.length
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Quat * Vec3</b> | <b>Quat * Vec4</b></p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+				<div class="code">
+					<p>
+						vector = Vec3()<br>
+						quat = Quat()<br>
+						<br>
+						vector = quat * vector
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p><b>Quat == Quat</b> | <b>-Quat</b> | <b>Quat + Quat</b> | <b>Quat - Quat</b> | <b>Quat * Quat</b> | <b>Quat / Quat</b></p></div>
+			<div class="description">
+				<p>
+					Description
+				</p>
+			</div>
+		</div>
+		
+	</body>
+</html>

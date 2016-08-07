@@ -1,0 +1,96 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+		
+		<title>ComsEngine - Custom Scripts</title>	
+	</head>
+
+	<body>
+		<div class="title">
+			<p>Custom Scripts</p>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p><b>Load.lua</b> and <b>Start.lua</b></p></div>
+			<div class="description">
+				<p>
+					<span>Load.lua</span> and <span>Start.lua</span> should be located in the <span>data</span> folder, along with any custom script files.<br>
+					<br>
+					<span>Load.lua</span> is ran once before startup, and everytime a script reload is triggered with <span>CTRL + R</span>.<br>
+					<br>
+					<span>Start.lua</span> is ran once after the initial startup <span>Load.lua</span>, but never again.
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Custom Scripts</b></p></div>
+			<div class="description">
+				<p>
+					Custom script definitions should be formatted as functions that return tables.<br>
+					<br>
+					To register a custom script definition for adding to entities and reloading, use <span>Script.register</span>.<br>
+					<br>
+					To add a custom script instance to an entity, add a <span>Script</span> component, and use <span>script:create</span> to create an instance of the script.<br>
+					<br>
+					Inside <span>MyScript.lua</span>
+				</p>
+				<div class="code">
+					<p>
+						local MyScript = {}<br>
+						<br>
+						function MyScript:load()<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;-- called on creation<br>
+						end<br>
+						<br>
+						function MyScript:reset()<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;-- called on script reload<br>
+						end<br>
+						<br>
+						function MyScript:update()<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;-- called every tick<br>
+						end<br>
+						<br>
+						return MyScript
+					</p>
+				</div>
+				<p>
+					<br>
+					Inside <span>Load.lua</span>
+				</p>
+				<div class="code">
+					<p>
+						Script.register("MyScript", "MyScript.lua")
+					</p>
+				</div>
+				<p>
+					<br>
+					Inside <span>Start.lua</span>
+				</p>
+				<div class="code">
+					<p>
+						local entity = Entity.create()<br>
+						<br>
+						entity:add(Script)<br>
+						entity:get(Script):create("MyScript")
+					</p>
+				</div>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b>Script Reloading</b></p></div>
+			<div class="description">
+				<p>
+					Script reloading recompiles every custom script file registered using <span>Script.register</span> without restarting.<br>
+					Script reloading is triggered with <span>CTRL + R</span>.<br>
+					<br>
+					The <span>reset</span> function is triggered in every custom script after reloading, before <span>update</span>.<br>
+				</p>
+			</div>
+		</div>		
+	</body>
+</html>
