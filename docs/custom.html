@@ -35,9 +35,34 @@
 			<div class="description">
 				<p>
 					To register a custom script definition for adding to entities, use <span>Script.register</span>.<br>
+					Script registering is done within <span>Load.lua</span> as to allow for re-registering of scripts on reload.<br>
+					<br>
+					Inside <span>Load.lua</span>
+				</p>
+				<div class="code">
+					<p>
+						Script.register("MyScript", "MyScript.lua")
+					</p>
+				</div>
+				<p>
 					<br>
 					To add a custom script instance to an entity, add a <span>Script</span> component, and use <span>script:create</span> to create an instance of the script.<br>
-					An entity's <span>Script</span> component can hold up to 8 Lua script instances of any type.<br>
+					An entity's <span>Script</span> component can hold up to 8 instances of any type.<br>
+					<br>
+					Inside <span>Start.lua</span>
+				</p>
+				<div class="code">
+					<p>
+						local entity = Entity.create()<br>
+						<br>
+						entity:add(Script)<br>
+						entity:get(Script):create("MyScript")
+					</p>
+				</div>
+				<p>				
+					<br>
+					Each custom script instance is created with an <span>Entity</span> object referencing the entity it was created upon.<br>
+					The entity object is allocated to <span>self.entity</span> and custom scripts should add, check, and get components through this entity object.<br>
 					<br>
 					Inside <span>MyScript.lua</span>
 				</p>
@@ -47,6 +72,8 @@
 						<br>
 						function MyScript:load()<br>
 						&nbsp;&nbsp;&nbsp;&nbsp;-- called on creation<br>
+						<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;self.entity:add(Transform)<br>
 						end<br>
 						<br>
 						function MyScript:reload()<br>
@@ -59,28 +86,7 @@
 						<br>
 						return MyScript
 					</p>
-				</div>
-				<p>
-					<br>
-					Inside <span>Load.lua</span>
-				</p>
-				<div class="code">
-					<p>
-						Script.register("MyScript", "MyScript.lua")
-					</p>
-				</div>
-				<p>
-					<br>
-					Inside <span>Start.lua</span>
-				</p>
-				<div class="code">
-					<p>
-						local entity = Entity.create()<br>
-						<br>
-						entity:add(Script)<br>
-						entity:get(Script):create("MyScript")
-					</p>
-				</div>
+				</div>				
 			</div>
 		</div>
 		
