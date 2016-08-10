@@ -1,61 +1,58 @@
 local Cube = {}
 
 function Cube:load()
-	if (not self.entity:has(Transform)) then
-		self.entity:add(Transform)
-	end
-	
-	if (not self.entity:has(Mesh)) then
-		self.entity:add(Mesh, "mesh/cube.obj")
-	end
-	
-	if (not self.entity:has(Identifier)) then
-		self.entity:add(Identifier, "", "cube_layer")
-	end
-		
-	self.camera = Identifier.getByName("camera"):get(Transform)
-	
-	self.seconds = 0
-	
-	-- Destroy self after random time between 0 - 60 seconds
-	self.killTime = math.random(0, 600) / 100
+	-- Transform required for mesh component
+	self.entity:add(Transform)
 
+	-- Mesh is wavefront .obj file in the data/mesh folder
+	self.entity:add(Mesh, "mesh/cube.obj")
+
+	-- Clock script uses cube_layer to count how many cubes are left
+	self.entity:add(Identifier, "", "cube_layer")
+
+	-- Get transform instance
 	self.transform = self.entity:get(Transform)
 
+	-- Set transform position to random x y position, on fixed z plane
 	local distance = 512
+	self.transform:position(Vec3(math.random(-distance, distance), math.random(-distance, distance), -distance))
 	
-	self.transform:position(Vec3(math.random(-distance, distance), math.random(-distance, distance), -512))
+	-- Generate random time to destroy self (0 - 60 seconds)
+	self.killTime = math.random(0, 600) / 100
 	
+	-- Second counter
+	self.seconds = 0
+
+	-- Call reload functions to set self.speed and self.movement
 	self:reload()
 end
 
 function Cube:reload()
-	--self.killTime = math.random(0, 60)
-	self.speed = math.random(0, 1024)
+	-- Generate random speed
+	self.speed = math.random(1, 1024)
 	
-	local spin = 512
-	
+	-- Generate random rotational movement
+	local spin = 256
 	self.movement = Vec3(math.random(-spin, spin), math.random(-spin, spin), math.random(-spin, spin))
-	
-	--self.entity:destroy()
-
 end
 
 function Cube:update()
+	-- Update second counter
 	self.seconds = self.seconds + 1 * Engine.dt()
 	
-	--self.transform:lookAt(-self.camera:position(), Vec3(0, 0, 1))
-	
+	-- Transform entity position
 	self.transform:localRotate(Quat(self.movement * Engine.dt()))
 	self.transform:translate(Vec3(0, 0, self.speed * Engine.dt()))	
 	
-	-- Destroy self
+	-- If timer is up
 	if (self.seconds > self.killTime) then
+		-- Create new cube instance on a new entity
 		local cube = Entity.create()
 		
 		cube:add(Script)
         cube:get(Script):create("Cube")
 		
+		-- Destroy self
 		self.entity:destroy()
 	end
 end

@@ -1,18 +1,13 @@
 local Grid = {}
 
 function Grid:load()
-	if (not self.entity:has(Transform)) then
-		self.entity:add(Transform)
-	end
+	-- Transform required for mesh component
+	self.entity:add(Transform)
 	
-	if (not self.entity:has(Mesh)) then
-		self.entity:add(Mesh, "mesh/grid.obj")
-	end			
+	-- Mesh is wavefront .obj file in the data/mesh folder
+	self.entity:add(Mesh, "mesh/grid.obj")
 	
-	if (not self.entity:has(Transform)) then
-		self.entity:add(Identifier, "grid")
-	end
-
+	-- Make grid big
 	self.entity:get(Transform):scale(Vec3(10, 10, 10))
 end
 
