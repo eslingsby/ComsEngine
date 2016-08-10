@@ -121,11 +121,6 @@ void Renderer::load(){
 	std::string vertexFile = _engine.getConfig("shader.vertex");
 	std::string fragmentFile = _engine.getConfig("shader.fragment");
 
-	if (!_camera.valid()){
-		_camera.create();
-		_camera.addComponent<Transform>();
-	}
-
 	if (_mainFShader)
 		glDeleteShader(_mainFShader);
 
@@ -173,7 +168,16 @@ void Renderer::load(){
 	_reshape(windowWidth, windowHeight);
 }
 
+void Renderer::reset(){
+	_camera.invalidate();
+}
+
 void Renderer::update(){
+	if (!_camera.valid()){
+		_camera.create();
+		_camera.addComponent<Transform>();
+	}
+
 	if (!_window)
 		return;
 

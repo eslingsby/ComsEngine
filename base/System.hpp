@@ -56,6 +56,8 @@ public:
 	// Called on state changes (also script reloads)
 	virtual void reset(){};
 
+	virtual void reload(){};
+
 	// Called by entity manager every tick
 	virtual void update(){};
 

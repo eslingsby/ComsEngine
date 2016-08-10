@@ -315,6 +315,9 @@ inline void EntityManager::eraseDestroyed(){
 		_versions.clear();
 		_references.clear();
 
+		_entities = 0;
+		_purge = false;
+
 		while (_destroyed.size())
 			_destroyed.pop();
 

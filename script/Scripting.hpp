@@ -10,7 +10,7 @@
 #include <set>
 
 class Scripting : public System<Script>{
-	lua_State* const _L;
+	lua_State* _L;
 
 	std::set<std::string> _loadedScripts;
 
@@ -19,12 +19,17 @@ class Scripting : public System<Script>{
 	Input* _input;
 
 	bool _reloaded = false;
+	bool _reset = false;
+
+	std::string _startScript;
+	bool _started = true;
 
 public:
 	Scripting(Engine* engine, const std::string& scriptPath = "");
 	~Scripting();
 
 	void load() override;
+	void reset() override;
 	void update() override;
 
 	void onProcess(uint64_t id, Script& script) override;

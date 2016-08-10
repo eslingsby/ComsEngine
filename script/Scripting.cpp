@@ -50,15 +50,35 @@ void Scripting::load(){
 		_scriptPath = _engine.getConfig("data");
 
 	Binder::bind(_L, _engine);
-	
+
 	callFile("Load.lua");
+
+	if (_engine.getConfig("script.start") == "")
+		_engine.setConfig("script.start", "Start.lua");
+
+	_startScript = _engine.getConfig("script.start");
 
 #ifdef SCRIPTING_CONSOLE
 	_console = new std::thread(consoleThread);
 #endif
 }
 
+void Scripting::reset(){
+	lua_close(_L);
+
+	_L = luaL_newstate();
+
+	luaL_openlibs(_L);
+
+	_reset = true;
+}
+
 void Scripting::update(){
+	if (_started){
+		callFile(_startScript);
+		_started = false;
+	}
+
 #ifdef SCRIPTING_CONSOLE
 	if (_consoleDone == true){
 		if (luaL_dostring(_L, _consoleCommand.c_str()))
@@ -76,8 +96,6 @@ void Scripting::update(){
 
 	if (_input->wasDown("reload")){
 		callFile("Load.lua");
-		_engine.reset();
-
 		_reloaded = true;
 	}
 

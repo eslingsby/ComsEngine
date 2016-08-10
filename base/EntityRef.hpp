@@ -104,7 +104,7 @@ inline void EntityRef::operator=(const EntityRef& other){
 }
 
 inline void EntityRef::operator=(uint64_t id){
-	assert(_manager && _id != id  && _manager->entityExists(id));
+	assert(_manager && _manager->entityExists(id));
 
 	// decrease reference count for old id
 	if (_valid)

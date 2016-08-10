@@ -174,10 +174,7 @@ inline void Engine::shutdown(bool abort){
 }
 
 inline void Engine::reset(bool data){
-	_resetSystems();
-
-	if (data)
-		_reset = true;
+	_reset = true;
 }
 
 inline void Engine::init(int argc, char * argv[]){
@@ -215,6 +212,7 @@ inline void Engine::update(){
 	_end = Clock::now();
 
 	if (_reset){
+		_resetSystems();
 		manager.purge();
 		manager.eraseDestroyed();
 		_reset = false;
