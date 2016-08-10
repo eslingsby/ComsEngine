@@ -139,20 +139,33 @@ iframe{
 	padding-right:2px;
 }
 
+.description  a{
+	text-decoration:underline;
+}
+
+.description a:link{
+	color: #427fed;
+}
+
+.description  a:visited {
+	color: #427fed;
+}
+
 .code{
 	margin-top:5px;
 	margin-bottom:5px;
 	padding:5px;
 	background-color:#f9f9f9;
 	border:1px solid #efefef;
-	height:initial;
 }
 
 .code p{
 	font-family:"Lucida Console", Monaco, monospace;
 	text-align:left;
 	font-size:10pt;
-	overflow: hidden;	
+	text-overflow:ellipsis;
+	overflow:hidden;
+	white-space: nowrap;
 }
 
 .shadow{
