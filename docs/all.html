@@ -46,7 +46,35 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p><b><a href="engine.html">Engine (core object)</a></b></p></div>
+			<div class="label shadow"><p>Engine Types</p></div>
+			<div class="description">
+				<p>
+					<span>Core objects</span>, aside from the <span>entity object</span>, cannot be instanced.<br>
+					<br>
+					The <span>entity object</span> is the interface for adding and getting <span>component objects</span>.<br>
+					<br>
+					<span>Component objects</span> can only be instanced through the <span>entity object</span>.<br>
+					<br>
+					<span>Primitive objects</span> can be instanced by simply calling their type name as a constructor function.
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p>Dot and Colon</p></div>
+			<div class="description">
+				<p>
+					The <span>.</span> operator should be used when referring to a global object, or an instance member.<br>
+					<br>
+					The <span>:</span> operator should be used when referring to an instance function.<br>
+					<br>
+					The documentation below includes capitalization to refer to global objects, and lower-case to refer to instance objects.
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="engine.html">Engine</b> (core object)</a></p></div>
 			<div class="code left">
 				<p>
 					Engine.dt<br>
@@ -70,7 +98,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="entity.html">Entity (core object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="entity.html">Entity</b> (core object)</a></p></div>
 			<div class="code left">
 				<p>
 					Entity.create<br>
@@ -100,7 +128,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="input.html">Input (core object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="input.html">Input</b> (core object)</a></p></div>
 			<div class="code left">
 				<p>
 					Input.addInput<br>
@@ -132,7 +160,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="script.html">Script (component object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="script.html">Script</b> (component object)</a></p></div>
 			<div class="code left">
 				<p>
 					entity:add(Script)<br>
@@ -156,7 +184,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="transform.html">Transform (component object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="transform.html">Transform</b> (component object)</a></p></div>
 			<div class="code left">
 				<p>
 					entity:add(Transform)<br>
@@ -192,7 +220,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="mesh.html">Mesh (component object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="mesh.html">Mesh</b> (component object)</a></p></div>
 			<div class="code left">
 				<p>
 					entity:add(Mesh)<br>
@@ -208,7 +236,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="identifier.html">Identifier (component object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="identifier.html">Identifier</b> (component object)</a></p></div>
 			<div class="code left">
 				<p>
 					entity:add(Identifier)<br>
@@ -236,9 +264,10 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="quat.html">Quat (primitive object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="quat.html">Quat</b> (primitive object)</a></p></div>
 			<div class="code left">
 				<p>
+					Quat()<br>
 					Quat()<br>
 					Quat()<br>
 					quat.x<br>
@@ -264,6 +293,7 @@
 			<div class="code right">
 				<p>
 					Quat <b>Quat</b>(Number x = 0, Number y = 0, Number z = 0, Number w = 1)<br>
+					Quat <b>Quat</b>(Vec3 other)<br>
 					Quat <b>Quat</b>(Quat other)<br>
 					Number <b>quat.x</b><br>
 					<b>quat.x</b> = Number<br>
@@ -288,7 +318,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="vec4.html">Vec4 (primitive object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="vec4.html">Vec4</b> (primitive object)</a></p></div>
 			<div class="code left">
 				<p>
 					Vec4()<br>
@@ -344,7 +374,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="vec3.html">Vec3 (primitive object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="vec3.html">Vec3</b> (primitive object)</a></p></div>
 			<div class="code left">
 				<p>
 					Vec3()<br>
@@ -396,7 +426,7 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p><b><a href="vec2.html">Vec2 (primitive object)</a></b></p></div>
+			<div class="label shadow"><p><b><a href="vec2.html">Vec2</b> (primitive object)</a></p></div>
 			<div class="code left">
 				<p>
 					Vec2()<br>

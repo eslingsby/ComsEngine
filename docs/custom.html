@@ -46,7 +46,7 @@
 				</div>
 				<p>
 					<br>
-					To add a custom script instance to an entity, add a <span>Script</span> component, and use <span>script:create</span> to create an instance of the script.<br>
+					To add a custom script instance to an entity, add a script component, and use <span>script:create</span> to create an instance of the script.<br>
 					An entity's <span>Script</span> component can hold up to 8 instances of any type.<br>
 					<br>
 					Inside <span>Start.lua</span>
@@ -74,6 +74,8 @@
 						&nbsp;&nbsp;&nbsp;&nbsp;-- called on creation<br>
 						<br>
 						&nbsp;&nbsp;&nbsp;&nbsp;self.entity:add(Transform)<br>
+						<br>
+						&nbsp;&nbsp;&nbsp;&nbsp;self.transform = self.entity:get(Transform)<br>
 						end<br>
 						<br>
 						function MyScript:reload()<br>

@@ -21,9 +21,11 @@
 			<div class="label shadow"><p><b>entity:add</b>(Mesh c, String file)</p></div>
 			<div class="description">
 				<p>
+					Provides a way to attach a wavefront obj mesh file to an entity. Entity requires a transform component.<br>
+					<br>
 					The <span>mesh</span> component can be added with the constructor argument with the file location of an obj mesh file.<br>
 					<br>
-					If the mesh has already been loaded, it will use that, otherwise it will load the mesh during run-time.
+					If the mesh has already been loaded it have to load it again, otherwise it will load the mesh during run-time.
 				</p>
 				<div class="code">
 					<p>
@@ -42,7 +44,7 @@
 				<p>
 					Allows a mesh to be changed to another obj mesh file.<br>
 					<br>
-					If the mesh has already been loaded, it will use that, otherwise it will load the mesh during run-time.
+					If the mesh has already been loaded it have to load it again, otherwise it will load the mesh during run-time.
 				</p>
 				<div class="code">
 					<p>

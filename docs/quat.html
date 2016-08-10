@@ -18,10 +18,10 @@
 		</div>
 
 		<div class="section">
-			<div class="label shadow"><p>Quat <b>Quat</b>(Number x = 0, Number y = 0, Number z = 0,  Number w = 1) | Quat <b>Quat</b>(Quat other)</p></div>
+			<div class="label shadow"><p>Quat <b>Quat</b>(Number x = 0, Number y = 0, Number z = 0,  Number w = 1) | Quat <b>Quat</b>(Vec3 other) | Quat <b>Quat</b>(Quat other)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Can be constructed from euler angles in degrees, by using a Vec3.
 				</p>
 				<div class="code">
 					<p>
@@ -38,9 +38,6 @@
 		<div class="section">
 			<div class="label shadow"><p>Number <b>quat.x</b> | <b>quat.x</b> = Number | Number <b>quat.y</b> | <b>quat.y</b> = Number | Number <b>quat.z</b> | <b>quat.z</b> = Number | Number <b>quat.w</b> | <b>quat.w</b> = Number</p></div>
 			<div class="description">
-				<p>
-					Description
-				</p>
 				<div class="code">
 					<p>
 						local quat = Quat()<br>
@@ -56,9 +53,6 @@
 		<div class="section">
 			<div class="label shadow"><p>Number <b>quat.length</b></p></div>
 			<div class="description">
-				<p>
-					Description
-				</p>
 				<div class="code">
 					<p>
 						local quat = Quat()<br>
@@ -73,7 +67,7 @@
 			<div class="label shadow"><p>Vec3 <b>quat:eulerAngles()</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns a Vec3 representing euler angles in degrees. 
 				</p>
 				<div class="code">
 					<p>
@@ -89,7 +83,7 @@
 			<div class="label shadow"><p><b>Quat * Vec3</b> | <b>Quat * Vec4</b></p></div>
 			<div class="description">
 				<p>
-					Description
+					Vector transformations, returns vector.
 				</p>
 				<div class="code">
 					<p>
@@ -105,9 +99,6 @@
 		<div class="section">
 			<div class="label shadow"><p><b>Quat == Quat</b> | <b>-Quat</b> | <b>Quat + Quat</b> | <b>Quat - Quat</b> | <b>Quat * Quat</b> | <b>Quat / Quat</b></p></div>
 			<div class="description">
-				<p>
-					Description
-				</p>
 			</div>
 		</div>
 		

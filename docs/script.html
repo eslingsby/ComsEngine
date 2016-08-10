@@ -21,6 +21,8 @@
 			<div class="label shadow"><p><b>entity:add</b>(Script c)</p></div>
 			<div class="description">
 				<p>
+					Provides an interface to add, get, and remove script instances defined in Lua, to an entity.<br>
+					<br>
 					The <span>script</span> component has no construction arguments, but is required to create script instances.
 				</p>
 				<div class="code">
@@ -70,7 +72,7 @@
 			<div class="label shadow"><p><b>script:remove</b>(String type, Int number = 0)</p></div>
 			<div class="description">
 				<p>
-					Returns a script instance table from an entity's script <span>component</span>.<br>
+					Destroys and removes a script instance from an entity's <span>script</span> component.<br>
 					<br>
 					The number argument specifies which instance to destroy when multiple exist.
 				</p>
@@ -90,9 +92,9 @@
 			<div class="label shadow"><p>Table <b>script:instance</b>(String type, Int number = 0)</p></div>
 			<div class="description">
 				<p>
-					Returns a script instance table from an entity's script <span>component</span>.<br>
+					Returns a script instance table from an entity's <span>script</span> component.<br>
 					<br>
-					The number argument specifies which instance to destroy when multiple exist.
+					The number argument specifies which instance to return when multiple exist.
 				</p>
 				<div class="code">
 					<p>
@@ -112,7 +114,7 @@
 			<div class="label shadow"><p>Int <b>script:instances</b>(String type)</p></div>
 			<div class="description">
 				<p>
-					Returns how many script instances of a type are attached to an entity's <span>component</span>.
+					Returns how many script instances of a type are attached to an entity's <span>script</span> component.
 				</p>
 				<div class="code">
 					<p>
