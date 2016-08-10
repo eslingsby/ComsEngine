@@ -180,6 +180,7 @@ inline void Engine::reset(bool data){
 inline void Engine::init(int argc, char * argv[]){
 	std::string root = argv[0];
 
+	root = root.substr(0, root.find_last_of("\\"));
 	root = root.substr(0, root.find_last_of("\\") + 1);
 
 	setConfig("root", root);
