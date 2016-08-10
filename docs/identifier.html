@@ -21,7 +21,9 @@
 			<div class="label shadow"><p><b>entity:add</b>(Identifier c, String name = "", String layer = "")</p></div>
 			<div class="description">
 				<p>
-					Description
+					The <span>identifier</span> component can be added with two constructor argument strings, a name that should be unique, and a layer that can be shared.<br>
+					An empty string will result in that name or layer not being assigned.
+					
 				</p>
 				<div class="code">
 					<p>
@@ -38,7 +40,7 @@
 			<div class="label shadow"><p>Entity <b>Identifier.getByName</b>(String name)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns an <span>Entity</span> object that has the unique given name.
 				</p>
 				<div class="code">
 					<p>
@@ -52,7 +54,8 @@
 			<div class="label shadow"><p>Entity <b>Identifier.getByLayer</b>(String layer, Int number = 0)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns one of many <span>Entity</span> objects that have the given layer identifier.<br>
+					The number argument is used to select which entity from the layer to return.
 				</p>
 				<div class="code">
 					<p>
@@ -70,7 +73,7 @@
 			<div class="label shadow"><p>Bool <b>Identifier.hasName</b>(String name)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns if an entity with the given unique name exists.
 				</p>
 				<div class="code">
 					<p>
@@ -88,7 +91,7 @@
 			<div class="label shadow"><p>Int <b>Identifier.hasLayer</b>(String layer)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns how many entities have the given layer identifier.
 				</p>
 				<div class="code">
 					<p>
@@ -103,7 +106,7 @@
 			<div class="label shadow"><p><b>identifier:rename</b>(String name, String layer)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Allows an <span>identifier</span> component to have its name and layer reset.
 				</p>
 				<div class="code">
 					<p>
@@ -121,7 +124,7 @@
 			<div class="label shadow"><p>String <b>identifier.name</b></p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns the name string of the identifier component, an empty string if unassigned.
 				</p>
 				<div class="code">
 					<p>
@@ -139,7 +142,7 @@
 			<div class="label shadow"><p>String <b>identifier.layer</b></p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns the layer string of the identifier component, an empty string if unassigned.
 				</p>
 				<div class="code">
 					<p>

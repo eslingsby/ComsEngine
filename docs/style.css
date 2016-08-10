@@ -145,11 +145,14 @@ iframe{
 	padding:5px;
 	background-color:#f9f9f9;
 	border:1px solid #efefef;
+	height:initial;
 }
 
 .code p{
 	font-family:"Lucida Console", Monaco, monospace;
 	text-align:left;
+	font-size:10pt;
+	overflow: hidden;	
 }
 
 .shadow{

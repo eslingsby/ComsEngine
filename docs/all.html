@@ -1,0 +1,446 @@
+<!doctype html>
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8">	
+		<link rel="stylesheet" href="style.css">
+			
+		<style>
+.label p{
+	text-decoration:underline;
+}
+
+.left{
+	width:20%;
+	display:inline-block;
+}
+
+.left p{
+	font-weight: bold;
+	text-align:right;
+}
+
+.right{
+	width:75%;
+	display:inline-block;
+	float:right;
+}
+
+.code br{
+	line-height:30px;
+}
+
+body{
+	min-width:1100px;
+}
+		</style>	
+		
+		<title>ComsEngine - All</title>	
+	</head>
+
+	<body>
+		<div class="wrapper">
+			<iframe src="navigator.html" frameborder="0" scrolling="no"></iframe>
+		</div>
+	
+		<div class="title">
+			<p>All</p>
+		</div>
+
+		<div class="section">
+			<div class="label shadow"><p><b><a href="engine.html">Engine (core object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					Engine.dt<br>
+					Engine.shutdown<br>
+					Engine.camera<br>
+					Engine.camera<br>
+					Engine.config<br>
+					Engine.config
+				</p>
+			</div>
+			<div class="code right">
+				<p>
+					Number <b>Engine.dt</b>()<br>
+					<b>Engine.shutdown()</b><br>
+					Entity <b>Engine.camera</b>()<br>
+					<b>Engine.camera</b>(Entity camera)<br>
+					String <b>Engine.config</b>(String key)<br>
+					<b>Engine.config</b>(String key, String value)
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="entity.html">Entity (core object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					Entity.create<br>
+					entity:add<br>
+					entity:get<br>
+					entity:has<br>
+					entity:destroy<br>
+					entity:invalidate<br>
+					entity:id<br>
+					entity:destroyed<br>
+					entity:valid					
+				</p>
+			</div>
+			<div class="code right">
+				<p>
+					Entity <b>Entity.create</b>()<br>
+					<b>entity:add</b>(Component c, ... args)<br>
+					Component <b>entity:get</b>(Component c)<br>
+					Bool <b>entity:has</b>(Component c)<br>
+					<b>entity:destroy</b>()<br>
+					<b>entity:invalidate</b>()<br>
+					Int <b>entity:id</b>()<br>
+					Bool <b>entity:destroyed</b>()<br>
+					Bool <b>entity:valid</b>()
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="input.html">Input (core object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					Input.addInput<br>
+					Input.wasDown<br>
+					Input.isDown<br>
+					Input.mouseLWasDown<br>
+					Input.mouseRWasDown<br>
+					Input.mouseLIsDown<br>
+					Input.mouseRIsDown<br>
+					Input.mousePos<br>
+					Input.mouseRelativePos<br>
+					Input.lockMouse
+				</p>
+			</div>
+			<div class="code right">
+				<p>
+					<b>Input.addInput</b>(String name, Int scancode)<br>
+					Bool <b>Input.wasDown</b>(String name)<br>
+					Bool <b>Input.isDown</b>(String name)<br>
+					Bool <b>Input.mouseLWasDown</b>()<br>
+					Bool <b>Input.mouseRWasDown</b>()<br>
+					Bool <b>Input.mouseLIsDown</b>()<br>
+					Bool <b>Input.mouseRIsDown</b>()<br>
+					Vec3 <b>Input.mousePos</b>()<br>
+					Vec3 <b>Input.mouseRelativePos</b>()<br>
+					<b>Input.lockMouse</b>(Bool locked)
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="script.html">Script (component object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					entity:add(Script)<br>
+					Script.register<br>
+					script:create<br>
+					script:remove<br>
+					script:instance<br>
+					script:instances
+				</p>
+			</div>			
+			<div class="code right">
+				<p>
+					<b>entity:add</b>(Script c)<br>
+					<b>Script.register</b>(String type, String file)<br>
+					<b>script:create</b>(String type)<br>
+					<b>script:remove</b>(String type, Int number = 0)<br>
+					Table <b>script:instance</b>(String type, Int number = 0)<br>
+					Int <b>script:instances</b>(String type)
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="transform.html">Transform (component object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					entity:add(Transform)<br>
+					transform:position<br>
+					transform:position<br>
+					transform:rotation<br>
+					transform:rotation<br>
+					transform:scale<br>
+					transform:scale<br>
+					transform:translate<br>
+					transform:localTranslate<br>
+					transform:rotate<br>
+					transform:localRotate<br>
+					transform:lookAt
+				</p>
+			</div>	
+			<div class="code right">
+				<p>
+					<b>entity:add</b>(Transform c, Vec3 pos = (0, 0, 0), Quat rot = (0, 0, 0, 1), Vec3 scale = (1, 1, 1))<br>
+					Vec3 <b>transform:position</b>()<br>
+					<b>transform:position</b>(Vec3 position)<br>
+					Quat <b>transform:rotation</b>()<br>
+					<b>transform:rotation</b>(Quat rotation)<br>
+					Vec3 <b>transform:scale</b>()<br>
+					<b>transform:scale</b>(Vec3 scale)<br>
+					<b>transform:translate</b>(Vec3 translation)<br>
+					<b>transform:localTranslate</b>(Vec3 translation)<br>
+					<b>transform:rotate</b>(Quat rotation)<br>
+					<b>transform:localRotate</b>(Quat rotation)<br>
+					<b>transform:lookAt</b>(Vec3 target, Vec3 up)
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="mesh.html">Mesh (component object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					entity:add(Mesh)<br>
+					mesh:reload
+				</p>
+			</div>	
+			<div class="code right">
+				<p>
+					<b>entity:add</b>(Mesh c, String file)<br>
+					<b>mesh:reload</b>(String name)
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="identifier.html">Identifier (component object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					entity:add(Identifier)<br>
+					Identifier.getByName<br>
+					Identifier.getByLayer<br>
+					Identifier.hasName<br>
+					Identifier.hasLayer<br>
+					identifier:rename<br>
+					identifier.name<br>
+					identifier.layer
+				</p>
+			</div>	
+			<div class="code right">
+				<p>
+					<b>entity:add</b>(Identifier c, String name = "", String layer = "")<br>
+					Entity <b>Identifier.getByName</b>(String name)<br>
+					Entity <b>Identifier.getByLayer</b>(String layer, Int number = 0)<br>
+					Bool <b>Identifier.hasName</b>(String name)<br>
+					Int <b>Identifier.hasLayer</b>(String layer)<br>
+					<b>identifier:rename</b>(String name, String layer)<br>
+					String <b>identifier.name</b><br>
+					String <b>identifier.layer</b>
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="quat.html">Quat (primitive object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					Quat()<br>
+					Quat()<br>
+					quat.x<br>
+					quat.x<br>
+					quat.y<br>
+					quat.y<br>
+					quat.z<br>
+					quat.z<br>
+					quat.w<br>
+					quat.w<br>
+					quat.length<br>
+					quat:eulerAngles<br>
+					*<br>
+					*<br>
+					==<br>
+					-<br>
+					+<br>
+					-<br>
+					*<br>
+					/					
+				</p>
+			</div>
+			<div class="code right">
+				<p>
+					Quat <b>Quat</b>(Number x = 0, Number y = 0, Number z = 0, Number w = 1)<br>
+					Quat <b>Quat</b>(Quat other)<br>
+					Number <b>quat.x</b><br>
+					<b>quat.x</b> = Number<br>
+					Number <b>quat.y</b><br>
+					<b>quat.y</b> = Number<br>
+					Number <b>quat.z</b><br>
+					<b>quat.z</b> = Number<br>
+					Number <b>quat.w</b><br>
+					<b>quat.w</b> = Number<br>
+					Number <b>quat.length</b><br>
+					Vec3 <b>quat:eulerAngles</b>()<br>
+					Quat * Vec3 <br>
+					Quat * Vec4<br>
+					Quat == Quat<br>
+					-Quat<br>
+					Quat + Quat<br>
+					Quat - Quat<br>
+					Quat * Quat<br>
+					Quat / Quat
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="vec4.html">Vec4 (primitive object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					Vec4()<br>
+					Vec4()<br>
+					vec4.x<br>
+					vec4.x<br>
+					vec4.y<br>
+					vec4.y<br>
+					vec4.z<br>
+					vec4.z<br>
+					vec4.w<br>
+					vec4.w<br>
+					vec4.length<br>
+					*<br>
+					==<br>
+					-<br>
+					+<br>
+					-<br>
+					*<br>
+					/<br>
+					+<br>
+					-<br>
+					*<br>
+					/				
+				</p>
+			</div>
+			<div class="code right">
+				<p>
+					Vec4 <b>Vec4</b>(Number x = 0, Number y = 0, Number z = 0, Number w = 0)<br>
+					Vec4 <b>Vec4</b>(Vec4 other)<br>
+					Number <b>vec4.x</b><br>
+					<b>vec4.x</b> = Number<br>
+					Number <b>vec4.y</b><br>
+					<b>vec4.y</b> = Number<br>
+					Number <b>vec4.z</b><br>
+					<b>vec4.z</b> = Number<br>
+					Number <b>vec4.w</b><br>
+					<b>vec4.w</b> = Number<br>
+					Number <b>vec4.length</b><br>
+					Vec4 <b>*</b> Quat<br>
+					Vec4 <b>==</b> Vec4<br>
+					<b>-</b>Vec4<br>
+					Vec4 <b>+</b> Vec4<br>
+					Vec4 <b>-</b> Vec4<br>
+					Vec4 <b>*</b> Vec4<br>
+					Vec4 <b>/</b> Vec4<br>
+					Vec4 <b>+</b> Number<br>
+					Vec4 <b>-</b> Number<br>
+					Vec4 <b>*</b> Number<br>
+					Vec4 <b>/</b> Number
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="vec3.html">Vec3 (primitive object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					Vec3()<br>
+					Vec3()<br>
+					vec3.x<br>
+					vec3.x<br>
+					vec3.y<br>
+					vec3.y<br>
+					vec3.z<br>
+					vec3.z<br>
+					vec3.length<br>
+					*<br>
+					==<br>
+					-<br>
+					+<br>
+					-<br>
+					*<br>
+					/<br>
+					+<br>
+					-<br>
+					*<br>
+					/				
+				</p>
+			</div>
+			<div class="code right">
+				<p>
+					Vec3 <b>Vec3</b>(Number x = 0, Number y = 0, Number z = 0)<br>
+					Vec3 <b>Vec3</b>(Vec3 other)<br>
+					Number <b>vec3.x</b><br>
+					<b>vec3.x</b> = Number<br>
+					Number <b>vec3.y</b><br>
+					<b>vec3.y</b> = Number<br>
+					Number <b>vec3.z</b><br>
+					<b>vec3.z</b> = Number<br>
+					Number <b>vec3.length</b><br>
+					Vec3 <b>*</b> Quat<br>
+					Vec3 <b>==</b> Vec3<br>
+					<b>-</b>Vec3<br>
+					Vec3 <b>+</b> Vec3<br>
+					Vec3 <b>-</b> Vec3<br>
+					Vec3 <b>*</b> Vec3<br>
+					Vec3 <b>/</b> Vec3<br>
+					Vec3 <b>+</b> Number<br>
+					Vec3 <b>-</b> Number<br>
+					Vec3 <b>*</b> Number<br>
+					Vec3 <b>/</b> Number
+				</p>
+			</div>
+		</div>
+		
+		<div class="section">
+			<div class="label shadow"><p><b><a href="vec2.html">Vec2 (primitive object)</a></b></p></div>
+			<div class="code left">
+				<p>
+					Vec2()<br>
+					Vec2()<br>
+					vec2.x<br>
+					vec2.x<br>
+					vec2.y<br>
+					vec2.y<br>
+					vec2.length<br>
+					==<br>
+					-<br>
+					+<br>
+					-<br>
+					*<br>
+					/<br>
+					+<br>
+					-<br>
+					*<br>
+					/				
+				</p>
+			</div>
+			<div class="code right">
+				<p>
+					Vec2 <b>Vec2</b>(Number x = 0, Number y = 0)<br>
+					Vec2 <b>Vec2</b>(Vec2 other)<br>
+					Number <b>vec2.x</b><br>
+					<b>vec2.x</b> = Number<br>
+					Number <b>vec2.y</b><br>
+					<b>vec2.y</b> = Number<br>
+					Number <b>vec2.length</b><br>
+					Vec2 <b>==</b> Vec2<br>
+					<b>-</b>Vec2<br>
+					Vec2 <b>+</b> Vec2<br>
+					Vec2 <b>-</b> Vec2<br>
+					Vec2 <b>*</b> Vec2<br>
+					Vec2 <b>/</b> Vec2<br>
+					Vec2 <b>+</b> Number<br>
+					Vec2 <b>-</b> Number<br>
+					Vec2 <b>*</b> Number<br>
+					Vec2 <b>/</b> Number
+				</p>
+			</div>
+		</div>	
+	</body>
+</html>

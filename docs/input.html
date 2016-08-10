@@ -21,7 +21,7 @@
 			<div class="label shadow"><p><b>Input.addInput</b>(String name, Int scancode)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Binds a keyboard scancode to a string.
 				</p>
 				<div class="code">
 					<p>
@@ -39,7 +39,8 @@
 			<div class="label shadow"><p>Bool <b>Input.wasDown</b>(String name)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Checks if a bound string was pressed in the past.<br>
+					The input string will stay true until <span>Input.wasDown</span> has been checked, similar to an event.
 				</p>
 				<div class="code">
 					<p>
@@ -53,7 +54,7 @@
 			<div class="label shadow"><p>Bool <b>Input.isDown</b>(String name)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Checks if a bound string is currently being pressed.<br>
 				</p>
 				<div class="code">
 					<p>
@@ -64,66 +65,40 @@
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p>Bool <b>Input.mouseLWasDown</b>()</p></div>
+			<div class="label shadow"><p>Bool <b>Input.mouseLWasDown</b>() | Bool <b>Input.mouseRWasDown</b>()</p></div>
 			<div class="description">
 				<p>
-					Description
+					Similar to <span>Input.wasDown</span>, but for the mouse.
 				</p>
 				<div class="code">
 					<p>
-						local down = Input.mouseLWasDown()
+						local lDown = Input.mouseLWasDown()
+						local rDown = Input.mouseRWasDown()
 					</p>
 				</div>
 			</div>
 		</div>
 		
 		<div class="section">
-			<div class="label shadow"><p>Bool <b>Input.mouseLIsDown</b>()</p></div>
+			<div class="label shadow"><p>Bool <b>Input.mouseLIsDown</b>() | Bool <b>Input.mouseRIsDown</b>()</p></div>
 			<div class="description">
 				<p>
-					Description
+					Similar to <span>Input.isDown</span>, but for the mouse.
 				</p>
 				<div class="code">
 					<p>
-						local down = Input.mouseLIsDown()
+						local lDown = Input.mouseLIsDown()
+						local rDown = Input.mouseRIsDown()
 					</p>
 				</div>
 			</div>
 		</div>
-		
-		<div class="section">
-			<div class="label shadow"><p>Bool <b>Input.mouseRWasDown</b>()</p></div>
-			<div class="description">
-				<p>
-					Description
-				</p>
-				<div class="code">
-					<p>
-						local down = Input.mouseRWasDown()
-					</p>
-				</div>
-			</div>
-		</div>	
-		
-		<div class="section">
-			<div class="label shadow"><p>Bool <b>Input.mouseRIsDown</b>()</p></div>
-			<div class="description">
-				<p>
-					Description
-				</p>
-				<div class="code">
-					<p>
-						local down = Input.mouseRIsDown()
-					</p>
-				</div>
-			</div>
-		</div>
-		
+				
 		<div class="section">
 			<div class="label shadow"><p>Vec3 <b>Input.mousePos</b>()</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns the mouse position relative to the top left corner of the screen.
 				</p>
 				<div class="code">
 					<p>
@@ -137,7 +112,7 @@
 			<div class="label shadow"><p>Vec3 <b>Input.mouseRelativePos</b>()</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns the difference in mouse position relative to the centre from the previous frame.
 				</p>
 				<div class="code">
 					<p>
@@ -151,7 +126,7 @@
 			<div class="label shadow"><p><b>Input.lockMouse</b>(Bool locked)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Locks and hides the cursor to the window.
 				</p>
 				<div class="code">
 					<p>

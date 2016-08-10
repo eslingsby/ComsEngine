@@ -21,7 +21,8 @@
 			<div class="label shadow"><p>Number <b>Engine.dt</b>()</p></div>
 			<div class="description">
 				<p>
-					Description
+					Provides previous tick-time in floating point seconds.<br>
+					Use as a multiplier to make data transformations relative to tick rate.
 				</p>
 				<div class="code">
 					<p>
@@ -36,7 +37,7 @@
 			<div class="label shadow"><p><b>Engine.shutdown</b>()</p></div>
 			<div class="description">
 				<p>
-					Description
+					Shut down the engine after the current tick is finished.
 				</p>
 				<div class="code">
 					<p>
@@ -50,7 +51,10 @@
 			<div class="label shadow"><p>Entity <b>Engine.camera</b>() | <b>Engine.camera</b>(Entity camera)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Get and set the camera entity that the renderer will use as the main point-of-view.<br>
+					<br>
+					Camera starts as default set as an entity with a transform component.<br>
+					Any new camera must also have a transform component.
 				</p>
 				<div class="code">
 					<p>
@@ -68,16 +72,39 @@
 		<div class="section">
 			<div class="label shadow"><p>String <b>Engine.config</b>(String key) | <b>Engine.config</b>(String key, String value)</p></div>
 			<div class="description">
+			
 				<p>
-					Description
+					Get and set engine configuration strings to re-define the input of some systems.<br>
+					<span>Engine.config</span> only works from within <span>Load.lua</span>.
 				</p>
+				
+				
+				
 				<div class="code">
 					<p>
-						local title = Engine.config("title")<br>
+						local oldTitle = Engine.config("window.title")<br>
 						<br>
-						Engine.config("title", "new title")<br>
+						Engine.config("window.title", "new title")<br>
 					</p>
 				</div>
+				
+				<p>
+					<br>
+					Below shows available configuration keys on the left, and their default values on the right.<br>
+				</p>
+				
+				<div class="code">
+					<p>
+						"script.start" = "Start.lua"<br>
+						"window.title" = "ComsEngine"<br>
+						"window.x" = "720"<br>
+						"window.y" = "405"<br>
+						"shader.vertex" = "Vertex.gls"<br>
+						"shader.fragment" = "Fragment.gls"
+					</p>
+				</div>
+				
+				
 			</div>
 		</div>
 		

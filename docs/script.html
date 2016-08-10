@@ -21,7 +21,7 @@
 			<div class="label shadow"><p><b>entity:add</b>(Script c)</p></div>
 			<div class="description">
 				<p>
-					Description
+					The <span>script</span> component has no construction arguments, but is required to create script instances.
 				</p>
 				<div class="code">
 					<p>
@@ -37,7 +37,8 @@
 			<div class="label shadow"><p><b>Script.register</b>(String type, String file)</p></div>
 			<div class="description">
 				<p>
-					Description
+					<span>Script.register</span> is a global function allowing script files to be registered for later creation in a script instance.<br>
+					Scripts can be re-registered at any time and will also update the behaviour of existing script instances.
 				</p>
 				<div class="code">
 					<p>
@@ -51,7 +52,8 @@
 			<div class="label shadow"><p><b>script:create</b>(String type)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Creates a script instance from a previously registered script.<br>
+					An entity's <span>script</span> component is allowed up to 8 script instances of any type.
 				</p>
 				<div class="code">
 					<p>
@@ -68,7 +70,9 @@
 			<div class="label shadow"><p><b>script:remove</b>(String type, Int number = 0)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns a script instance table from an entity's script <span>component</span>.<br>
+					<br>
+					The number argument specifies which instance to destroy when multiple exist.
 				</p>
 				<div class="code">
 					<p>
@@ -86,7 +90,9 @@
 			<div class="label shadow"><p>Table <b>script:instance</b>(String type, Int number = 0)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns a script instance table from an entity's script <span>component</span>.<br>
+					<br>
+					The number argument specifies which instance to destroy when multiple exist.
 				</p>
 				<div class="code">
 					<p>
@@ -106,7 +112,7 @@
 			<div class="label shadow"><p>Int <b>script:instances</b>(String type)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns how many script instances of a type are attached to an entity's <span>component</span>.
 				</p>
 				<div class="code">
 					<p>

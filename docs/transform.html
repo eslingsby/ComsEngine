@@ -21,7 +21,7 @@
 			<div class="label shadow"><p><b>entity:add</b>(Transform c, Vec3 position = (0, 0, 0), Quat rotation = (0, 0, 0, 1), Vec3 scale = (1, 1, 1))</p></div>
 			<div class="description">
 				<p>
-					Description
+					The <span>transform</span> component can be added with the constructor arguments for the initial position, rotation, and scale, all of which are set by default anyway.
 				</p>
 				<div class="code">
 					<p>
@@ -37,7 +37,8 @@
 			<div class="label shadow"><p>Vec3 <b>transform:position</b>() | <b>transform:position</b>(Vec3 position)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns or sets the position using a <span>Vec3</span>.<br>
+					The default position is <span>(0, 0, 0)</span>
 				</p>
 				<div class="code">
 					<p>
@@ -58,7 +59,8 @@
 			<div class="label shadow"><p>Quat <b>transform:rotation</b>() | <b>transform:rotation</b>(Quat rotation)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns or sets the rotation using a <span>Quat</span>.<br>
+					The default rotation is <span>(0, 0, 0, 1)</span>
 				</p>
 				<div class="code">
 					<p>
@@ -78,7 +80,8 @@
 			<div class="label shadow"><p>Vec3 <b>transform:scale</b>() | <b>transform:scale</b>(Vec3 scale)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Returns or sets the scale using a <span>Vec3</span>.<br>
+					The default scale is <span>(1, 1, 1)</span>
 				</p>
 				<div class="code">
 					<p>
@@ -88,7 +91,7 @@
 						<br>
 						local scale = transform:scale()<br>
 						<br>
-						transform:scale(Vec3(0, 0, 0))
+						transform:scale(Vec3(2, 2, 2))
 					</p>
 				</div>
 			</div>
@@ -98,7 +101,9 @@
 			<div class="label shadow"><p><b>transform:translate</b>(Vec3 translation) | <b>transform:localTranslate</b>(Vec3 translation)</p></div>
 			<div class="description">
 				<p>
-					Description
+					<span>transform:translate</span> translates the position relative to the global rotation.<br>
+					<br>
+					<span>transform:localTranslate</span> translates the position relative to the transform's rotation.
 				</p>
 				<div class="code">
 					<p>
@@ -119,7 +124,9 @@
 			<div class="label shadow"><p><b>transform:rotate</b>(Quat rotation) | <b>transform:localRotate</b>(Quat rotation)</p></div>
 			<div class="description">
 				<p>
-					Description
+					<span>transform:rotate</span> performs a rotation on the global axes.<br>
+					<br>
+					<span>transform:localRotate</span> performs a rotation relative to the axes of the transform's rotation.<br>
 				</p>
 				<div class="code">
 					<p>
@@ -140,7 +147,7 @@
 			<div class="label shadow"><p><b>transform:lookAt</b>(Vec3 target, Vec3 up)</p></div>
 			<div class="description">
 				<p>
-					Description
+					Changes a transform's position and rotation to look at a target.
 				</p>
 				<div class="code">
 					<p>
