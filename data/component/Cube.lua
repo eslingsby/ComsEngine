@@ -46,17 +46,15 @@ function Cube:update()
 	
 	-- If timer is up
 	if (self.seconds > self.killTime) then
+		-- Create new cube instance on a new entity
+		local cube = Entity.create()
+		
+		cube:add(Script)
+		cube:get(Script):create("Cube")
+		
 		-- Destroy self
 		self.entity:destroy()
 	end
-end
-
-function Cube:destroy()
-	-- Create new cube instance on a new entity
-	local cube = Entity.create()
-	
-	cube:add(Script)
-	cube:get(Script):create("Cube")
 end
 
 return Cube

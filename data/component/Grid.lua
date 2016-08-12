@@ -20,8 +20,4 @@ function Grid:load()
 	self.sphere:get(Transform):scale(Vec3(1, 1, 1) * 512)
 end
 
-function Grid:destroy()
-	-- Destroy large sphere entity
-	self.sphere:destroy()
-end
 return Grid
