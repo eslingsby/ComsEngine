@@ -58,7 +58,7 @@ GLuint Renderer::_loadShader(std::string shaderPath, uint32_t type){
 	return 0;
 }
 
-void Renderer::_reshape(int width, int height, float fov){
+void Renderer::_reshape(int width, int height, float fov, int drawDist){
 	//glViewport(0, 0, width, height);
 
 	glMatrixMode(GL_PROJECTION);
@@ -66,7 +66,7 @@ void Renderer::_reshape(int width, int height, float fov){
 
 	float aspectRatio = ((float)width / (float)height);
 
-	gluPerspective(fov / aspectRatio, aspectRatio, 0.1, 1024 * 4);
+	gluPerspective(fov / aspectRatio, aspectRatio, 0.1, drawDist);
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();

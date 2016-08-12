@@ -35,7 +35,6 @@ function Clock:update()
 	-- Shut down after 70 seconds
 	--if (self.seconds > 70) then
 		--print("End of program...\n")
-		--self.entity:destroy()
 		--Engine.shutdown()
 	--end
 end

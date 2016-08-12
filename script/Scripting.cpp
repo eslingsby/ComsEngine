@@ -246,6 +246,28 @@ bool Scripting::destroyInstance(uint64_t id, const std::string& type, unsigned i
 			const char* identifier = script->identifiers[i];
 			int reference = script->references[i];
 		
+			// {}
+			lua_rawgeti(_L, LUA_REGISTRYINDEX, reference);
+
+			// {} function()   OR {} nil
+			lua_getfield(_L, -1, "destroy");
+
+			if (!lua_isnil(_L, -1)){
+				// {} function() {}
+				lua_pushvalue(_L, -2);
+
+				// {}
+				if (lua_pcall(_L, 1, 0, 0))
+					Binder::printStackError(_L);
+			}
+			else{
+				// {}
+				lua_pop(_L, 1);
+			}
+
+			//
+			lua_pop(_L, 1);
+			
 			if (type == identifier && index == number){
 				luaL_unref(_L, LUA_REGISTRYINDEX, reference);
 				script->references[i] = -1;
@@ -332,7 +354,31 @@ void Scripting::onDestroy(uint64_t id){
 	for (unsigned int i = 0; i < Script::maxReferences; i++){
 		int reference = script->references[i];
 
-		if (reference != -1)
-			luaL_unref(_L, LUA_REGISTRYINDEX, reference);
+		if (reference == -1)
+			continue;
+
+		// {}
+		lua_rawgeti(_L, LUA_REGISTRYINDEX, reference);
+
+		// {} function()   OR {} nil
+		lua_getfield(_L, -1, "destroy");
+
+		if (!lua_isnil(_L, -1)){
+			// {} function() {}
+			lua_pushvalue(_L, -2);
+
+			// {}
+			if (lua_pcall(_L, 1, 0, 0))
+				Binder::printStackError(_L);
+		}
+		else{
+			// {}
+			lua_pop(_L, 1);
+		}
+
+		//
+		lua_pop(_L, 1);
+
+		luaL_unref(_L, LUA_REGISTRYINDEX, reference);
 	}
 }

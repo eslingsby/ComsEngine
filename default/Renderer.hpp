@@ -29,7 +29,7 @@ class Renderer : public System<Transform, Mesh>{
 
 	GLuint _loadShader(std::string shaderPath, uint32_t type);
 
-	void _reshape(int width, int height, float fov = 90.f);
+	void _reshape(int width, int height, float fov = 90.f, int drawDist = 1024 * 8);
 
 	EntityRef _camera;
 
