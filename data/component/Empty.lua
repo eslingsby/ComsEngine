@@ -4,7 +4,7 @@ function Empty:load()
 	-- called on script creation
 end
 
-function MyScript:reload()
+function Empty:reload()
     -- called on script reload
 end
 

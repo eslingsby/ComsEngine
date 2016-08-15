@@ -11,7 +11,7 @@ Script.register("Clock", "component/Clock.lua")
 Script.register("Clock", "component/Empty.lua")
 
 -- Setting renderer settings
-Engine.config("window.title", "OpenGL")
+Engine.config("window.title", "Press ESC to control the camera")
 Engine.config("window.x", "1000")
 Engine.config("window.y", "512")
 
@@ -19,4 +19,13 @@ Engine.config("window.y", "512")
 Engine.config("shader.vertex", "shader/Vertex.gls")
 Engine.config("shader.fragment", "shader/Fragment.gls")
 
-io.write("\n\nReload triggered...\n\n>>> ")
+-- If this is the first call, then don't print reload message
+if (start == nil) then
+	start = true
+end
+
+if (start) then
+	start = false
+else
+	io.write("\n\nReload triggered...\n\n>>> ")
+end
