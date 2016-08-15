@@ -130,7 +130,10 @@ inline int QuatBind::_eq(lua_State * L){
 
 int QuatBind::_print(lua_State * L){
 	LuaQuat* quat = (LuaQuat*)luaL_checkudata(L, 1, name);
-	std::string combined = std::to_string((*quat).x) + "," + std::to_string((*quat).y) + "," + std::to_string((*quat).z) + "," + std::to_string((*quat).w);
+
+	LuaVec3 euler = glm::degrees(glm::eulerAngles(*quat));
+
+	std::string combined = std::to_string(euler.x) + "," + std::to_string(euler.y) + "," + std::to_string(euler.z);
 
 	// L{} string
 	lua_pushstring(L, combined.c_str());

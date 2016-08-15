@@ -12,12 +12,7 @@ function Grid:load()
 	
 	-- Make grid big
 	self.entity:get(Transform):scale(Vec3(10, 10, 10))
-	
-	-- Creating a large sphere
-	self.sphere = Entity.create()
-	self.sphere:add(Transform)
-	self.sphere:add(Mesh, "mesh/sphere.obj")
-	self.sphere:get(Transform):scale(Vec3(1, 1, 1) * 512)
+
 end
 
 return Grid

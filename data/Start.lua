@@ -9,9 +9,13 @@ local grid = Entity.create()
 grid:add(Script)
 grid:get(Script):create("Grid")
 
--- Cubes setup
-math.randomseed(os.time())
+-- Example cube
+local cube = Entity.create()
+cube:add(Transform)
+cube:add(Mesh, "mesh/cube.obj")
 
+-- Cubes setup 
+--[[
 local i = 0
 while i < 1024 * 2 do
 	local cube = Entity.create()
@@ -21,3 +25,4 @@ while i < 1024 * 2 do
 	
 	i = i + 1
 end
+]]--

@@ -15,8 +15,8 @@ function Camera:load()
 	
 	-- Set position to just above the origin, looking forward
 	self.transform = self.entity:get(Transform)
-	self.transform:position(Vec3(0, 0, 128))
-	self.transform:rotation(Quat(Vec3(90, 0, 0)))
+	self.transform:position(Vec3(0, -64, 16))
+	self.transform:rotation(Quat(Vec3(110, 0, 0)))
 	
 	-- Set speed of camera movement
 	self.speed = 512
@@ -46,6 +46,9 @@ end
 
 
 function Camera:update()
+	--print(self.transform:position())
+	--print(self.transform:rotation())
+
 	-- Bool used to check if escape was pressed and lock enabled
 	local focused = false
 

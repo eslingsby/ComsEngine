@@ -1,14 +1,24 @@
 local Cube = {}
 
 function Cube:load()
+	math.randomseed(os.time())
+
 	-- Transform required for mesh component
-	self.entity:add(Transform)
+	if (not self.entity:has(Transform)) then
+		self.entity:add(Transform)
+	end
 
 	-- Mesh is wavefront .obj file in the data/mesh folder
-	self.entity:add(Mesh, "mesh/cube.obj")
+	if (not self.entity:has(Mesh)) then
+		self.entity:add(Mesh, "mesh/cube.obj")
+	end
 
 	-- Clock script uses cube_layer to count how many cubes are left
-	self.entity:add(Identifier, "", "cube_layer")
+	if (not self.entity:has(Identifier)) then
+		self.entity:add(Identifier, "", "cube_layer")
+	else
+		self.entity:get(Identifier):rename("", "cube_layer")
+	end
 
 	-- Get transform instance
 	self.transform = self.entity:get(Transform)
