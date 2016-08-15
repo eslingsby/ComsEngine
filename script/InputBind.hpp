@@ -2,6 +2,7 @@
 
 #include "Binder.hpp"
 
+#include "LuaTypes.hpp"
 #include "Engine.hpp"
 #include "Input.hpp"
 

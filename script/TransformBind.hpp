@@ -102,8 +102,12 @@ inline int TransformBind::_add(lua_State* L){
 	
 	Engine& engine = Binder::getEngine(L);
 
-	if (lua_gettop(L) > 1)
-		engine.manager.addComponent<Transform>(id, luaL_checkinteger(L, 2));
+	if (lua_gettop(L) > 3)
+		engine.manager.addComponent<Transform>(id, *(LuaVec3*)luaL_checkudata(L, 2, "Vec3"), *(LuaQuat*)luaL_checkudata(L, 3, "Quat"), *(LuaVec3*)luaL_checkudata(L, 4, "Vec3"));
+	else if (lua_gettop(L) > 2)
+		engine.manager.addComponent<Transform>(id, *(LuaVec3*)luaL_checkudata(L, 2, "Vec3"), *(LuaQuat*)luaL_checkudata(L, 3, "Quat"));
+	else if (lua_gettop(L) > 1)
+		engine.manager.addComponent<Transform>(id, *(LuaVec3*)luaL_checkudata(L, 2, "Vec3"));
 	else
 		engine.manager.addComponent<Transform>(id);
 

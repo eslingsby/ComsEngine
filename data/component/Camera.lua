@@ -1,6 +1,10 @@
 local Camera = {}
 
-function Camera:load()	
+function Camera:load()
+	io.write("Camera script created.\n")
+	io.write("- Press the ESC key to toggle movement controls.\n")
+	io.write("- Use WASD and mouse-look to move.\n\n>>> ")
+
 	-- If entity already has transform
 	if (not self.entity:has(Transform)) then
 		self.entity:add(Transform)

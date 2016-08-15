@@ -9,47 +9,47 @@ Hierarchy::Hierarchy(Engine* engine) : System(engine){}
 void Hierarchy::onCreate(uint64_t id){
 	Transform* transform = _engine.manager.getComponent<Transform>(id);
 
-	if (!transform->parent)
-		return;
-
-	_children[transform->parent].insert(id);
-
-	_engine.manager.addReference(id);
+	//if (!transform->parent)
+	//	return;
+	//
+	//_children[transform->parent].insert(id);
+	//
+	//_engine.manager.addReference(id);
 }
 
 void Hierarchy::onDestroy(uint64_t id){
 	Transform* transform = _engine.manager.getComponent<Transform>(id);
 
-	if (!transform->parent)
-		return;
-
-	_children[transform->parent].erase(id);
-
-	if (_children.find(id) == _children.end())
-		return;
-
-	std::queue<uint64_t> toErase;
-
-	for (uint64_t child : _children[id]){
-		transform = _engine.manager.getComponent<Transform>(child);
-
-		transform->position = globalPosition(child);
-		transform->rotation = globalRotation(child);
-		transform->scale = globalScale(child);
-
-		_engine.manager.addComponent<Transform>(child, 0, _engine.manager.getComponent<Transform>(child));
-		_engine.manager.removeReference(child);
-
-		toErase.push(child);
-	}
-
-	while (toErase.size()){
-		_children[id].erase(toErase.front());
-		toErase.pop();
-	}
-
-	if (!_children[id].size())
-		_children.erase(id);
+	//if (!transform->parent)
+	//	return;
+	//
+	//_children[transform->parent].erase(id);
+	//
+	//if (_children.find(id) == _children.end())
+	//	return;
+	//
+	//std::queue<uint64_t> toErase;
+	//
+	//for (uint64_t child : _children[id]){
+	//	transform = _engine.manager.getComponent<Transform>(child);
+	//
+	//	transform->position = globalPosition(child);
+	//	transform->rotation = globalRotation(child);
+	//	transform->scale = globalScale(child);
+	//
+	//	_engine.manager.addComponent<Transform>(child, 0, _engine.manager.getComponent<Transform>(child));
+	//	_engine.manager.removeReference(child);
+	//
+	//	toErase.push(child);
+	//}
+	//
+	//while (toErase.size()){
+	//	_children[id].erase(toErase.front());
+	//	toErase.pop();
+	//}
+	//
+	//if (!_children[id].size())
+	//	_children.erase(id);
 }
 
 void Hierarchy::translate(uint64_t id, glm::vec3 position){
