@@ -14,7 +14,7 @@
 		</div>
 	
 		<div class="title">
-			<p>Quat (primitive object)</p>
+			<p>Quat (maths object)</p>
 		</div>
 
 		<div class="section">
@@ -27,9 +27,13 @@
 					<p>
 						local quat = Quat(0, 0, 0, 1)<br>
 						<br>
-						quat = Quat(quat)<br>
+						-- OR<br>
 						<br>
-						quat = Quat(Vec3(0, 90, 0))
+						local newQuat = Quat(quat)<br>
+						<br>
+						-- OR<br>
+						<br>
+						local eulerQuat = Quat(Vec3(0, 90, 0))
 					</p>
 				</div>
 			</div>
