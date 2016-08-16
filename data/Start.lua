@@ -6,7 +6,6 @@ io.write("Use this console to input single Lua commands.\n\n>>> ")
 local camera = Entity.create()
 camera:add(Script)
 camera:get(Script):create("Camera")
---camera:get(Script):create("Clock")
 
 -- Grid setup
 local grid = Entity.create()
@@ -18,8 +17,16 @@ local cube = Entity.create()
 cube:add(Transform)
 cube:add(Mesh, "mesh/cube.obj")
 
--- Stress test cubes setup 
 --[[
+
+-- FPS clock setup
+local clock = Entity.create()
+cube:add(Script)
+camera:get(Script):create("Clock")
+
+-- Stress test cubes setup 
+math.randomseed(os.time())
+
 local i = 0
 while i < 1024 * 2 do
 	local cube = Entity.create()
@@ -29,4 +36,5 @@ while i < 1024 * 2 do
 	
 	i = i + 1
 end
+
 ]]--

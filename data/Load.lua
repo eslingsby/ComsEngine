@@ -8,7 +8,7 @@ Script.register("Camera", "component/Camera.lua")
 Script.register("Grid", "component/Grid.lua")
 Script.register("Cube", "component/Cube.lua")
 Script.register("Clock", "component/Clock.lua")
-Script.register("Clock", "component/Empty.lua")
+Script.register("Empty", "component/Empty.lua")
 
 -- Setting renderer settings
 Engine.config("window.title", "Press ESC to control the camera")

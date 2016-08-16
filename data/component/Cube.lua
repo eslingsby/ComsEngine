@@ -1,8 +1,6 @@
 local Cube = {}
 
 function Cube:load()
-	math.randomseed(os.time())
-
 	-- Transform required for mesh component
 	if (not self.entity:has(Transform)) then
 		self.entity:add(Transform)
