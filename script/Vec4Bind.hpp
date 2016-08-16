@@ -52,8 +52,18 @@ namespace Vec4Bind{
 
 inline int Vec4Bind::constructor(lua_State* L){
 	LuaVec4* vec = (LuaVec4*)lua_newuserdata(L, sizeof(LuaVec4));
-	*vec = LuaVec4(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4), luaL_checknumber(L, 5));
-	
+
+	if (lua_gettop(L) > 5)
+		*vec = LuaVec4(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4), luaL_checknumber(L, 5));
+	else if (lua_gettop(L) > 4)
+		*vec = LuaVec4(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4), 0);
+	else if (lua_gettop(L) > 3)
+		*vec = LuaVec4(luaL_checknumber(L, 2), luaL_checknumber(L, 3), 0, 0);
+	else if (lua_gettop(L) > 2)
+		*vec = LuaVec4(luaL_checknumber(L, 2), 0, 0, 0);
+	else
+		*vec = LuaVec4();
+
 	luaL_getmetatable(L, name);
 	lua_setmetatable(L, -2);
 

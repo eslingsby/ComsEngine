@@ -48,8 +48,14 @@ namespace Vec2Bind{
 
 inline int Vec2Bind::constructor(lua_State* L){
 	LuaVec2* vec = (LuaVec2*)lua_newuserdata(L, sizeof(LuaVec2));
-	*vec = LuaVec2(luaL_checknumber(L, 2), luaL_checknumber(L, 3));
-	
+
+	if (lua_gettop(L) > 3)
+		*vec = LuaVec2(luaL_checknumber(L, 2), luaL_checknumber(L, 3));
+	else if (lua_gettop(L) > 2)
+		*vec = LuaVec2(luaL_checknumber(L, 2), 0);
+	else
+		*vec = LuaVec2();
+
 	luaL_getmetatable(L, name);
 	lua_setmetatable(L, -2);
 

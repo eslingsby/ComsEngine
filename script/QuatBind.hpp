@@ -65,6 +65,8 @@ inline int QuatBind::constructor(lua_State * L){
 		*quat = *(LuaQuat*)luaL_checkudata(L, 2, name);
 	else if (luaL_testudata(L, 2, "Vec3"))
 		*quat = LuaQuat(glm::radians(*(LuaVec3*)luaL_checkudata(L, 2, "Vec3")));
+	else
+		*quat = LuaQuat();
 
 	return 1;
 }
