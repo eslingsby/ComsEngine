@@ -51,8 +51,6 @@ namespace Vec3Bind{
 inline int Vec3Bind::constructor(lua_State* L){
 	LuaVec3* vec = (LuaVec3*)lua_newuserdata(L, sizeof(LuaVec3));
 
-	Binder::printStack(L);
-
 	if (lua_gettop(L) > 4)
 		*vec = LuaVec3(luaL_checknumber(L, 2), luaL_checknumber(L, 3), luaL_checknumber(L, 4));
 	else if (lua_gettop(L) > 3)
