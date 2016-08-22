@@ -48,7 +48,7 @@ protected:
 TEST_F(ContainerTest, Vector_Iteration){
 	for (unsigned int x = 0; x < ITERATIONS; x++){
 		for (unsigned int i = 0; i < OBJECTS; i++){
-			memset((void*)static_cast<TestComponent*>(vector->at(i))->memory, rand(), OBJECTS);
+			memset((void*)static_cast<TestComponent*>(vector->at(i))->memory, rand(), SIZE);
 		}
 	}
 }
@@ -56,7 +56,7 @@ TEST_F(ContainerTest, Vector_Iteration){
 TEST_F(ContainerTest, ObjectPool_Iteration){
 	for (unsigned int x = 0; x < ITERATIONS; x++){
 		for (unsigned int i = 0; i < OBJECTS; i++){
-			memset((void*)pool->get<TestComponent>(i)->memory, rand(), OBJECTS);
+			memset((void*)pool->get<TestComponent>(i)->memory, rand(), SIZE);
 		}
 	}
 }
@@ -64,14 +64,14 @@ TEST_F(ContainerTest, ObjectPool_Iteration){
 TEST_F(ContainerTest, ObjectPool_Gets){
 	for (unsigned int x = 0; x < GETS; x++){
 		unsigned int i = rand() % OBJECTS;
-		memset((void*)pool->get<TestComponent>(i)->memory, rand(), OBJECTS);
+		memset((void*)pool->get<TestComponent>(i)->memory, rand(), SIZE);
 	}
 }
 
 TEST_F(ContainerTest, Vector_Gets){
 	for (unsigned int x = 0; x < GETS; x++){
 		unsigned int i = rand() % OBJECTS;
-		memset((void*)static_cast<TestComponent*>(vector->at(i))->memory, rand(), OBJECTS);
+		memset((void*)static_cast<TestComponent*>(vector->at(i))->memory, rand(), SIZE);
 	}
 }
 

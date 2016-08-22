@@ -76,7 +76,7 @@ public:
 
 	inline void reset(bool data = false);
 
-	// Manually load and tick the engine (mainly for testing speed)
+	// Each step of the run function (exposoed publicly for testing)
 	virtual inline void init(int argc, char* argv[]);
 	virtual inline void load();
 	virtual inline void start(){}
@@ -88,6 +88,7 @@ public:
 };
 
 inline void Engine::_loadSystems(){
+	// Call load on all systems in load order
 	for (std::type_index i : _loadOrder)
 		_systems[i]->load();
 
@@ -95,6 +96,7 @@ inline void Engine::_loadSystems(){
 }
 
 inline void Engine::_resetSystems(){
+	// Call reset on all systems in load order
 	for (std::type_index i : _loadOrder)
 		_systems[i]->reset();
 
@@ -102,6 +104,7 @@ inline void Engine::_resetSystems(){
 }
 
 inline void Engine::_updateSystems(){
+	// Call update on all systems in update order
 	for (std::type_index i : _updateOrder)
 		_systems[i]->update();
 
@@ -109,6 +112,7 @@ inline void Engine::_updateSystems(){
 }
 
 inline void Engine::_exitSystems(){
+	// Call exit on all systems in load order
 	for (std::type_index i : _loadOrder)
 		_systems[i]->exit();
 
@@ -119,20 +123,25 @@ template<typename T, typename ...Ts>
 inline void Engine::addSystem(uint32_t loadIndex, uint32_t updateIndex, Ts ...args){
 	assert(!_running);
 	
+	// Create system in dynamic memory
 	T* system = new T(this, args...);
 
 	assert(_systems.find(typeid(T)) == _systems.end());
 
+	// Add system to system map
 	_systems[typeid(T)] = system;
 
+	// Register system with entity manager
 	manager.registerSystem(system);
 
+	// Resize ordering vectors
 	if (loadIndex >= _loadOrder.size())
 		_loadOrder.resize(loadIndex + 1, typeid(nullptr));
 
 	if (updateIndex >= _updateOrder.size())
 		_updateOrder.resize(updateIndex + 1, typeid(nullptr));
 	
+	// Add system call order
 	_loadOrder[loadIndex] = typeid(T);
 	_updateOrder[updateIndex] = typeid(T);
 
@@ -157,10 +166,12 @@ inline std::string Engine::getConfig(const std::string& key){
 	if (config != _config.end())
 		return config->second;
 
+	// If key doesn't exist return ""
 	return "";
 }
 
 inline void Engine::setConfig(const std::string& key, const std::string& value){
+	// Set key (or overwrite)
 	_config[key] = value;
 }
 
@@ -178,19 +189,23 @@ inline void Engine::reset(bool data){
 }
 
 inline void Engine::init(int argc, char * argv[]){
+	// Shorten exe path to root directory
 	std::string root = argv[0];
 
 	root = root.substr(0, root.find_last_of("\\"));
 	root = root.substr(0, root.find_last_of("\\") + 1);
 
+	// Add root directory as config key
 	setConfig("root", root);
-	setConfig("name", "ComsEngine");
+	// Add data folder as config key
 	setConfig("data", root + "data\\");
+	setConfig("name", "ComsEngine");
 }
 
 inline void Engine::load(){
 	assert(!_running && _systemCount > 0);
 
+	// Initiate clocks
 	_start = Clock::now();
 	_end = _start;
 
@@ -198,19 +213,25 @@ inline void Engine::load(){
 
 	_running = true;
 
+	// Load all systems
 	_loadSystems();
 }
 
 inline void Engine::update(){
 	assert(_running && _systemCount > 0);
 
+	// Calculate delta time
 	_dt = _end - _start;
+	// Start timer
 	_start = Clock::now();
 
+	// Update all systems
 	_updateSystems();
 
+	// End timer
 	_end = Clock::now();
 
+	// If reset was triggered (experimental)
 	if (_reset){
 		_resetSystems();
 		manager.purge();

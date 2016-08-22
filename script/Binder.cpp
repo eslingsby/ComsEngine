@@ -17,6 +17,7 @@
 void Binder::_setMembers(lua_State* L, MemberReg* binder){
 	// {}
 
+	// For each MemberReg, add as lightuserdata pointer to table
 	for (; binder->name; binder++){
 		// {} string
 		lua_pushstring(L, binder->name);
@@ -102,6 +103,7 @@ void Binder::bind(lua_State* L, uint8_t type, const std::string& name, lua_CFunc
 	lua_newtable(L);
 	int globalMeta = lua_gettop(L);
 
+	// Add constructor method
 	if (constructor){
 		const luaL_Reg constructorReg[] = {
 			{ "__call", constructor },
@@ -110,6 +112,8 @@ void Binder::bind(lua_State* L, uint8_t type, const std::string& name, lua_CFunc
 
 		luaL_setfuncs(L, constructorReg, 0);
 	}
+
+	// Define global type
 
 	// {} M{} M{} {}
 	lua_newtable(L);
@@ -139,13 +143,15 @@ void Binder::bind(lua_State* L, uint8_t type, const std::string& name, lua_CFunc
 }
 
 void Binder::bind(lua_State* L, Engine& engine){
+	// Push engine pointer to Lua stack
 	lua_pushlightuserdata(L, &engine);
 	lua_setglobal(L, "__engine");
 
 	Scripting* scripting = engine.getSystem<Scripting>();
 
 	assert(scripting);
-
+	
+	// Bind each engine Lua type
 	bind(L, EngineType::Core, EngineBind::name, 0, EngineBind::global);
 	bind(L, EngineType::Core, EntityBind::name, EntityBind::constructor, EntityBind::global, EntityBind::methods, EntityBind::meta);
 

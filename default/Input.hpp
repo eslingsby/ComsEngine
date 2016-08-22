@@ -10,6 +10,11 @@
 #include <SDL_scancode.h>
 #include <glm\vec2.hpp>
 
+// Input system. Subsribes to no components.
+// Used to bind keyboard input to string identifiers.
+// Use string identifiers to check for key presses.
+// Also checks mouse and window input.
+
 class Input : public System<>{	
 	bool _quit = false;
 
@@ -62,7 +67,9 @@ public:
 	glm::vec2 mousePos();
 	glm::vec2 mouseRelativePos();
 
+	// Lock and hide mouse on window
 	void lockMouse(bool lock = true);
 
+	// Scroll amount (not working)
 	int scrollAmount();
 };

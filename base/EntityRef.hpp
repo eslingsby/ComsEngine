@@ -4,6 +4,9 @@
 
 #include <cstdint>
 
+// EntityRef provides an object like way of handling an entity ID.
+// Creates a reference to an entity, and can be used to get and add component through.
+
 class EntityRef{
 	EntityManager* _manager = nullptr;
 	uint64_t _id;

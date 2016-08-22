@@ -7,11 +7,13 @@ Identification::Identification(Engine* engine) : System(engine){}
 void Identification::onCreate(uint64_t id){
 	Identifier* identifier = _engine.manager.getComponent<Identifier>(id);
 
+	// If name, add to name name
 	if (identifier->name != "" && !hasName(identifier->name)){
 		_names[identifier->name] = id;
 		identifier->validName = true;
 	}
 
+	// If layer, add to layer map
 	if (identifier->layer != ""){
 		assert(_layers[identifier->layer].find(id) == _layers[identifier->layer].end());
 		_layers[identifier->layer].insert(id);
@@ -21,9 +23,11 @@ void Identification::onCreate(uint64_t id){
 void Identification::onDestroy(uint64_t id){
 	Identifier* identifier = _engine.manager.getComponent<Identifier>(id);
 
+	// If name, remove from name map
 	if (identifier->name != "" && identifier->validName)
 		_names.erase(identifier->name);
 
+	// If layer, remove from layer map
 	if (identifier->layer != ""){
 		_layers[identifier->layer].erase(id);
 

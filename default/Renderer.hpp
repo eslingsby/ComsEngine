@@ -13,6 +13,12 @@
 #include <SDL_opengl.h>
 #include <gl\glu.h>
 
+// Renderer system. Subsribes to entities with Transform and Mesh components.
+// Loads mesh using TinyObjLoader and OpenGL.
+// Creates and updates OpenGL window.
+// Renders entities with a mesh component.
+// Handles a camera entity with a transform used as OpenGL camera, that can be assigned publicly.
+
 class Renderer : public System<Transform, Mesh>{
 	SDL_Window* _window = nullptr;
 	SDL_GLContext _context = nullptr;
@@ -41,13 +47,18 @@ public:
 	void update() override;
 	void exit() override;
 
+	// Render all meshes
 	void onProcess(uint64_t id, Transform& transform, Mesh& mesh) override;
 
+	// Load mesh
 	void onCreate(uint64_t id) override;
 
+	// Return camera entity ID
 	uint64_t cameraId();
 
+	// Set camera entity
 	void setCamera(uint64_t id);
 
+	// Reload mesh file on entity
 	void load(uint64_t id, std::string file);
 };

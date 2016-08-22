@@ -4,6 +4,16 @@
 #include <cassert>
 #include <string>
 
+// Use be deriving from a template component.
+// Second template argument defines chunk size, IE amount of components that will be made when increasing memory.
+// Use a larger chunk size for entities that are created very often, default is 8.
+//
+//struct MyComponent : public Component<MyComponent, 8>{
+//	int memberInt1;
+//	int memberInt2;
+//	int memberInt3;
+//};
+
 class BaseComponent{
 protected:
 	static uint32_t _typeCounter;

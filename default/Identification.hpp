@@ -7,6 +7,10 @@
 #include <set>
 #include <unordered_map>
 
+// Renderer system. Subsribes to entities with Identifier components.
+// Used to name components by uniqe names, or layer names.
+// Entities can be obtained through this system via their unique name, or their layer name.
+
 class Identification : public System<Identifier>{
 	std::unordered_map<std::string, uint64_t> _names;
 	std::unordered_map<std::string, std::set<uint64_t>> _layers;
@@ -34,5 +38,6 @@ public:
 	// Destroy all entities by layer
 	void destroyByLayer(const std::string& layer);
 
+	// Rename an entity
 	void rename(uint64_t id, const std::string& name, const std::string& layer);
 };

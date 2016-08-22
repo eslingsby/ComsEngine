@@ -18,33 +18,50 @@ namespace Binder{
 		bool nil;
 	} MemberReg;
 
+	// MemberReg binding (overly complicated, simply to allow for 'Vec3.x = 10' in Lua)
+	// http://lua-users.org/wiki/BindingWithMembersAndMethods
+
 	const char typeName[] = "__EngineType";
 
 	enum EngineType : uint8_t{ Core = 1, Primitive = 2, System = 3, Component = 4 };
 
+	// Called for getting member variables
 	inline static int _indexHandler(lua_State* L);
+	// Called for setting member variables
 	inline static int _newindexHandler(lua_State* L);
 	
+	// Called to set lua objects member variable names and bindings using a MemberReg array
 	void _setMembers(lua_State* L, const MemberReg* binder);
 
+	// Individual bind function for each Lua type, called in the body
 	void bind(lua_State* L, uint8_t type, const std::string& name, lua_CFunction constructor = 0, const luaL_Reg* global = 0, const luaL_Reg* instance = 0, const luaL_Reg* meta = 0, const MemberReg* getters = 0, const MemberReg* setters = 0);
+	
+	// The main bind function (defined in the body to avoid cross-inclusion)
 	void bind(lua_State* L, Engine& engine);
 
+	// Get engine pointer from lua stack
 	inline Engine& getEngine(lua_State* L);
 
+	// Get system using the engine pointer on the lua stack
 	template <typename T>
 	inline static T* getSystem(lua_State* L);
 
+	// Create an entity reference lua object (base of all lua components and entities)
 	inline static void createEntityRef(lua_State* L, uint64_t id, const std::string& type);
-
+	
+	// Print the error currently on the stack
 	inline static void printStackError(lua_State* L);
 
+	// Check if an entity manager error was triggered, and trigger a lua event if so
 	inline static bool checkEngineError(lua_State* L);
 
+	// Print what's on the Lua stack 
 	inline static void printStack(lua_State* L);
 
+	// Check if an entity exists, and trigger a lua event if not
 	inline static void checkEntity(lua_State* L, EntityRef* entity);
 
+	// Functions for binding object to member variable
 	inline static int getInt(lua_State* L, void* value);
 	inline static int setInt(lua_State* L, void* value);
 	inline static int getNumber(lua_State* L, void* value);

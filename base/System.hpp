@@ -6,10 +6,6 @@
 
 class Engine;
 
-// To-do
-// - Change System from being fixed to one Component filter.
-// - Remove templatized Component mask.
-
 // System class used to derive all system objects within the engine.
 // Systems subscribe to listen to entities with certain types of components.
 // Subscribed components of interest are expressed in the template definition,

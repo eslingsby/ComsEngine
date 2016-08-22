@@ -41,11 +41,13 @@ void Input::update(){
 	SDL_Event e;
 
 	while (SDL_PollEvent(&e)){
+		// Check if window X button was pressed
 		if (e.type == SDL_QUIT){
 			_quit = true;
 			continue;
 		}
 
+		// Check if mouse button down
 		if (e.type == SDL_MOUSEBUTTONDOWN){
 			if (e.button.button == SDL_BUTTON_LEFT){
 				_mouseLDown = true;
@@ -56,16 +58,19 @@ void Input::update(){
 				_mouseRWasDown = true;
 			}
 		}
+		// Check if mouse button up
 		else if (e.type == SDL_MOUSEBUTTONUP){
 			if (e.button.button == SDL_BUTTON_LEFT)
 				_mouseLDown = false;
 			else if (e.button.button == SDL_BUTTON_RIGHT)
 				_mouseRDown = false;
 		}
+		// If no keydown, then exit
 		else if (e.type != SDL_KEYDOWN && e.type != SDL_KEYUP){
 			continue;
 		}
 
+		// For each key combination assigned, check against keydown and keyup events
 		for (unsigned int i = 0; i < _keyCombos.size(); i++){
 			if (e.type == SDL_KEYDOWN){
 				if (e.key.keysym.scancode == _keyCombos[i].first){
@@ -100,13 +105,7 @@ void Input::update(){
 }
 
 void Input::addInput(const std::string& name, SDL_Scancode modifier, SDL_Scancode key){
-	// search _keyCombos for pair(modifier, key)
-
-	// if pair not in _keyCombos then resize vectors and add
-
 	_insert(name, std::make_pair(modifier, key));
-
-	// set _comboNames[name] to false and vector index
 }
 
 void Input::addInput(const std::string& name, SDL_Scancode key){

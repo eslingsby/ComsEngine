@@ -8,6 +8,7 @@
 #include <tuple>
 #include <set>
 
+// Entity debug info for testing
 struct EntityDebug{
 	uint32_t index;
 	uint32_t version;
@@ -48,6 +49,7 @@ class EntityManager{
 	// System register for calling BaseSystem events
 	std::set<BaseSystem*> _systems;
 
+	// Error value set when using _check functions
 	uint8_t _error = 0;
 
 	// Non-copyable overloads
@@ -57,15 +59,16 @@ class EntityManager{
 	// Erase entity component's from object pools
 	inline void _eraseEntity(uint32_t index);
 	
+	// Error check functions for entities, returns true if error, sets _error to enum value
 	inline bool _checkRange(uint32_t index);
 	inline bool _checkSlot(uint32_t index);
 	inline bool _checkDestroyed(uint32_t index);
 	inline bool _checkVersion(uint32_t index, uint32_t version);
 	inline bool _checkComponent(uint32_t index, uint8_t type);
 	inline bool _checkNoComponent(uint32_t index, uint8_t type);
-
 	inline bool _checkPool(uint8_t type);
 
+	// Prints errors string of _error
 	inline void _verboseError();
 
 	// Fill component type tuple with relevent components at existing entity index
@@ -104,57 +107,79 @@ public:
 	// Entity states for entity _states vector
 	enum EntityState : uint8_t{ Empty, Active, Inactive, Destroyed };
 
+	// Entity error types
 	enum EntityError : uint8_t{ Okay, Invalid, Destructed, Component, NoComponent };
 
 	EntityManager();
 	~EntityManager();
 
+	// Create new entity, returns 64 bit ID to new entity
 	inline uint64_t createEntity();
 	
+	// Destroy entity and components using entity ID
 	inline uint8_t destroyEntity(uint64_t id);
 
+	// Enable or disable entity
 	inline uint8_t setEntityActive(uint64_t id, bool active);
 
+	// Enable or disable individual component of entity 
 	template <typename T>
 	inline uint8_t setComponentEnabled(uint64_t id, bool enabled);
 
+	// Create and add component type to entity ID with constructor args, returns instance pointer
 	template <typename T, typename ...Ts>
 	inline T* const addComponent(uint64_t id, Ts... args);
 
+	// Get component instance from entity ID
 	template <typename T>
 	inline T* const getComponent(uint64_t id);
 
+	// Iterate over all entities related to a system (call from inside system)
 	template <typename ...Ts>
 	inline void processEntities(System<Ts...>* system);
 	
+	// Return entity state enum
 	inline uint8_t getEntityState(uint64_t id);
 
+	// Return entity mask representing attached components to an entity
 	inline uint32_t getEntityMask(uint64_t id);
 
+	// Checks if component types are attached to entity ID
 	template <typename ...Ts>
 	inline bool hasComponents(uint64_t id);
 
+	// Checks if entity exists
 	inline bool entityExists(uint64_t id);
 
+	// Increments an entity's reference count (won't be erased until references hit zero)
 	inline uint8_t addReference(uint64_t id);
 
+	// Decrements an entity's reference count (won't be erased until references hit zero)
 	inline uint8_t removeReference(uint64_t id);
 
+	// Register a system for entity events like onCreate and onDestroy
 	template<typename T>
 	inline uint8_t registerSystem(T* system);
 
+	// Erase any previously destroyed entities with a reference count of zero
 	inline void eraseDestroyed();
 
+	// Return total amount of references (for testing only)
 	inline uint8_t totalReferences();
 
+	// Remove everything (experimental)
 	inline void purge();
 
+	// Get error string from returned entity manager error
 	inline std::string errorString(uint8_t error);
 
+	// Check if an error was triggered from an entity manager function
 	inline uint8_t getError();
 
+	// Check if an error was triggered, but return error string instead
 	inline std::string getErrorString();
 
+	// Fill an entity debug struct with info (for testing only)
 	inline int fillEntityDebug(uint64_t id, EntityDebug& debug);
 };
 
@@ -252,6 +277,7 @@ inline uint8_t EntityManager::addReference(uint64_t id){
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
 		return _error;
 
+	// Increment references
 	_references[index]++;
 
 	return EntityError::Okay;
@@ -264,22 +290,27 @@ inline uint8_t EntityManager::removeReference(uint64_t id){
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _references[index] != 0))
 		return _error;
 
+	// Decrement referneces
 	_references[index]--;
 
+	// If references hits zero, and entity was destroyed
 	if (!_references[index] && _states[index] == EntityState::Destroyed)
-		_eraseEntity(index);
+		_eraseEntity(index); // Erase entity
 
 	return EntityError::Okay;
 }
 
 inline void EntityManager::_eraseEntity(uint32_t index){
+	// Erase each component from pools
 	for (uint8_t i = 0; i < _pools.size(); i++){
 		if (BitHelper::getBit(i, _masks[index]))
 			_pools[i]->erase(index);
 	}
 
+	// Add index to free list
 	_free.push(index);
 
+	// Update entity state and increment entity version
 	_states[index] = EntityState::Empty;
 	_versions[index]++;
 
@@ -287,21 +318,24 @@ inline void EntityManager::_eraseEntity(uint32_t index){
 }
 
 inline void EntityManager::eraseDestroyed(){
-	// Call onDestroy
+	// While entities are in destroy queue
 	while (_destroyed.size()){
 		uint32_t index = BitHelper::front(_destroyed.front());
 
+		// Call onDestroy in each related system
 		for (BaseSystem* system : _systems){
 			if (system->mask && (system->mask & _masks[index]) == system->mask)
 				system->onDestroy(_destroyed.front());
 		}
 
+		// If no references, erase entity
 		if (!_references[index])
 			_eraseEntity(index);
 
 		_destroyed.pop();
 	}
 
+	// If purge, kill everything (experimental)
 	if (_purge){
 		for (BasePool* pool : _pools){
 			if (pool)
@@ -358,6 +392,7 @@ inline std::string EntityManager::errorString(uint8_t error){
 inline uint8_t EntityManager::getError(){
 	uint8_t error = _error;
 
+	// Clear error
 	_error = 0;
 
 	return error;
@@ -406,10 +441,12 @@ inline uint64_t EntityManager::createEntity(){
 	uint32_t index;
 
 	if (_free.size()){
+		// Use index from free lease
 		index = _free.front();
 		_free.pop();
 	}
 	else{
+		// Increase entity info vectors
 		if (_states.size() <= _entities){
 			_states.resize(_entities + 1);
 			_masks.resize(_entities + 1);
@@ -423,16 +460,20 @@ inline uint64_t EntityManager::createEntity(){
 
 	assert(!_states[index]);
 
+	// Set entity state to active
 	_states[index] = EntityState::Active;
 
+	// Set entity component and enabled mask to 0
 	_masks[index] = 0;
 	_enabled[index] = 0;
 
+	// If index is 0, initiate version to 1
 	if (!_versions[index])
 		_versions[index] = 1;
 
 	_entities++;
 
+	// Combine index location and version to 64 bit ID
 	return BitHelper::combine(index, _versions[index]);
 }
 
@@ -443,8 +484,10 @@ inline uint8_t EntityManager::destroyEntity(uint64_t id){
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkDestroyed(index)))
 		return _error;
 
+	// Set entity state to destroyed
 	_states[index] = EntityState::Destroyed;
 
+	// Push id to destroy queue
 	_destroyed.push(id);
 
 	return EntityError::Okay;
@@ -527,6 +570,7 @@ inline T* const EntityManager::getComponent(uint64_t id){
 	if (!(_checkPool(T::type()) && _checkRange(index) && _checkSlot(index) && _checkVersion(index, version) && _checkComponent(index, T::type())))
 		return nullptr;
 
+	// Return component from pool
 	return _pools[T::type()]->get<T>(index);
 }
 
@@ -534,11 +578,12 @@ template <typename ...Ts>
 inline void EntityManager::processEntities(System<Ts...>* system){
 	std::tuple<Ts*...> components;
 
-	// Call onProcess
+	// Iterate through all entities
 	for (uint32_t i = 0; i < _states.size(); i++){
 		if (_states[i] != EntityState::Active)
 			continue;
 
+		// Call onProcess in systems
 		if (system->mask && (system->mask & _enabled[i]) == system->mask){
 			_fillTuple(i, components);
 			system->onProcess(BitHelper::combine(i, _versions[i]), *std::get<Ts*>(components)...);
@@ -553,6 +598,7 @@ inline uint8_t EntityManager::getEntityState(uint64_t id){
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
 		return EntityState::Empty;
 
+	// Return entity state
 	return _states[index];
 }
 
@@ -563,6 +609,7 @@ inline uint32_t EntityManager::getEntityMask(uint64_t id){
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
 		return EntityError::Okay;
 
+	// Return entity component mask
 	return _masks[index];
 }
 
@@ -574,8 +621,10 @@ inline bool EntityManager::hasComponents(uint64_t id){
 	if (!(_checkRange(index) && _checkSlot(index) && _checkVersion(index, version)))
 		return false;
 
+	// Create a component mask from template args
 	uint32_t mask = BitHelper::createMask<Ts...>();
 
+	// Return component mask comparison
 	return (mask & _masks[index]) == mask;
 }
 
