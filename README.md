@@ -1,8 +1,6 @@
 # ComsEngine
-<img width="100% "src="http://i.imgur.com/MYkPoi0.png"/>
-
-Un-finished bare-bones ECS game engine, written in C++, extended with Lua.  
-[Documentation here](http://elliottslingsby.github.io/ComsEngine/custom.html), and [example scripts here](https://github.com/ElliottSlingsby/ComsEngine/tree/master/data/component). 
+A bare-bones ECS game engine, written in C++, extended with Lua.  
+[Documentation here](http://eslingsby.github.io/ComsEngine/custom.html), and [example scripts here](https://github.com/eslingsby/ComsEngine/tree/master/data/component). 
 
 # Third Party
 
